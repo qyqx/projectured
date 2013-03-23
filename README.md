@@ -13,7 +13,7 @@ Unfortunately due to lack of time it's under quite *slow* construction. Send us 
 Wiki
 ----
 
-There's a separate [**wiki**](https://github.com/projectured/projectured/wiki) with an increasing number of pages. It gives an overview of the whole idea, and it also describes how to [**install*](https://github.com/projectured/projectured/wiki/Installation), [**run and test**](https://github.com/projectured/projectured/wiki/Running) the projectional editor.
+There's a separate [**wiki**](https://github.com/projectured/projectured/wiki) with an increasing number of pages. It gives an overview of the whole idea, and it also describes how to [**install**](https://github.com/projectured/projectured/wiki/Installation), [**run and test**](https://github.com/projectured/projectured/wiki/Running) the projectional editor.
 
 Internals
 ---------
