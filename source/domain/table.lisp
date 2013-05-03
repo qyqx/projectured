@@ -88,5 +88,4 @@
                   (declare (ignore iomap))
                   (pattern-case reference
                     ((the character (elt (the string (border-of ?a)) ?b))
-                     (return-from table-font-color-provider
-                       (make-style/color 255 196 196 196)))))))
+                     (return-from table-font-color-provider (make-style/color 255 196 196 196)))))))

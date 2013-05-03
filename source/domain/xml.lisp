@@ -70,17 +70,13 @@
                   (pattern-case reference
                     ((the character (elt (the string (?or (opening-delimiter ?a ?b)
                                                           (closing-delimiter ?a ?b))) ?c))
-                     (return-from xml-font-color-provider
-                       *color/solarized/gray*))
+                     (return-from xml-font-color-provider *color/solarized/gray*))
                     ((the character (elt (the string (name-of (the xml/attribute ?a))) ?b))
-                     (return-from xml-font-color-provider
-                       *color/solarized/red*))
+                     (return-from xml-font-color-provider *color/solarized/red*))
                     ((the character (elt (the string (value-of (the xml/attribute ?a))) ?b))
-                     (return-from xml-font-color-provider
-                       *color/solarized/green*))
+                     (return-from xml-font-color-provider *color/solarized/green*))
                     ((the character (elt (the string ((?or start-tag end-tag) (the xml/element ?a))) ?b))
-                     (return-from xml-font-color-provider
-                       *color/solarized/blue*))))))
+                     (return-from xml-font-color-provider *color/solarized/blue*))))))
 
 (def (function e) xml-delimiter-provider (iomap reference)
   (pattern-case reference
@@ -94,8 +90,7 @@
                        (pattern-case reference
                          ;; " around attribute value
                          ((the string (value-of (the xml/attribute ?a)))
-                          (return-from xml-delimiter-provider
-                            "\"")))))))))
+                          (return-from xml-delimiter-provider "\"")))))))))
 
 (def (function e) xml-separator-provider (iomap previous-child-reference next-child-reference)
   (declare (ignore previous-child-reference))

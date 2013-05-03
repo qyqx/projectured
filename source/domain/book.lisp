@@ -48,14 +48,11 @@
                   (declare (ignore iomap))
                   (pattern-case reference
                     ((the character (elt (the string (title-of (the book/book ?a))) ?b))
-                     (return-from book-font-color-provider
-                       (make-style/color 255 196 0 0)))
+                     (return-from book-font-color-provider (make-style/color 255 196 0 0)))
                     ((the character (elt (the string (title-of (the book/chapter ?a))) ?b))
-                     (return-from book-font-color-provider
-                       (make-style/color 255 0 0 196)))
+                     (return-from book-font-color-provider (make-style/color 255 0 0 196)))
                     ((the character (elt (the string (elt (the list (elements-of (the book/chapter ?a))) ?b)) ?c))
-                     (return-from book-font-color-provider
-                       (make-style/color 255 0 0 0)))))))
+                     (return-from book-font-color-provider (make-style/color 255 0 0 0)))))))
 
 (def (function e) book-font-provider (iomap reference)
   (map-backward iomap reference
@@ -63,14 +60,11 @@
                   (declare (ignore iomap))
                   (pattern-case reference
                     ((the character (elt (the string (title-of (the book/book ?a))) ?b))
-                     (return-from book-font-provider
-                       *font/ubuntu/bold/36*))
+                     (return-from book-font-provider *font/ubuntu/bold/36*))
                     ((the character (elt (the string (title-of (the book/chapter ?a))) ?b))
-                     (return-from book-font-provider
-                       *font/ubuntu/bold/24*))
+                     (return-from book-font-provider *font/ubuntu/bold/24*))
                     ((the character (elt (the string (elt (the list (elements-of (the book/chapter ?a))) ?b)) ?c))
-                     (return-from book-font-provider
-                       *font/ubuntu/regular/18*))))))
+                     (return-from book-font-provider *font/ubuntu/regular/18*))))))
 
 (def (function e) book-delimiter-provider (iomap reference)
   (map-backward iomap reference

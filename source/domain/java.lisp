@@ -198,44 +198,34 @@
                     ;; delimiters
                     ((the character (elt (the string (?or (opening-delimiter ?a ?b)
                                                           (closing-delimiter ?a ?b))) ?c))
-                     (return-from java-font-color-provider
-                       (make-style/color 255 196 196 196)))
+                     (return-from java-font-color-provider (make-style/color 255 196 196 196)))
                     ;; function argument
                     ((the character (elt (the string (name-of (the java/declaration/argument ?b))) ?c))
-                     (return-from java-font-color-provider
-                       (make-style/color 255 128 128 0)))
+                     (return-from java-font-color-provider (make-style/color 255 128 128 0)))
                     ;; reference to a variable
                     ((the character (elt (the string (name-of (the java/expression/variable-reference ?b))) ?c))
-                     (return-from java-font-color-provider
-                       (make-style/color 255 196 196 0)))
+                     (return-from java-font-color-provider (make-style/color 255 196 196 0)))
                     ;; method name
                     ((the character (elt (the string (name-of (the java/declaration/method ?b))) ?c))
-                     (return-from java-font-color-provider
-                       (make-style/color 255 128 0 0)))
+                     (return-from java-font-color-provider (make-style/color 255 128 0 0)))
                     ;; operator name
                     ((the character (elt (the string (operator-of (the java/expression/infix-operator ?b))) ?c))
-                     (return-from java-font-color-provider
-                       (make-style/color 255 128 0 0)))
+                     (return-from java-font-color-provider (make-style/color 255 128 0 0)))
                     ;; method invocation name
                     ((the character (elt (the string (method-of (the java/expression/method-invocation ?b))) ?c))
-                     (return-from java-font-color-provider
-                       (make-style/color 255 196 0 0)))
+                     (return-from java-font-color-provider (make-style/color 255 196 0 0)))
                     ;; statement reserved word
                     ((the character (elt (the string (form-name (the ?type (?if (subtypep ?type 'java/statement)) ?b))) ?c))
-                     (return-from java-font-color-provider
-                       (make-style/color 255 196 0 196)))
+                     (return-from java-font-color-provider (make-style/color 255 196 0 196)))
                     ;; type name
                     ((the character (elt (the string (name-of (the java/declaration/type ?b))) ?c))
-                     (return-from java-font-color-provider
-                       (make-style/color 255 0 0 196)))
+                     (return-from java-font-color-provider (make-style/color 255 0 0 196)))
                     ;; qualifier name
                     ((the character (elt (the string (name-of (the java/declaration/qualifier ?b))) ?c))
-                     (return-from java-font-color-provider
-                       (make-style/color 255 128 0 128)))
+                     (return-from java-font-color-provider (make-style/color 255 128 0 128)))
                     ;; number literal
                     ((the character (elt (the string (write-to-string (the number ?b))) ?c))
-                     (return-from java-font-color-provider
-                       (make-style/color 255 0 196 0)))))))
+                     (return-from java-font-color-provider (make-style/color 255 0 196 0)))))))
 
 (def (function e) java-delimiter-provider (iomap reference)
   (pattern-case reference
