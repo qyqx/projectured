@@ -27,8 +27,12 @@
 (def document json/array (json/base)
   ((elements :type sequence)))
 
+(def document json/object-entry (json/base)
+  ((key :type t)
+   (value :type t)))
+
 (def document json/object (json/base)
-  ((key-value-map :type hash-table)))
+  ((entries :type sequence)))
 
 ;;;;;;
 ;;; Construction
@@ -48,13 +52,11 @@
 (def (function e) make-json/array (elements)
   (make-instance 'json/array :elements elements))
 
-(def (function e) make-json/object (elements)
-  (make-instance 'json/object
-                 :key-value-map (if (listp elements)
-                                    (prog1-bind key-value-map (make-hash-table)
-                                      (iter (for (key value) :in elements)
-                                            (setf (gethash key key-value-map) value)))
-                                    elements)))
+(def (function e) make-json/object-entry (key value)
+  (make-instance 'json/object-entry :key key :value value))
+
+(def (function e) make-json/object (entries)
+  (make-instance 'json/object :entries entries))
 
 ;;;;;;
 ;;; Construction
@@ -74,9 +76,12 @@
 (def (macro e) json/array (&body elements)
   `(make-json/array (list ,@elements)))
 
+(def (macro e) json/object-entry (key value)
+  `(make-json/object-entry ,key ,value))
+
 (def (macro e) json/object (&body key-value-pairs)
   `(make-json/object (list ,@(iter (for (key value) :in key-value-pairs)
-                                   (collect `(list ,key ,value))))))
+                                   (collect `(make-json/object-entry ,key ,value))))))
 
 ;;;;;;
 ;;; Provider
@@ -88,23 +93,17 @@
                   (pattern-case reference
                     ((the character (elt (the string (?or (opening-delimiter ?a ?b)
                                                           (closing-delimiter ?a ?b))) ?c))
-                     (return-from json-font-color-provider
-                       *color/solarized/gray*))
+                     (return-from json-font-color-provider *color/solarized/gray*))
                     ((the character (elt (the string (value (the json/null ?a) ?b)) ?c))
-                     (return-from json-font-color-provider
-                       *color/solarized/red*))
+                     (return-from json-font-color-provider *color/solarized/red*))
                     ((the character (elt (the string (boolean-to-string (the boolean (value-p (the json/boolean ?a))))) ?b))
-                     (return-from json-font-color-provider
-                       *color/solarized/blue*))
+                     (return-from json-font-color-provider *color/solarized/blue*))
                     ((the character (elt (the string (write-to-string (the number (value-of (the json/number ?a))))) ?b))
-                     (return-from json-font-color-provider
-                       *color/solarized/magenta*))
+                     (return-from json-font-color-provider *color/solarized/magenta*))
                     ((the character (elt (the string (text-of (the json/string ?a))) ?b))
-                     (return-from json-font-color-provider
-                       *color/solarized/green*))
+                     (return-from json-font-color-provider *color/solarized/green*))
                     ((the character (elt (the string (entry-key ?a)) ?b))
-                     (return-from json-font-color-provider
-                       *color/solarized/orange*))))))
+                     (return-from json-font-color-provider *color/solarized/orange*))))))
 
 (def (function e) json-delimiter-provider (iomap reference)
   (pattern-case reference
@@ -136,10 +135,10 @@
                 (lambda (iomap reference)
                   (declare (ignore iomap))
                   (pattern-case reference
-                    ((?or (the ?a (gethash-entry ?b (the json/object ?c)))
+                    ((?or (the ?a (the json/object-entry (elt (the list (entries-of (the json/object ?b))) ?c)))
                           (the ?a (elt (the list (elements-of (the json/array ?b))) ?c)))
                      (return-from json-separator-provider ","))
-                    ((the ?a (gethash ?b (key-value-map-of (the json/object ?c))))
+                    ((the json/object-entry (elt (the list (entries-of (the json/object ?c))) ?b))
                      (return-from json-separator-provider " : "))))))
 
 (def (function e) json-indentation-provider (iomap previous-child-reference next-child-reference parent-node)
@@ -151,6 +150,6 @@
                       ((the ?a (elt (the list (elements-of (the json/array ?b))) ?c))
                        (when (> ?c 0)
                          (return-from json-indentation-provider 1)))
-                      ((the t (gethash-entry ?a (the json/object ?b)))
+                      ((the json/object-entry (elt (the list (entries-of (the json/object ?a))) ?b))
                        (when previous-child-reference
                          (return-from json-indentation-provider 1))))))))

@@ -16,8 +16,9 @@
   (make-graphics/canvas (list (make-graphics/viewport (make-graphics/canvas (list (make-graphics/point (make-2d 50 150) :stroke-color *color/red*)
                                                                                   (make-graphics/line (make-2d 150 300) (make-2d 50 400) :stroke-color *color/blue*)
                                                                                   (make-graphics/rectangle (make-2d 200 200) (make-2d 100 100) :stroke-color *color/green*)
+                                                                                  (make-graphics/rounded-rectangle (make-2d 120 180) (make-2d 50 50) 10 :fill-color *color/dark-yellow*)
                                                                                   (make-graphics/polygon (list (make-2d 150 100) (make-2d 160 160) (make-2d 100 150)) :stroke-color *color/black*)
-                                                                                  (make-graphics/circle (make-2d 50 250) 50 :stroke-color *color/black*)
+                                                                                  (make-graphics/circle (make-2d 50 250) 50 :stroke-color *color/black* :fill-color *color/blue*)
                                                                                   (make-graphics/ellipse (make-2d 50 50) (make-2d 100 50) :stroke-color *color/red*)
                                                                                   (make-graphics/text (make-2d 200 150) "hello world" :font *font/default* :font-color *color/default* :fill-color *color/light-cyan*)
                                                                                   (make-graphics/image (make-2d 300 0) (asdf:system-relative-pathname :projectured "etc/projectured.png")))
@@ -37,6 +38,14 @@
 
 (def function make-test-content/string ()
   "just a simple string")
+
+;;;;;;
+;;; Styled string
+
+(def function make-test-content/styled-string ()
+  (make-styled-string/document (list (make-styled-string/string "Hello" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*)
+                                     (make-styled-string/string " " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*)
+                                     (make-styled-string/string "World" :font *font/ubuntu/monospace/bold/18* :font-color *color/solarized/green*))))
 
 ;;;;;;
 ;;; Text
@@ -99,6 +108,35 @@
                         (make-tree/node (list (make-tree/leaf "fifth")
                                               (make-tree/node (list (make-tree/leaf "sixth") (make-tree/leaf "seventh")))
                                               (make-tree/leaf "eigth"))))))
+
+;;;;;;
+;;; Graph
+
+(def function make-test-content/graph ()
+  (bind ((vertex1 (make-graph/vertex "A"))
+         (vertex2 (make-graph/vertex "B"))
+         (vertex3 (make-graph/vertex "C"))
+         (edge12 (make-graph/edge vertex1 vertex2))
+         (edge13 (make-graph/edge vertex1 vertex3))
+         (edge23 (make-graph/edge vertex2 vertex3)))
+    (make-graph/graph (list vertex1 vertex2 vertex3) (list edge12 edge13 edge23))))
+
+;;;;;;
+;;; State machine
+
+(def function make-test-content/state-machine ()
+  (bind ((start-state (make-state-machine/state "Start"))
+         (a-state (make-state-machine/state "A"))
+         (b-state (make-state-machine/state "B"))
+         (finish-state (make-state-machine/state "Finish")))
+    (make-state-machine/state-machine "AB"
+                                      (list start-state a-state b-state finish-state)
+                                      (list (make-state-machine/transition "Start->A" "a" start-state a-state)
+                                            (make-state-machine/transition "Start->B" "b" start-state b-state)
+                                            (make-state-machine/transition "A->A" "a" a-state a-state)
+                                            (make-state-machine/transition "B->B" "b" b-state b-state)
+                                            (make-state-machine/transition "A->Finish" "a" a-state finish-state)
+                                            (make-state-machine/transition "B->Finish" "b" b-state finish-state)))))
 
 ;;;;;;
 ;;; Book

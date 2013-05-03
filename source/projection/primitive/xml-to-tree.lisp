@@ -52,29 +52,32 @@
 
 (def printer xml/text->string (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
-  (bind ((output (text-of input)))
+  (bind ((output (make-styled-string/string (text-of input) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/magenta*)))
     (make-iomap/object projection recursion input input-reference output output-reference)))
 
 (def printer xml/attribute->tree/node (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
   (bind ((name (name-of input))
          (value (value-of input))
-         (name-leaf (make-tree/leaf name))
-         (value-leaf (make-tree/leaf value))
-         (output (make-tree/node (list name-leaf value-leaf)))
+         (name-leaf (make-tree/leaf (make-styled-string/string name :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*)))
+         (value-leaf (make-tree/leaf (make-styled-string/string value :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/green*)
+                                     :opening-delimiter (make-styled-string/string "\"" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
+                                     :closing-delimiter (make-styled-string/string "\"" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)))
+         (output (make-tree/node (list name-leaf value-leaf)
+                                 :separator (make-styled-string/string "=" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)))
          (typed-input-reference `(the ,(form-type input) ,input-reference))
          (name-reference `(elt (the list (children-of (the tree/node ,output-reference))) 0))
          (value-reference `(elt (the list (children-of (the tree/node ,output-reference))) 1)))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)
                                 (make-iomap/string name `(name-of ,typed-input-reference) 0
-                                                   name `(content-of (the tree/leaf ,name-reference)) 0
+                                                   name `(content-of (the styled-string/string (content-of (the tree/leaf ,name-reference)))) 0
                                                    (length name))
                                 (make-iomap/object projection recursion
                                                    name `(name-of ,typed-input-reference)
                                                    name-leaf name-reference)
                                 (make-iomap/string value `(value-of ,typed-input-reference) 0
-                                                   value `(content-of (the tree/leaf ,value-reference)) 0
+                                                   value `(content-of (the styled-string/string (content-of (the tree/leaf ,value-reference)))) 0
                                                    (length value))
                                 (make-iomap/object projection recursion
                                                    value `(value-of ,typed-input-reference)
@@ -87,15 +90,16 @@
          (name (name-of input))
          (attributes (attributes-of input))
          (children (children-of input))
-         (output (make-tree/node (append (list (prog1 (make-tree/leaf name
-                                                                      :opening-delimiter "<"
-                                                                      :closing-delimiter (unless attributes (if children ">" "/>")))
+         (output (make-tree/node (append (list (prog1 (make-tree/leaf (make-styled-string/string name :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*)
+                                                                      :opening-delimiter (make-styled-string/string "<" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
+                                                                      :closing-delimiter (unless attributes
+                                                                                           (make-styled-string/string (if children ">" "/>") :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)))
                                                  (push (make-iomap/object* projection recursion input `(the string (start-tag ,typed-input-reference))
                                                                            name `(the tree/leaf (elt (the list (children-of (the tree/node ,output-reference))) 0)))
                                                        child-iomaps)
-                                                 (push (make-iomap/string* name `(the string (start-tag ,typed-input-reference)) 0
-                                                                           name `(the string (content-of (the tree/leaf (elt (the list (children-of (the tree/node ,output-reference))) 0)))) 0
-                                                                           (length name))
+                                                 (push (make-iomap/string name `(start-tag ,typed-input-reference) 0
+                                                                          name `(content-of (the styled-string/string (content-of (the tree/leaf (elt (the list (children-of (the tree/node ,output-reference))) 0))))) 0
+                                                                          (length name))
                                                        child-iomaps)))
                                          (when attributes
                                            (list (prog1-bind output
@@ -106,7 +110,7 @@
                                                                                                          `(elt (the list (children-of (the tree/node (elt (the list (children-of (the tree/node ,output-reference))) ,1)))) ,attribute-index)))
                                                                            (push iomap child-iomaps)
                                                                            (collect (output-of iomap)))
-                                                                     :closing-delimiter (if children ">" "/>")
+                                                                     :closing-delimiter (make-styled-string/string (if children ">" "/>") :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
                                                                      :separator " ")
                                                    (push (make-iomap/object* projection recursion input `(the list (attributes-of ,typed-input-reference))
                                                                              output `(the tree/node (elt (the list (children-of (the tree/node ,output-reference))) 1)))
@@ -120,14 +124,17 @@
                                                                                            `(elt (the list (children-of (the tree/node ,output-reference))) ,(+ child-index (if attributes 2 1)))))
                                                              (push iomap child-iomaps)
                                                              (collect (output-of iomap))))
-                                                   (prog1 (list (make-tree/leaf name :opening-delimiter "</" :closing-delimiter ">"))
+                                                   (prog1 (list (make-tree/leaf (make-styled-string/string name :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*)
+                                                                                :opening-delimiter (make-styled-string/string "</" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
+                                                                                :closing-delimiter (make-styled-string/string ">" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)))
                                                      (push (make-iomap/object* projection recursion input `(the string (end-tag ,typed-input-reference))
                                                                                name `(the tree/leaf (elt (the list (children-of (the tree/node ,output-reference))) ,(+ (length children) (if attributes 2 1)))))
                                                            child-iomaps)
-                                                     (push (make-iomap/string* name `(the string (end-tag ,typed-input-reference)) 0
-                                                                               name `(the string (content-of (the tree/leaf (elt (the list (children-of (the tree/node ,output-reference))) ,(+ (length children) (if attributes 2 1)))))) 0
-                                                                               (length name))
-                                                           child-iomaps))))))))
+                                                     (push (make-iomap/string name `(end-tag ,typed-input-reference) 0
+                                                                              name `(content-of (the styled-string/string (content-of (the tree/leaf (elt (the list (children-of (the tree/node ,output-reference))) ,(+ (length children) (if attributes 2 1))))))) 0
+                                                                              (length name))
+                                                           child-iomaps)))))
+                                 :separator " ")))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))
 

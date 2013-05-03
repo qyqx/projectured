@@ -95,6 +95,9 @@
    (stroke-color :type style/color)
    (fill-color :type style/color)))
 
+(def document graphics/rounded-rectangle (graphics/rectangle)
+  ((radius :type number)))
+
 (def document graphics/polygon (graphics/base)
   ((points :type sequence)
    (stroke-color :type style/color)
@@ -143,6 +146,9 @@
 
 (def (function e) make-graphics/rectangle (location size &key stroke-color fill-color)
   (make-instance 'graphics/rectangle :location location :size size :stroke-color stroke-color :fill-color fill-color))
+
+(def (function e) make-graphics/rounded-rectangle (location size radius &key stroke-color fill-color)
+  (make-instance 'graphics/rounded-rectangle :location location :size size :radius radius :stroke-color stroke-color :fill-color fill-color))
 
 (def (function e) make-graphics/polygon (points &key stroke-color fill-color)
   (make-instance 'graphics/polygon :points points :stroke-color stroke-color :fill-color fill-color))

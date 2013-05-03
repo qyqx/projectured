@@ -64,35 +64,42 @@
 ;;; Printer
 
 (def printer lisp-form/number->string (projection recursion iomap input input-reference output-reference)
+  (declare (ignore iomap))
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
-         (output (write-to-string (value-of input))))
+         (output-content (write-to-string (value-of input)))
+         (output (make-tree/leaf output-content)))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)
                                 (make-iomap/string* input `(the string (write-to-string (the number (value-of ,typed-input-reference)))) 0
-                                                    output `(the string ,output-reference) 0
-                                                    (length output))))))
+                                                    output-content `(the string (content-of (the tree/leaf ,output-reference))) 0
+                                                    (length output-content))))))
 
 (def printer lisp-form/symbol->string (projection recursion iomap input input-reference output-reference)
+  (declare (ignore iomap))
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
-         (output (string-downcase (value-of input))))
+         (output-content (string-downcase (value-of input)))
+         (output (make-tree/leaf output-content)))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)
                                 (make-iomap/string* input `(the string (string-downcase (the symbol (value-of ,typed-input-reference)))) 0
-                                                    output `(the string ,output-reference) 0
-                                                    (length output))))))
+                                                    output-content `(the string (content-of (the tree/leaf ,output-reference))) 0
+                                                    (length output-content))))))
 
 (def printer lisp-form/string->string (projection recursion iomap input input-reference output-reference)
+  (declare (ignore iomap))
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
          (value (value-of input))
-         (output (string+ "\"" value "\"")))
+         (output-content (string+ "\"" value "\""))
+         (output (make-tree/leaf output-content)))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/string* value `(the string (value-of ,typed-input-reference)) 0
-                                                    output `(the string ,output-reference) 1
+                                                    output-content `(the string (content-of (the tree/leaf ,output-reference))) 1
                                                     (length value))
                                 (make-iomap/object* projection recursion input `(the string (value-of ,typed-input-reference))
                                                     output `(the string ,output-reference))))))
 
 (def printer lisp-form/cons->tree/node (projection recursion iomap input input-reference output-reference)
+  (declare (ignore iomap))
   (bind ((child-iomaps nil)
          (typed-input-reference `(the ,(form-type input) ,input-reference))
          (output (make-tree/node (iter (for index :from 0)
@@ -106,13 +113,15 @@
                           (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))
 
 (def printer lisp-form/object->string (projection recursion iomap input input-reference output-reference)
+  (declare (ignore iomap))
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
-         (output (write-to-string input)))
+         (output-content (write-to-string input))
+         (output (make-tree/leaf output-content)))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)
                                 (make-iomap/string* input `(the string (write-to-string (value-of ,typed-input-reference))) 0
-                                                    output `(the string ,output-reference) 0
-                                                    (length output))))))
+                                                    output-content `(the string (content-of (the tree/leaf ,output-reference))) 0
+                                                    (length output-content))))))
 
 ;;;;;;
 ;;; Reader

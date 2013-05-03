@@ -43,6 +43,13 @@
     (make-test-content/string)))
 
 ;;;;;;
+;;; Styled string
+
+(def function make-test-document/styled-string ()
+  (test-document (:selection '(the sequence-position (pos (the string (content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document (content-of (the document document))))) 0)))) 2)))
+    (make-test-content/styled-string)))
+
+;;;;;;
 ;;; Text
 
 (def function make-test-document/text/empty ()
@@ -93,6 +100,20 @@
 (def function make-test-document/tree ()
   (test-document (:selection '(the sequence-position (pos (the string (content-of (the tree/leaf (elt (the list (children-of (the tree/node (elt (the list (children-of (the tree/node (content-of (the document document))))) 1)))) 1)))) 1)))
     (make-test-content/tree)))
+
+;;;;;;
+;;; Graph
+
+(def function make-test-document/graph ()
+  (test-document ()
+    (make-test-content/graph)))
+
+;;;;;;
+;;; State machine
+
+(def function make-test-document/state-machine ()
+  (test-document ()
+    (make-test-content/state-machine)))
 
 ;;;;;;
 ;;; Book

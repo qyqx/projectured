@@ -6,45 +6,52 @@
 
 (in-package :projectured)
 
-;;;;;;;;
-;;;; Tree domain provides:
-;;;;  - node
-
 ;;;;;;
-;;; Tree document classes
+;;; Document
 
 (def document tree/base ()
   ((opening-delimiter :type string)
    (closing-delimiter :type string)
-   (separator :type string)))
-
-(def document tree/node (tree/base)
-  ((expanded :type boolean)
-   (children :type sequence)))
+   (indentation :type positive-integer)))
 
 (def document tree/leaf (tree/base)
   ((content :type t)))
 
+(def document tree/node (tree/base)
+  ((expanded :type boolean)
+   (separator :type string)
+   (children :type sequence)))
+
 ;;;;;;
-;;; Tree document constructors
+;;; Construction
 
-(def (function e) make-tree/node (children &key opening-delimiter closing-delimiter separator)
-  (make-instance 'tree/node
-                 :children children
-                 :expanded #t
-                 :opening-delimiter opening-delimiter
-                 :closing-delimiter closing-delimiter
-                 :separator separator))
-
-(def (function e) make-tree/leaf (content &key opening-delimiter closing-delimiter separator)
+(def (function e) make-tree/leaf (content &key opening-delimiter closing-delimiter indentation)
   (make-instance 'tree/leaf
                  :content content
                  :opening-delimiter opening-delimiter
                  :closing-delimiter closing-delimiter
+                 :indentation indentation))
+
+(def (function e) make-tree/node (children &key opening-delimiter closing-delimiter separator indentation)
+  (make-instance 'tree/node
+                 :children children
+                 :opening-delimiter opening-delimiter
+                 :closing-delimiter closing-delimiter
+                 :indentation indentation
+                 :expanded #t
                  :separator separator))
 
 ;;;;;;
-;;; Tree reference
+;;; Construction
+
+(def (macro e) tree/leaf (() content)
+  `(make-tree/leaf ,content))
+
+(def (macro e) tree/node (() &body children)
+  `(make-tree/node (list ,@children)))
+
+;;;;;;
+;;; Reference
 
 (def macro opening-delimiter (reference value)
   (declare (ignore reference))
@@ -68,7 +75,7 @@
 ")
 
 ;;;;;;
-;;; Tree operation classes
+;;; Operation
 
 (def operation operation/tree (operation)
   ())
@@ -78,13 +85,13 @@
    (target :type reference)))
 
 ;;;;;;
-;;; Tree operation constructors
+;;; Construction
 
 (def (function e) make-operation/tree/toggle-node (document target)
   (make-instance 'operation/tree/toggle-node :document document :target target))
 
 ;;;;;;
-;;; Tree operation API implementation
+;;; Redo
 
 (def method redo-operation ((operation operation/tree/toggle-node))
   (notf (expanded-p (eval-reference (document-of operation) (target-of operation)))))
@@ -98,8 +105,7 @@
                   (declare (ignore iomap))
                   (pattern-case reference
                     ((the character (elt (the string (content-of (the tree/leaf ?a))) 0))
-                     (return-from tree-font-provider
-                       *font/ubuntu/monospace/bold/18*))))))
+                     (return-from tree-font-provider *font/ubuntu/monospace/bold/18*))))))
 
 (def (function e) tree-font-color-provider (iomap reference)
   (map-backward iomap reference
@@ -108,8 +114,7 @@
                   (pattern-case reference
                     ((the character (elt (the string (?or (opening-delimiter ?a ?b)
                                                           (closing-delimiter ?a ?b))) ?c))
-                     (return-from tree-font-color-provider
-                       (make-style/color 255 196 196 196)))))))
+                     (return-from tree-font-color-provider (make-style/color 255 196 196 196)))))))
 
 (def (function e) tree-delimiter-provider (iomap reference)
   (declare (ignore iomap))

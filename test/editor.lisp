@@ -32,6 +32,9 @@
 (def test test/editor/string/sorting ()
   (test/editor/read-eval-print-loop (make-test-document/string) (make-test-projection/string->graphics/sorting)))
 
+(def test test/editor/styled-string ()
+  (test/editor/read-eval-print-loop (make-test-document/styled-string) (make-test-projection/styled-string->graphics)))
+
 (def test test/editor/text ()
   (test/editor/read-eval-print-loop (make-test-document/text) (make-test-projection/text->graphics)))
 
@@ -58,6 +61,12 @@
 
 (def test test/editor/tree/sorting ()
   (test/editor/read-eval-print-loop (make-test-document/tree) (make-test-projection/tree->graphics/sorting)))
+
+(def test test/editor/graph ()
+  (test/editor/read-eval-print-loop (make-test-document/graph) (make-test-projection/graph->graphics)))
+
+(def test test/editor/state-machine ()
+  (test/editor/read-eval-print-loop (make-test-document/state-machine) (make-test-projection/state-machine->graphics)))
 
 (def test test/editor/book ()
   (test/editor/read-eval-print-loop (make-test-document/book) (make-test-projection/book->graphics)))

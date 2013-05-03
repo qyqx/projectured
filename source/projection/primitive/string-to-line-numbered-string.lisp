@@ -40,7 +40,7 @@
                             (for index :from 0)
                             (for line :in (split-sequence #\NewLine input))
                             (for line-number = (format nil format-string index))
-                            (push (make-iomap/string line-number `(line-number ,typed-input-reference ,index) 0
+                            (push (make-iomap/string line-number `(line-number ,typed-input-reference ,line-number ,index) 0
                                                      output output-reference (file-position stream)
                                                      (length line-number))
                                   child-iomaps)
@@ -73,5 +73,15 @@
                 (lambda (iomap reference)
                   (declare (ignore iomap))
                   (pattern-case reference
-                    ((the character (elt (the string (line-number ?a ?b)) ?c))
-                     (return-from line-number-font-color-provider *color/dark-red*))))))
+                    ((the character (elt (the string (line-number ?a ?b ?c)) ?d))
+                     (return-from line-number-font-color-provider *color/solarized/content/light*))))))
+
+;; TODO: move
+(def (function e) line-number-fill-color-provider (iomap reference)
+  (map-backward iomap reference
+                (lambda (iomap reference)
+                  (declare (ignore iomap))
+                  (pattern-case reference
+                    ((the character (elt (the string (line-number ?a ?b ?c)) ?d))
+                     (when (< ?d (1- (length ?b)))
+                       (return-from line-number-fill-color-provider *color/solarized/background/light*)))))))

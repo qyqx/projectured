@@ -44,8 +44,19 @@
         (sequential
           string->styled-string
           ;; TODO:
-          #+nil(word-wrapping :wrap-width 100)
+          #+nil(word-wrapping :wrap-width 800)
           (styled-string->graphics)))))
+
+(def function make-test-projection/styled-string->output ()
+  ;; KLUDGE:
+  (if (search "SLIME" (symbol-name (class-name (class-of (make-editor)))))
+      (sequential
+        ;; TODO:
+        #+nil(word-wrapping :wrap-width 800))
+      (sequential
+        ;; TODO:
+        #+nil(word-wrapping :wrap-width 800)
+        (styled-string->graphics))))
 
 ;;;;;;
 ;;; Graphics
@@ -102,6 +113,18 @@
         (nesting
           (document->graphics)
           (make-test-projection/string->output))))))
+
+;;;;;;
+;;; Styled string
+
+(def function make-test-projection/styled-string->graphics ()
+  (test-projection
+    (nesting
+      (widget->graphics)
+      (sequential
+        (nesting
+          (document->graphics)
+          (styled-string->graphics))))))
 
 ;;;;;;
 ;;; Text
@@ -174,6 +197,18 @@
                                                                        (make-indentation-provider :indentation-width 0)
                                                                        (constantly nil)))))
 
+;; TODO: factor
+(def function make-test-projection/tree->styled-string ()
+  (recursive (tree->styled-string :delimiter-provider (make-alternative-function (list 'tree-delimiter-provider
+                                                                                       (provider-combinator 'tree-delimiter-provider (make-delimiter-provider "\"" "\""))
+                                                                                       (make-delimiter-provider "" "")))
+                                  :separator-provider (make-alternative-function (list 'tree-separator-provider (make-separator-provider "")))
+                                  :indentation-provider (make-alternative-function (list 'tree-indentation-provider
+                                                                                         (make-indentation-provider :indentation-width 1)
+                                                                                         (make-indentation-provider :indentation-width 0)
+                                                                                         (constantly nil))))))
+
+#+nil
 (def function make-test-projection/tree->graphics ()
   (test-projection
     (nesting
@@ -194,7 +229,28 @@
                                                                                                  (make-font-provider *font/ubuntu/regular/18*)
                                                                                                  (make-font-provider *font/ubuntu/bold/24*)))
                                                  :font-color-provider (make-alternative-function (list (provider-combinator 'line-number-font-color-provider 'tree-font-color-provider)
-                                                                                                       (make-color-provider *color/black*))))))
+                                                                                                       (make-color-provider *color/black*)))
+                                                 :fill-color-provider 'line-number-fill-color-provider)))
+        (nesting
+          (document->graphics)
+          (tree->graphics))))))
+
+(def function make-test-projection/tree->graphics ()
+  (test-projection
+    (nesting
+      (widget->graphics)
+      (alternative
+        (sequential
+          (nesting
+            (document->document)
+            (make-test-projection/tree->styled-string))
+          #+nil
+          (nesting
+            (document->document)
+            (string->line-numbered-string))
+          (nesting
+            (document->graphics)
+            (make-test-projection/styled-string->output)))
         (nesting
           (document->graphics)
           (tree->graphics))))))
@@ -226,7 +282,8 @@
                                                                                                  (make-font-provider *font/ubuntu/regular/18*)
                                                                                                  (make-font-provider *font/ubuntu/bold/24*)))
                                                  :font-color-provider (make-alternative-function (list (provider-combinator 'line-number-font-color-provider 'tree-font-color-provider)
-                                                                                                       (make-color-provider *color/black*))))))
+                                                                                                       (make-color-provider *color/black*)))
+                                                 :fill-color-provider 'line-number-fill-color-provider)))
         (nesting
           (document->graphics)
           (tree->graphics))))))
@@ -257,17 +314,52 @@
                                                                                                  (make-font-provider *font/ubuntu/regular/18*)
                                                                                                  (make-font-provider *font/ubuntu/bold/24*)))
                                                  :font-color-provider (make-alternative-function (list (provider-combinator 'line-number-font-color-provider 'tree-font-color-provider)
-                                                                                                       (make-color-provider *color/black*))))))
+                                                                                                       (make-color-provider *color/black*)))
+                                                 :fill-color-provider 'line-number-fill-color-provider)))
         (nesting
           (document->graphics)
           (tree->graphics))))))
+
+;;;;;;
+;;; Graph
+
+(def function make-test-projection/graph->graphics ()
+  (test-projection
+    (nesting
+      (widget->graphics)
+      (sequential
+        (nesting
+          (document->document)
+          (make-test-projection/graph->graphics))))))
+
+;;;;;;
+;;; State machine
+
+(def function make-test-projection/state-machine->string ()
+  (sequential
+    (recursive
+      (state-machine->tree))
+    (tree->string :delimiter-provider 'state-machine-delimiter-provider :separator-provider 'state-machine-separator-provider :indentation-provider 'state-machine-indentation-provider)))
+
+(def function make-test-projection/state-machine->graphics ()
+  (test-projection
+    (nesting
+      (widget->graphics)
+      (sequential
+        (nesting
+          (document->document)
+          (make-test-projection/state-machine->string))
+        (nesting
+          (document->graphics)
+          (make-test-projection/string->output :font-color-provider 'state-machine-font-color-provider :font-provider 'state-machine-font-provider))))))
 
 ;;;;;;
 ;;; Book
 
 (def function make-test-projection/book->string ()
   (sequential
-    (recursive (book->tree))
+    (recursive
+      (book->tree))
     (tree->string :delimiter-provider 'book-delimiter-provider :separator-provider 'book-separator-provider :indentation-provider 'book-indentation-provider)))
 
 (def function make-test-projection/book->graphics ()
@@ -285,10 +377,10 @@
 ;;;;;;
 ;;; XML
 
-(def function make-test-projection/xml->string ()
+(def function make-test-projection/xml->styled-string ()
   (sequential
     (recursive (xml->tree))
-    (tree->string :delimiter-provider 'xml-delimiter-provider :separator-provider 'xml-separator-provider :indentation-provider 'xml-indentation-provider)))
+    (recursive (tree->styled-string :indentation-provider 'xml-indentation-provider))))
 
 (def function make-test-projection/xml->graphics ()
   (test-projection
@@ -298,13 +390,17 @@
         (sequential
           (nesting
             (document->document)
-            (make-test-projection/xml->string))
+            (recursive (xml->tree)))
           (nesting
             (document->document)
-            (string->line-numbered-string))
+            (recursive (tree->styled-string :indentation-provider 'xml-indentation-provider)))
+          #+nil
+          (nesting
+            (document->document)
+            (styled-string->line-numbered-styled-string))
           (nesting
             (document->graphics)
-            (make-test-projection/string->output :font-color-provider (provider-combinator 'line-number-font-color-provider 'xml-font-color-provider))))
+            (make-test-projection/styled-string->output)))
         (nesting
           (document->graphics)
           (sequential
@@ -314,12 +410,10 @@
 ;;;;;;
 ;;; JSON
 
-(def function make-test-projection/json->string ()
+(def function make-test-projection/json->styled-string ()
   (sequential
     (recursive (json->tree))
-    (tree->string :delimiter-provider (make-alternative-function (list 'json-delimiter-provider (make-delimiter-provider "" "")))
-                  :separator-provider (make-alternative-function (list 'json-separator-provider (make-separator-provider "")))
-                  :indentation-provider (make-alternative-function (list 'json-indentation-provider (make-indentation-provider :indentation-width 0))))))
+    (recursive (tree->styled-string :indentation-provider 'json-indentation-provider))))
 
 (def function make-test-projection/json->graphics ()
   (test-projection
@@ -329,15 +423,17 @@
         (sequential
           (nesting
             (document->document)
-            (make-test-projection/json->string))
+            (recursive (json->tree)))
           (nesting
             (document->document)
-            (string->line-numbered-string))
+            (recursive (tree->styled-string :indentation-provider 'json-indentation-provider)))
+          #+nil
+          (nesting
+            (document->document)
+            (styled-string->line-numbered-styled-string))
           (nesting
             (document->graphics)
-            (make-test-projection/string->output :font-color-provider (make-alternative-function
-                                                                       (list (provider-combinator 'line-number-font-color-provider 'json-font-color-provider)
-                                                                             (make-color-provider *color/black*))))))
+            (make-test-projection/styled-string->output)))
         (nesting
           (document->graphics)
           (sequential
@@ -354,13 +450,14 @@
           (focusing '(elt (elements-of (the json/array document)) 5)))
         (nesting
           (document->document)
-          (make-test-projection/json->string))
+          (make-test-projection/json->styled-string))
+        #+nil
         (nesting
           (document->document)
-          (string->line-numbered-string))
+          (styled-string->line-numbered-styled-string))
         (nesting
           (document->graphics)
-          (make-test-projection/string->output :font-color-provider (provider-combinator 'line-number-font-color-provider 'json-font-color-provider)))))))
+          (make-test-projection/styled-string->output))))))
 
 (def function make-test-projection/json->graphics/removing ()
   (test-projection
@@ -374,13 +471,14 @@
           (preserving))
         (nesting
           (document->document)
-          (make-test-projection/json->string))
+          (make-test-projection/json->styled-string))
+        #+nil
         (nesting
           (document->document)
-          (string->line-numbered-string))
+          (styled-string->line-numbered-styled-string))
         (nesting
           (document->graphics)
-          (make-test-projection/string->output :font-color-provider (provider-combinator 'line-number-font-color-provider 'json-font-color-provider)))))))
+          (make-test-projection/styled-string->output))))))
 
 (def function make-test-projection/json->graphics/sorting ()
   (test-projection
@@ -394,13 +492,14 @@
           (preserving))
         (nesting
           (document->document)
-          (make-test-projection/json->string))
+          (make-test-projection/json->styled-string))
+        #+nil
         (nesting
           (document->document)
-          (string->line-numbered-string))
+          (styled-string->line-numbered-styled-string))
         (nesting
           (document->graphics)
-          (make-test-projection/string->output :font-color-provider (provider-combinator 'line-number-font-color-provider 'json-font-color-provider)))))))
+          (make-test-projection/styled-string->output))))))
 
 ;;;;;;
 ;;; Java
@@ -426,7 +525,8 @@
           (string->line-numbered-string))
         (nesting
           (document->graphics)
-          (make-test-projection/string->output :font-color-provider (provider-combinator 'line-number-font-color-provider 'java-font-color-provider)))))))
+          (make-test-projection/string->output :font-color-provider (provider-combinator 'line-number-font-color-provider 'java-font-color-provider)
+                                               :fill-color-provider 'line-number-fill-color-provider))))))
 
 ;;;;;;
 ;;; Lisp form
@@ -447,12 +547,14 @@
         (nesting
           (document->document)
           (make-test-projection/lisp-form->string))
+        #+nil
         (nesting
           (document->document)
           (string->line-numbered-string))
         (nesting
           (document->graphics)
-          (make-test-projection/string->output :font-color-provider (provider-combinator 'line-number-font-color-provider 'lisp-form-font-color-provider)))))))
+          (make-test-projection/string->output :font-color-provider (provider-combinator 'line-number-font-color-provider 'lisp-form-font-color-provider)
+                                               :fill-color-provider 'line-number-fill-color-provider))))))
 
 ;;;;;;
 ;;; Walked lisp form
@@ -479,7 +581,8 @@
           (string->line-numbered-string))
         (nesting
           (document->graphics)
-          (make-test-projection/string->output :font-color-provider (provider-combinator 'line-number-font-color-provider 'walked-lisp-form-font-color-provider)))))))
+          (make-test-projection/string->output :font-color-provider (provider-combinator 'line-number-font-color-provider 'walked-lisp-form-font-color-provider)
+                                               :fill-color-provider 'line-number-fill-color-provider))))))
 
 ;;;;;;
 ;;; Evaluator
@@ -583,7 +686,8 @@
           (string->line-numbered-string))
         (nesting
           (document->graphics)
-          (make-test-projection/string->output :font-color-provider (provider-combinator 'line-number-font-color-provider 'walked-lisp-form-font-color-provider 'json-font-color-provider 'xml-font-color-provider)))))))
+          (make-test-projection/string->output :font-color-provider (provider-combinator 'line-number-font-color-provider 'walked-lisp-form-font-color-provider 'json-font-color-provider 'xml-font-color-provider)
+                                               :fill-color-provider 'line-number-fill-color-provider))))))
 
 ;;;;;;
 ;;; Complex
@@ -686,14 +790,14 @@
 (def test test/projection/book->graphics ()
   (test/projection/apply-printer (make-test-document/book) (make-test-projection/book->graphics)))
 
-(def test test/projection/xml->string ()
-  (test/projection/apply-printer (make-test-content/xml) (make-test-projection/xml->string)))
+(def test test/projection/xml->styled-string ()
+  (test/projection/apply-printer (make-test-content/xml) (make-test-projection/xml->styled-string)))
 
 (def test test/projection/xml->graphics ()
   (test/projection/apply-printer (make-test-document/xml) (make-test-projection/xml->graphics)))
 
-(def test test/projection/json->string ()
-  (test/projection/apply-printer (make-test-content/json) (make-test-projection/json->string)))
+(def test test/projection/json->styled-string ()
+  (test/projection/apply-printer (make-test-content/json) (make-test-projection/json->styled-string)))
 
 (def test test/projection/json->graphics ()
   (test/projection/apply-printer (make-test-document/json) (make-test-projection/json->graphics)))

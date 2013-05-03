@@ -39,6 +39,10 @@
 ;;;;;;
 ;;; API
 
+(def (function e) styled-string/length (styled-string)
+  (iter (for element :in-sequence (elements-of styled-string))
+        (summing (length (content-of element)))))
+
 (def (function e) styled-string/substring (styled-string start-element-index start-character-index end-element-index end-character-index)
   (make-styled-string/document
    (iter (with elements = (elements-of styled-string))
@@ -72,3 +76,32 @@
               (next-iteration)))
         (when (funcall test (elt content character-index))
           (return (values element-index character-index)))))
+
+(def (function e) styled-string/count (styled-string character)
+  (iter (for element :in-sequence (elements-of styled-string))
+        (summing (funcall 'count character (content-of element)))))
+
+(def (function e) styled-string/string (styled-string)
+  (with-output-to-string (stream)
+    (iter (for element :in-sequence (elements-of styled-string))
+          (write-string (content-of element) stream))))
+
+(def (function e) styled-string/element-index (styled-string index)
+  (iter (for element-index :from 0)
+        (for element :in-sequence (elements-of styled-string))
+        (decf index (length (content-of element)))
+        (when (<= index 0)
+          (return element-index))))
+
+(def (function e) styled-string/character-index (styled-string index)
+  (iter (for element :in-sequence (elements-of styled-string))
+        (for length = (length (content-of element)))
+        (if (<= index length)
+            (return index)
+            (decf index length))))
+
+(def (function e) styled-string/index (styled-string element-index character-index)
+  (+ (iter (for index :from 0 :below element-index)
+           (for element :in-sequence (elements-of styled-string))
+           (summing (length (content-of element))))
+     character-index))
