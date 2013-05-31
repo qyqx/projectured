@@ -112,6 +112,7 @@
                                                          (:file "string-to-styled-string")
                                                          (:file "styled-string-to-graphics")
                                                          (:file "styled-string-to-line-numbered-styled-string")
+                                                         (:file "styled-string-to-string")
                                                          (:file "t-to-class-name")
                                                          (:file "t-to-table")
                                                          (:file "table-to-string")

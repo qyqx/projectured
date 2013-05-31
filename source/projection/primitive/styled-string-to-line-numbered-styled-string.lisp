@@ -43,7 +43,7 @@
                    (iter (with format-string = (format nil "\~~~A,' D " line-number-length))
                          (with input-offset = 0)
                          (for index :from 0)
-                         (for line :in (split-sequence #\NewLine (styled-string/string input)))
+                         (for line :in (styled-string/split input #\NewLine))
                          (for line-number = (format nil format-string (1+ index)))
                          (push (make-iomap/string line-number `(line-number ,typed-input-reference ,line-number ,index) 0
                                                   line-number output-reference string-position
@@ -52,11 +52,12 @@
                          (write-element (make-styled-string/string line-number :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/content/light* :fill-color *color/solarized/background/light*))
                          (push (make-iomap/string input input-reference input-offset
                                                   input output-reference string-position
-                                                  (1+ (length line)))
+                                                  (1+ (styled-string/length line)))
                                child-iomaps)
-                         (write-element (make-styled-string/string line :font *font/default* :font-color *color/default*))
+                         (iter (for line-element :in-sequence (elements-of line))
+                               (write-element line-element))
                          (write-element (make-styled-string/string (string #\NewLine) :font *font/default* :font-color *color/default*))
-                         (incf input-offset (1+ (length line))))
+                         (incf input-offset (1+ (styled-string/length line))))
                    (make-styled-string/document (nreverse elements)))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))

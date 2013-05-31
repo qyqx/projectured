@@ -26,6 +26,7 @@
 ;;; Construction
 
 (def (function e) make-styled-string/document (elements)
+  (assert (every (of-type 'styled-string/string) elements))
   (make-instance 'styled-string/document :elements elements))
 
 (def (function e) make-styled-string/string (content &key font font-color fill-color line-color)
@@ -85,6 +86,20 @@
   (with-output-to-string (stream)
     (iter (for element :in-sequence (elements-of styled-string))
           (write-string (content-of element) stream))))
+
+(def (function e) styled-string/split (styled-string split-character)
+  (iter (with length = (styled-string/length styled-string))
+        (with start-element-index = 0)
+        (with start-character-index = 0)
+        (for (values end-element-index end-character-index) = (styled-string/find styled-string start-element-index start-character-index (lambda (character) (char= character split-character))))
+        (collect (styled-string/substring styled-string start-element-index start-character-index end-element-index end-character-index))
+        (for index = (1+ (styled-string/index styled-string end-element-index end-character-index)))
+        (while (< index length))
+        (setf start-element-index (styled-string/element-index styled-string index))
+        (setf start-character-index (styled-string/character-index styled-string index))))
+
+(def (function e) styled-string/concatenate (&rest style-strings)
+  (make-styled-string/document (apply #'append (mapcar #'elements-of style-strings))))
 
 (def (function e) styled-string/element-index (styled-string index)
   (iter (for element-index :from 0)

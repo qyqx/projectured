@@ -110,5 +110,8 @@
 (def test test/editor/t ()
   (test/editor/read-eval-print-loop (make-test-document/t) (make-test-projection/t->graphics)))
 
+(def test test/editor/demo ()
+  (test/editor/read-eval-print-loop (make-test-document/demo) (make-test-projection/demo->graphics)))
+
 (def test test/editor/wow ()
   (test/editor/read-eval-print-loop (make-test-document/wow) (make-test-projection/wow->graphics)))

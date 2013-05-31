@@ -11,7 +11,7 @@
 
 (def function make-test-document (content &key selection)
   (composite ()
-    (scroll-pane (:location (make-2d 0 0) :size (make-2d 800 600) :margin (make-inset :all 5))
+    (scroll-pane (:location (make-2d 0 0) :size (make-2d 1024 768) :margin (make-inset :all 5))
       (document (:selection selection)
         content))
     (tooltip (:location (make-2d 100 100) :margin (make-inset :all 5))
@@ -219,6 +219,13 @@
 (def function make-test-document/complex ()
   (test-document (:selection '(the sequence-position (pos (the string (slot-value (the hu.dwim.walker:function-definition-form (content-of (content-of (the table/cell (elt (the list (cells-of (the table/row (elt (the list (rows-of (the table/table (content-of (the document document))))) 1)))) 1))))) 'hu.dwim.walker::docstring)) 7)))
     (make-test-content/complex)))
+
+;;;;;;
+;;; Demo
+
+(def function make-test-document/demo ()
+  (test-document ()
+    (make-test-content/demo)))
 
 ;;;;;;
 ;;; Wow

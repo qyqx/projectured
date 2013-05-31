@@ -27,7 +27,7 @@
 ;;;;;;
 ;;; Construction
 
-(def method make-editor (&key (width 800) (height 600))
+(def method make-editor (&key (width 1024) (height 768))
   (make-instance 'editor/sdl
                  :devices (list (make-instance 'device/mouse)
                                 (make-instance 'device/keyboard)
@@ -43,7 +43,7 @@
     (unwind-protect
          (progn
            (sdl:init-video)
-           (setf (surface-of display) (sdl:window (width-of display) (height-of display) :double-buffer #t))
+           (setf (surface-of display) (sdl:window (width-of display) (height-of display) :double-buffer #t :title-caption "Projection Editor"))
            (call-next-method))
       (sdl:quit-video))))
 

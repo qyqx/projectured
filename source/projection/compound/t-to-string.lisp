@@ -24,30 +24,34 @@
 (def method make-projection/t->string ((instance book/base))
   (sequential
     (recursive (book->tree))
-    (tree->string :delimiter-provider 'book-delimiter-provider :separator-provider 'book-separator-provider :indentation-provider 'book-indentation-provider)))
+    (recursive (tree->styled-string))
+    (styled-string->string)))
 
 (def method make-projection/t->string ((instance xml/base))
   (sequential
     (recursive (xml->tree))
-    (tree->string :delimiter-provider 'xml-delimiter-provider :separator-provider 'xml-separator-provider :indentation-provider 'xml-indentation-provider)))
+    (recursive (tree->styled-string))
+    (styled-string->string)))
 
 (def method make-projection/t->string ((instance java/base))
   (sequential
     (recursive (java->tree))
-    (tree->string :delimiter-provider 'java-delimiter-provider :separator-provider 'java-separator-provider :indentation-provider 'java-indentation-provider)))
+    (recursive (tree->styled-string))
+    (styled-string->string)))
 
 (def method make-projection/t->string ((instance json/base))
   (sequential
     (recursive (json->tree))
-    (tree->string :delimiter-provider 'json-delimiter-provider :separator-provider 'json-separator-provider :indentation-provider 'json-indentation-provider)))
+    (recursive (tree->styled-string))
+    (styled-string->string)))
 
 (def method make-projection/t->string ((instance sequence))
   (sequential
     (recursive (lisp-form->tree))
-    (tree->string :delimiter-provider 'lisp-form-delimiter-provider :separator-provider 'lisp-form-separator-provider :indentation-provider 'lisp-form-indentation-provider)))
+    (tree->string)))
 
 (def method make-projection/t->string ((instance hu.dwim.walker::walked-form))
   (sequential
     (recursive (walked-lisp-form->lisp-form))
     (recursive (lisp-form->tree))
-    (tree->string :indentation-provider 'walked-lisp-form-indentation-provider :separator-provider 'walked-lisp-form-separator-provider :indentation-provider 'walked-lisp-form-indentation-provider)))
+    (tree->string)))

@@ -264,6 +264,8 @@
                                                        (next-line (+ parent-indentation indentation) child-reference))
                                                      (recurse child child-path (- string-position line-position))
                                                      (finally
+                                                      ;; TODO: this caused indentation problems in JSON, XML ... delete?
+                                                      #+nil
                                                       (when-bind indentation
                                                           (or (indentation-of input)
                                                               (awhen (indentation-provider-of projection)

@@ -79,7 +79,7 @@
 (def (function e) make-projection/table->string ()
   (type-dispatching
     (table/table (make-projection/table/table->string))
-    (string (preserving))))
+    (t (preserving))))
 
 (def (function e) make-projection/t->table ()
   (type-dispatching
@@ -157,7 +157,7 @@
     (lisp-form/number (make-projection/lisp-form/number->string))
     (lisp-form/symbol (make-projection/lisp-form/symbol->string))
     (lisp-form/string (make-projection/lisp-form/string->string))
-    (lisp-form/list (make-projection/lisp-form/cons->tree/node))
+    (lisp-form/list (make-projection/lisp-form/list->tree/node))
     (lisp-form/object (make-projection/lisp-form/object->string))))
 
 (def (macro e) lisp-form->tree ()
@@ -172,6 +172,7 @@
     (hu.dwim.walker:variable-reference-form (make-projection/walked-lisp-form/variable-reference-form->lisp-form/string))
     (hu.dwim.walker:if-form (make-projection/walked-lisp-form/if-form->lisp-form/list))
     (hu.dwim.walker:the-form (make-projection/walked-lisp-form/the-form->lisp-form/list))
+    (hu.dwim.walker:let-form (make-projection/walked-lisp-form/let-form->lisp-form/list))
     (hu.dwim.walker:application-form (make-projection/walked-lisp-form/application-form->lisp-form/list))
     (hu.dwim.walker:function-definition-form (make-projection/walked-lisp-form/function-definition-form->lisp-form/list))
     (hu.dwim.walker:lambda-function-form (make-projection/walked-lisp-form/lambda-function-form->lisp-form/list))

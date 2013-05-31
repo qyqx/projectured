@@ -32,7 +32,7 @@
   (bind ((child-iomaps nil)
          (output (bind ((typed-input-reference `(the ,(form-type input) ,input-reference)))
                    (make-tree/node (list* (bind ((title (title-of input))
-                                                 (output (make-tree/leaf title)))
+                                                 (output (make-tree/leaf (make-styled-string/string title :font *font/ubuntu/bold/36* :font-color *color/solarized/red*))))
                                             (push (make-iomap/object projection recursion
                                                                      title `(title-of ,typed-input-reference)
                                                                      output `(elt (the list (children-of (the tree/node ,output-reference))) 0))
@@ -48,6 +48,8 @@
                                                                               `(elt (the list (elements-of ,typed-input-reference)) ,index)
                                                                               `(elt (the list (children-of (the tree/node ,output-reference))) ,(1+ index))))
                                                 (push iomap child-iomaps)
+                                                ;; KLUDGE:
+                                                (setf (indentation-of (output-of iomap)) 2)
                                                 (collect (output-of iomap))))))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference)
@@ -58,7 +60,7 @@
   (bind ((child-iomaps nil)
          (output (bind ((typed-input-reference `(the ,(form-type input) ,input-reference)))
                    (make-tree/node (list* (bind ((title (title-of input))
-                                                 (output (make-tree/leaf title)))
+                                                 (output (make-tree/leaf (make-styled-string/string title :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*))))
                                             (push (make-iomap/object projection recursion
                                                                      title `(title-of ,typed-input-reference)
                                                                      output `(elt (the list (children-of (the tree/node ,output-reference))) 0))
@@ -74,6 +76,8 @@
                                                                               `(elt (the list (elements-of ,typed-input-reference)) ,index)
                                                                               `(elt (the list (children-of (the tree/node ,output-reference))) ,(1+ index))))
                                                 (push iomap child-iomaps)
+                                                ;; KLUDGE:
+                                                (setf (indentation-of (output-of iomap)) 2)
                                                 (collect (output-of iomap))))))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference)

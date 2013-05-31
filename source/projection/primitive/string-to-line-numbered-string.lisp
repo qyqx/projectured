@@ -63,25 +63,3 @@
 (def reader string->line-numbered-string (projection recursion printer-iomap projection-iomap gesture-queue operation document)
   (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
   operation)
-
-;;;;;;
-;;; Color
-
-;; TODO: move
-(def (function e) line-number-font-color-provider (iomap reference)
-  (map-backward iomap reference
-                (lambda (iomap reference)
-                  (declare (ignore iomap))
-                  (pattern-case reference
-                    ((the character (elt (the string (line-number ?a ?b ?c)) ?d))
-                     (return-from line-number-font-color-provider *color/solarized/content/light*))))))
-
-;; TODO: move
-(def (function e) line-number-fill-color-provider (iomap reference)
-  (map-backward iomap reference
-                (lambda (iomap reference)
-                  (declare (ignore iomap))
-                  (pattern-case reference
-                    ((the character (elt (the string (line-number ?a ?b ?c)) ?d))
-                     (when (< ?d (1- (length ?b)))
-                       (return-from line-number-fill-color-provider *color/solarized/background/light*)))))))

@@ -128,15 +128,15 @@
   (bind ((start-state (make-state-machine/state "Start"))
          (a-state (make-state-machine/state "A"))
          (b-state (make-state-machine/state "B"))
-         (finish-state (make-state-machine/state "Finish")))
+         (fail-state (make-state-machine/state "Fail")))
     (make-state-machine/state-machine "AB"
-                                      (list start-state a-state b-state finish-state)
+                                      (list start-state a-state b-state fail-state)
                                       (list (make-state-machine/transition "Start->A" "a" start-state a-state)
                                             (make-state-machine/transition "Start->B" "b" start-state b-state)
-                                            (make-state-machine/transition "A->A" "a" a-state a-state)
-                                            (make-state-machine/transition "B->B" "b" b-state b-state)
-                                            (make-state-machine/transition "A->Finish" "a" a-state finish-state)
-                                            (make-state-machine/transition "B->Finish" "b" b-state finish-state)))))
+                                            (make-state-machine/transition "A->B" "b" a-state b-state)
+                                            (make-state-machine/transition "B->A" "a" b-state a-state)
+                                            (make-state-machine/transition "A->Fail" "a" a-state fail-state)
+                                            (make-state-machine/transition "B->Fail" "b" b-state fail-state)))))
 
 ;;;;;;
 ;;; Book
@@ -207,7 +207,7 @@
                                 "factorial"
                                 (list (make-java/declaration/argument "n" (make-java/declaration/type "int")))
                                 (make-java/statement/block (list (make-java/statement/if (make-java/expression/infix-operator "==" (list (make-java/expression/variable-reference "n")
-                                                                                                                                         (make-java/literal/number 1)))
+                                                                                                                                         (make-java/literal/number 0)))
                                                                                          (make-java/statement/return (make-java/literal/number 1))
                                                                                          (make-java/statement/return (make-java/expression/infix-operator "*" (list (make-java/expression/variable-reference "n")
                                                                                                                                                                     (make-java/expression/method-invocation "factorial"
@@ -280,7 +280,10 @@
   nil)
 
 (def function make-test-content/t ()
-  (elt (children-of (make-test-content/xml)) 0))
+  (make-xml/element "person"
+                    (list (make-xml/attribute "name" "John")
+                          (make-xml/attribute "sex" "female"))
+                    nil))
 
 ;;;;;;
 ;;; Nested
@@ -290,6 +293,54 @@
          (if-form (elt (hu.dwim.walker:body-of walked-lisp-form) 0)))
     (setf (hu.dwim.walker:then-of if-form) (make-test-content/json))
     (setf (hu.dwim.walker:else-of if-form) (make-test-content/xml))
+    walked-lisp-form))
+
+;;;;;;
+;;; Demo
+
+;; KLUDGE:
+(def function path-of (request)
+  (declare (ignore request)))
+
+;; KLUDGE:
+(def function write-http-response (body)
+  (declare (ignore body)))
+
+(def function make-test-content/demo ()
+  (bind ((walked-lisp-form (hu.dwim.walker:walk-form '(defun process-http-request (request)
+                                                       (let ((path (path-of request)))
+                                                         (write-http-response (if (string= "/" path)
+                                                                                  :html
+                                                                                  (if (string= "/data/" path)
+                                                                                      :json
+                                                                                      :error)))))))
+         (if-form (elt (hu.dwim.walker:arguments-of (elt (hu.dwim.walker:body-of (elt (hu.dwim.walker:body-of walked-lisp-form) 0)) 0)) 0)))
+    (setf (hu.dwim.walker:then-of if-form)
+          (xml/element "html" ()
+            (xml/element "head" ()
+              (xml/element "script" ((xml/attribute "type" "text/javascript") (xml/attribute "src" "https://www.google.com/jsapi")))
+              (xml/element "script" ((xml/attribute "type" "text/javascript"))
+                ;;      google.load("visualization", "1", { packages: ["corechart"] });
+                ;;      google.setOnLoadCallback(drawChart);
+                ;;      function drawChart() {
+                ;;        var data = get from URL
+                ;;        var chart = new google.visualization.PieChart(document.getElementById("chart_div"));
+                ;;        chart.draw(data, { title: "My Daily Activities"});
+                ;;      }))
+                (xml/element "body" ()
+                  (xml/element "div" ((xml/attribute "id" "chart_div") (xml/attribute "style" "width: 900px; height: 500px;"))))))))
+    (setf (hu.dwim.walker:then-of (hu.dwim.walker:else-of if-form))
+          (json/array
+            (json/array (json/string "Task") (json/string "Hours per Day"))
+            (json/array (json/string "Work") (json/number 11))
+            (json/array (json/string "Eat") (json/number 2))
+            (json/array (json/string "Commute") (json/number 2))
+            (json/array (json/string "Watch TV") (json/number 2))
+            (json/array (json/string "Sleep") (json/number 7))))
+    (setf (hu.dwim.walker:else-of (hu.dwim.walker:else-of if-form))
+          (xml/element "html" ()
+            (xml/element "head" ())
+            (xml/element "body" ())))
     walked-lisp-form))
 
 ;;;;;;
@@ -305,21 +356,24 @@
 ;;; Wow
 
 (def function make-test-content/wow ()
-  (book (:title "Lorem ipsum" :authors (list "Levente Mészáros"))
+  (book (:title "Projection Editor" :authors (list "Levente Mészáros"))
     (chapter (:title "Graphics Domain")
       "Some graphics"
       #+nil (make-test-content/graphics))
     (chapter (:title "Text Domain")
       "Some text"
+      #+nil
       (make-test-content/text))
     (chapter (:title "List Domain")
       "Some list"
+      #+nil
       (make-test-content/list))
     (chapter (:title "Tree Domain")
       "Some tree"
       (make-test-content/tree))
     (chapter (:title "Table Domain")
       "Some table"
+      #+nil
       (make-test-content/table))
     (chapter (:title "JSON Domain")
       "Some JSON"
