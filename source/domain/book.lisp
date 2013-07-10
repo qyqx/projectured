@@ -33,8 +33,8 @@
 ;;;;;;
 ;;; Construction
 
-(def (macro e) book ((&key title authors) &body elements)
+(def (macro e) book/book ((&key title authors) &body elements)
   `(make-book/book (list ,@elements) :title ,title :authors ,authors))
 
-(def (macro e) chapter ((&key title) &body elements)
+(def (macro e) book/chapter ((&key title) &body elements)
   `(make-book/chapter (list ,@elements) :title ,title))

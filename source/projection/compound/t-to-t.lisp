@@ -30,6 +30,19 @@
 (def (macro e) book->tree ()
   '(make-projection/book->tree))
 
+
+;;;;;;
+;;; Text
+
+(def (function e) make-projection/text->tree ()
+  (type-dispatching
+    (text/document (make-projection/text/document->tree/node))
+    (text/paragraph (make-projection/text/paragraph->tree/node))
+    (string (make-projection/string->tree/leaf))))
+
+(def (macro e) text->tree ()
+  '(make-projection/text->tree))
+
 ;;;;;;
 ;;; Tree
 
@@ -103,7 +116,7 @@
 
 (def (function e) make-projection/xml->tree ()
   (type-dispatching
-    (xml/text (make-projection/xml/text->string))
+    (xml/text (make-projection/xml/text->tree/leaf))
     (xml/attribute (make-projection/xml/attribute->tree/node))
     (xml/element (make-projection/xml/element->tree/node))))
 
@@ -150,10 +163,28 @@
   '(make-projection/java->tree))
 
 ;;;;;;
+;;; Javascript
+
+(def (function e) make-projection/javascript->tree ()
+  (type-dispatching
+    (javascript/statement/block (make-projection/javascript/statement/block->tree/node))
+    (javascript/expression/variable-reference (make-projection/javascript/expression/variable-reference->tree/leaf))
+    (javascript/expression/property-access (make-projection/javascript/expression/property-access->tree/node))
+    (javascript/expression/constructor-invocation (make-projection/javascript/expression/constructor-invocation->tree/node))
+    (javascript/expression/method-invocation (make-projection/javascript/expression/method-invocation->tree/node))
+    (javascript/literal/string (make-projection/javascript/literal/string->tree/leaf))
+    (javascript/declaration/variable (make-projection/javascript/declaration/variable->tree/node))
+    (javascript/declaration/function (make-projection/javascript/declaration/function->tree/node))))
+
+(def (macro e) javascript->tree ()
+  '(make-projection/javascript->tree))
+
+;;;;;;
 ;;; Lisp form
 
 (def (function e) make-projection/lisp-form->tree ()
   (type-dispatching
+    (lisp-form/comment (make-projection/lisp-form/comment->string))
     (lisp-form/number (make-projection/lisp-form/number->string))
     (lisp-form/symbol (make-projection/lisp-form/symbol->string))
     (lisp-form/string (make-projection/lisp-form/string->string))
@@ -168,6 +199,7 @@
 
 (def (function e) make-projection/walked-lisp-form->lisp-form ()
   (type-dispatching
+    (walked-lisp-form/comment (make-projection/walked-lisp-form/comment->lisp-form/comment))
     (hu.dwim.walker:constant-form (make-projection/walked-lisp-form/constant-form->lisp-form/string))
     (hu.dwim.walker:variable-reference-form (make-projection/walked-lisp-form/variable-reference-form->lisp-form/string))
     (hu.dwim.walker:if-form (make-projection/walked-lisp-form/if-form->lisp-form/list))

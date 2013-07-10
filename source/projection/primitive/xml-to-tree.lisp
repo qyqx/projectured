@@ -9,7 +9,7 @@
 ;;;;;;
 ;;; Projection
 
-(def (projection e) xml/text->string ()
+(def (projection e) xml/text->tree/leaf ()
   ())
 
 (def (projection e) xml/attribute->tree/node ()
@@ -24,8 +24,8 @@
 ;;;;;;
 ;;; Construction
 
-(def (function e) make-projection/xml/text->string ()
-  (make-projection 'xml/text->string))
+(def (function e) make-projection/xml/text->tree/leaf ()
+  (make-projection 'xml/text->tree/leaf))
 
 (def (function e) make-projection/xml/attribute->tree/node ()
   (make-projection 'xml/attribute->tree/node))
@@ -36,8 +36,8 @@
 ;;;;;;
 ;;; Construction
 
-(def (macro e) xml/text->string ()
-  '(make-projection/xml/text->string))
+(def (macro e) xml/text->tree/leaf ()
+  '(make-projection/xml/text->tree/leaf))
 
 (def (macro e) xml/attribute->tree/node ()
   '(make-projection/xml/attribute->tree/node))
@@ -50,9 +50,9 @@
 
 ;; TODO: rename projections ->tree/leaf
 
-(def printer xml/text->string (projection recursion iomap input input-reference output-reference)
+(def printer xml/text->tree/leaf (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
-  (bind ((output (make-styled-string/string (text-of input) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/magenta*)))
+  (bind ((output (make-tree/leaf (make-styled-string/string (text-of input) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/green*))))
     (make-iomap/object projection recursion input input-reference output output-reference)))
 
 (def printer xml/attribute->tree/node (projection recursion iomap input input-reference output-reference)
@@ -90,6 +90,7 @@
          (name (name-of input))
          (attributes (attributes-of input))
          (children (children-of input))
+         (deep-element (find-if (of-type 'xml/element) (children-of input)))
          (output (make-tree/node (append (list (prog1 (make-tree/leaf (make-styled-string/string name :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*)
                                                                       :opening-delimiter (make-styled-string/string "<" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
                                                                       :closing-delimiter (unless attributes
@@ -124,10 +125,11 @@
                                                                                            `(elt (the list (children-of (the tree/node ,output-reference))) ,(+ child-index (if attributes 2 1)))))
                                                              (push iomap child-iomaps)
                                                              ;; KLUDGE:
-                                                             (setf (indentation-of (output-of iomap)) 2)
+                                                             (when deep-element
+                                                               (setf (indentation-of (output-of iomap)) 2))
                                                              (collect (output-of iomap))))
                                                    (prog1 (list (make-tree/leaf (make-styled-string/string name :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*)
-                                                                                :indentation 0
+                                                                                :indentation (if deep-element 0 nil)
                                                                                 :opening-delimiter (make-styled-string/string "</" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
                                                                                 :closing-delimiter (make-styled-string/string ">" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)))
                                                      (push (make-iomap/object* projection recursion input `(the string (end-tag ,typed-input-reference))
@@ -144,7 +146,7 @@
 ;;;;;;
 ;;; Reader
 
-(def reader xml/text->string (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+(def reader xml/text->tree/leaf (projection recursion printer-iomap projection-iomap gesture-queue operation document)
   (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
   operation)
 

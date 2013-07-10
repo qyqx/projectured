@@ -34,6 +34,15 @@
   (make-instance 'text/paragraph :elements elements))
 
 ;;;;;;
+;;; Text document constructors
+
+(def (macro e) text/document (&body elements)
+  `(make-text/document (list ,@elements)))
+
+(def (macro e) text/paragraph (&body elements)
+  `(make-text/paragraph (list ,@elements)))
+
+;;;;;;
 ;;; Text operation classes
 
 (def operation operation/text/replace-stroke-color (operation)

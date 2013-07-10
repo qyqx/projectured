@@ -89,6 +89,9 @@
 (def test test/editor/java ()
   (test/editor/read-eval-print-loop (make-test-document/java) (make-test-projection/java->graphics)))
 
+(def test test/editor/javascript ()
+  (test/editor/read-eval-print-loop (make-test-document/javascript) (make-test-projection/javascript->graphics)))
+
 (def test test/editor/lisp-form ()
   (test/editor/read-eval-print-loop (make-test-document/lisp-form) (make-test-projection/lisp-form->graphics)))
 

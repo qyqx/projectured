@@ -39,6 +39,12 @@
     (recursive (tree->styled-string))
     (styled-string->string)))
 
+(def method make-projection/t->string ((instance javascript/base))
+  (sequential
+    (recursive (javascript->tree))
+    (recursive (tree->styled-string))
+    (styled-string->string)))
+
 (def method make-projection/t->string ((instance json/base))
   (sequential
     (recursive (json->tree))

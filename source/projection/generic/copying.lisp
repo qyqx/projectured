@@ -35,6 +35,8 @@
       (string (make-iomap/recursive projection recursion input input-reference input output-reference
                                     (list (make-iomap/object projection recursion input input-reference input output-reference)
                                           (make-iomap/string input input-reference 0 input output-reference 0 (length input)))))
+      (style/color (make-iomap/object projection recursion input input-reference input output-reference))
+      (style/font (make-iomap/object projection recursion input input-reference input output-reference))
       (cons
        (bind ((car-iomap (recurse-printer recursion iomap (car input) `(car ,typed-input-reference) `(car (the ,(form-type input) ,output-reference))))
               (cdr-iomap (recurse-printer recursion iomap (cdr input) `(cdr ,typed-input-reference) `(cdr (the ,(form-type input) ,output-reference))))

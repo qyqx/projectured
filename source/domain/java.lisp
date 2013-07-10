@@ -52,7 +52,7 @@
 
 (def document java/statement/variable-declaration (java/statement)
   ((name :type string)
-   (type :type java/type :accessor nil)))
+   (type :type java/declaration/type :accessor nil)))
 
 ;;;;;;
 ;;; Java expression classes
@@ -64,7 +64,7 @@
   ())
 
 (def document java/expression/method-invocation (java/expression)
-  ((method :type java/method)
+  ((method :type java/declaration/method)
    (arguments :type sequence)))
 
 (def document java/expression/infix-operator (java/expression)
@@ -109,7 +109,7 @@
 
 (def document java/declaration/class (java/declaration)
   ((name :type string)
-   (extends :type java/class)
+   (extends :type java/declaration/class)
    (fields :type sequence)
    (methods :type sequence)))
 
@@ -119,14 +119,14 @@
 
 (def document java/declaration/argument (java/declaration)
   ((name :type string)
-   (type :type java/type :accessor nil)))
+   (type :type java/declaration/type :accessor nil)))
 
 (def document java/declaration/method (java/declaration)
-  ((qualifier :type java/qualifier)
-   (return-type :type java/type)
+  ((qualifier :type java/declaration/qualifier)
+   (return-type :type java/declaration/type)
    (name :type string)
    (arguments :type sequence)
-   (body :type java/block)))
+   (body :type java/base)))
 
 ;;;;;;
 ;;; Java statement constructors

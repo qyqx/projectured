@@ -9,6 +9,9 @@
 ;;;;;;
 ;;; Projection
 
+(def (projection e) lisp-form/comment->string ()
+  ())
+
 (def (projection e) lisp-form/number->string ()
   ())
 
@@ -26,6 +29,9 @@
 
 ;;;;;;
 ;;; Construction
+
+(def (function e) make-projection/lisp-form/comment->string ()
+  (make-projection 'lisp-form/comment->string))
 
 (def (function e) make-projection/lisp-form/number->string ()
   (make-projection 'lisp-form/number->string))
@@ -45,6 +51,9 @@
 ;;;;;;
 ;;; Construction
 
+(def (macro e) lisp-form/comment->string ()
+  '(make-projection/lisp-form/comment->string))
+
 (def (macro e) lisp-form/number->string ()
   '(make-projection/lisp-form/number->string))
 
@@ -62,6 +71,19 @@
 
 ;;;;;;
 ;;; Printer
+
+(def printer lisp-form/comment->string (projection recursion iomap input input-reference output-reference)
+  (declare (ignore iomap))
+  (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
+         (content (content-of input))
+         (output (make-tree/leaf (make-styled-string/string content :font *font/ubuntu/regular/18* :font-color *color/solarized/gray*)
+                                 :opening-delimiter (make-styled-string/string ";; " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))
+    (make-iomap/recursive projection recursion input input-reference output output-reference
+                          (list (make-iomap/string* content `(the string (value-of ,typed-input-reference)) 0
+                                                    content `(the string (content-of (the tree/leaf ,output-reference))) 0
+                                                    (length content))
+                                (make-iomap/object* projection recursion input `(the string (value-of ,typed-input-reference))
+                                                    output `(the string ,output-reference))))))
 
 (def printer lisp-form/number->string (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
@@ -134,6 +156,10 @@
 
 ;;;;;;
 ;;; Reader
+
+(def reader lisp-form/comment->string (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
 
 (def reader lisp-form/number->string (projection recursion printer-iomap projection-iomap gesture-queue operation document)
   (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))

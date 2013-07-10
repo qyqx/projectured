@@ -9,6 +9,9 @@
 ;;;;;;
 ;;; Projection
 
+(def (projection e) walked-lisp-form/comment->lisp-form/comment ()
+  ())
+
 (def (projection e) walked-lisp-form/constant-form->lisp-form/string ()
   ())
 
@@ -39,6 +42,9 @@
 ;;;;;;
 ;;; Construction
 
+(def (function e) make-projection/walked-lisp-form/comment->lisp-form/comment ()
+  (make-projection 'walked-lisp-form/comment->lisp-form/comment))
+
 (def (function e) make-projection/walked-lisp-form/constant-form->lisp-form/string ()
   (make-projection 'walked-lisp-form/constant-form->lisp-form/string))
 
@@ -68,6 +74,9 @@
 
 ;;;;;;
 ;;; Construction
+
+(def (macro e) walked-lisp-form/comment->lisp-form/comment ()
+  '(make-projection/walked-lisp-form/comment->lisp-form/comment))
 
 (def (macro e) walked-lisp-form/constant-form->lisp-form/string ()
   '(make-projection/walked-lisp-form/constant-form->lisp-form/string))
@@ -160,6 +169,12 @@
                                   `(elt (the list (elements-of (the lisp-form/list ,output-reference))) ,index)) :into result
         :finally (return (nconc result
                                 (ensure-&allow-other-keys)))))))
+
+(def printer walked-lisp-form/comment->lisp-form/comment (projection recursion iomap input input-reference output-reference)
+  (declare (ignore iomap))
+  (bind ((output (make-lisp-form/comment (content-of input))))
+    (make-iomap/recursive projection recursion input input-reference output output-reference
+                          (list (make-iomap/object projection recursion input input-reference output output-reference)))))
 
 (def printer walked-lisp-form/constant-form->lisp-form/string (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
@@ -319,38 +334,42 @@
 ;;;;;;
 ;;; Reader
 
-(def reader walked-lisp-form/constant-form->lisp-form/string (projection recursion input input-reference output-reference)
-  (declare (ignore projection recursion input input-reference output-reference))
-  nil)
+(def reader walked-lisp-form/comment->lisp-form/comment (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
 
-(def reader walked-lisp-form/variable-reference-form->lisp-form/string (projection recursion input input-reference output-reference)
-  (declare (ignore projection recursion input input-reference output-reference))
-  nil)
+(def reader walked-lisp-form/constant-form->lisp-form/string (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
 
-(def reader walked-lisp-form/if-form->lisp-form/list (projection recursion input input-reference output-reference)
-  (declare (ignore projection recursion input input-reference output-reference))
-  nil)
+(def reader walked-lisp-form/variable-reference-form->lisp-form/string (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
 
-(def reader walked-lisp-form/the-form->lisp-form/list (projection recursion input input-reference output-reference)
-  (declare (ignore projection recursion input input-reference output-reference))
-  nil)
+(def reader walked-lisp-form/if-form->lisp-form/list (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
 
-(def reader walked-lisp-form/let-form->lisp-form/list (projection recursion input input-reference output-reference)
-  (declare (ignore projection recursion input input-reference output-reference))
-  nil)
+(def reader walked-lisp-form/the-form->lisp-form/list (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
 
-(def reader walked-lisp-form/application-form->lisp-form/list (projection recursion input input-reference output-reference)
-  (declare (ignore projection recursion input input-reference output-reference))
-  nil)
+(def reader walked-lisp-form/let-form->lisp-form/list (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
 
-(def reader walked-lisp-form/function-definition-form->lisp-form/list (projection recursion input input-reference output-reference)
-  (declare (ignore projection recursion input input-reference output-reference))
-  nil)
+(def reader walked-lisp-form/application-form->lisp-form/list (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
 
-(def reader walked-lisp-form/lambda-function-form->lisp-form/list (projection recursion input input-reference output-reference)
-  (declare (ignore projection recursion input input-reference output-reference))
-  nil)
+(def reader walked-lisp-form/function-definition-form->lisp-form/list (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
 
-(def reader walked-lisp-form/function-argument-form->lisp-form/string (projection recursion input input-reference output-reference)
-  (declare (ignore projection recursion input input-reference output-reference))
-  nil)
+(def reader walked-lisp-form/lambda-function-form->lisp-form/list (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
+
+(def reader walked-lisp-form/function-argument-form->lisp-form/string (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)

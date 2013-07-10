@@ -38,6 +38,12 @@
                  :line-color line-color))
 
 ;;;;;;
+;;; Construction
+
+(def (macro e) styled-string/document (&body elements)
+  `(make-styled-string/document (list ,@elements)))
+
+;;;;;;
 ;;; API
 
 (def (function e) styled-string/length (styled-string)
@@ -51,7 +57,6 @@
          (until (= element-index (length elements)))
          (for element = (elt elements element-index))
          (for font = (font-of element))
-         (for font-color = (font-color-of element))
          (for content = (content-of element))
          (for word-part = (subseq content
                                   (if (= element-index start-element-index)
@@ -61,7 +66,10 @@
                                       end-character-index
                                       (length content))))
          (unless (zerop (length word-part))
-           (collect (make-styled-string/string word-part :font font :font-color font-color))))))
+           (collect (make-styled-string/string word-part :font font
+                                               :font-color (font-color-of element)
+                                               :fill-color (fill-color-of element)
+                                               :line-color (line-color-of element)))))))
 
 (def (function e) styled-string/find (styled-string start-element-index start-character-index test)
   (iter (with elements = (elements-of styled-string))

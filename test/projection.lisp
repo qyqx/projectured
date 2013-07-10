@@ -50,13 +50,8 @@
 (def function make-test-projection/styled-string->output ()
   ;; KLUDGE:
   (if (search "SLIME" (symbol-name (class-name (class-of (make-editor)))))
-      (sequential
-        ;; TODO:
-        #+nil(word-wrapping :wrap-width 1024))
-      (sequential
-        ;; TODO:
-        #+nil(word-wrapping :wrap-width 1024)
-        (styled-string->graphics))))
+      (preserving)
+      (styled-string->graphics)))
 
 ;;;;;;
 ;;; Graphics
@@ -472,6 +467,32 @@
           (make-test-projection/styled-string->output))))))
 
 ;;;;;;
+;;; Javascript
+
+(def function make-test-projection/javascript->tree ()
+  (javascript->tree))
+
+(def function make-test-projection/javascript->styled-string ()
+  (sequential
+    (recursive (make-test-projection/javascript->tree))
+    (recursive (tree->styled-string))))
+
+(def function make-test-projection/javascript->graphics ()
+  (test-projection
+    (nesting
+      (widget->graphics)
+      (sequential
+        (nesting
+          (document->document)
+          (make-test-projection/javascript->styled-string))
+        (nesting
+          (document->document)
+          (styled-string->line-numbered-styled-string))
+        (nesting
+          (document->graphics)
+          (make-test-projection/styled-string->output))))))
+
+;;;;;;
 ;;; Lisp form
 
 (def function make-test-projection/lisp-form->tree ()
@@ -671,18 +692,6 @@
 ;;;;;;
 ;;; Demo
 
-(sequential
-    (recursive
-      (type-dispatching
-        (hu.dwim.walker:walked-form (walked-lisp-form->lisp-form))
-        (t (preserving))))
-    (recursive
-      (type-dispatching
-        (lisp-form/base (lisp-form->tree))
-        (xml/base (xml->tree))
-        (json/base (json->tree))))
-    (recursive (tree->styled-string)))
-
 (def function make-test-projection/demo->graphics ()
   (test-projection
     (nesting
@@ -693,20 +702,29 @@
           (recursive
             (type-dispatching
               (hu.dwim.walker::walked-form (walked-lisp-form->lisp-form))
-              (t (preserving)))))
+              (t (copying)))))
         (nesting
           (document->document)
           (recursive
             (type-dispatching
+              (string (make-projection/string->tree/leaf))
+              (styled-string/base (make-projection/styled-string->tree/leaf))
+              (text/base (text->tree))
+              (book/base (book->tree))
               (json/base (json->tree))
               (xml/base (xml->tree))
-              (lisp-form/base (lisp-form->tree)))))
+              (javascript/base (javascript->tree))
+              (lisp-form/base (lisp-form->tree))
+              (t (preserving)))))
         (nesting
           (document->document)
           (recursive (tree->styled-string)))
         (nesting
           (document->document)
           (styled-string->line-numbered-styled-string))
+        (nesting
+          (document->document)
+          (word-wrapping :wrap-width 1024))
         (nesting
           (document->graphics)
           (make-test-projection/styled-string->output))))))
@@ -727,6 +745,7 @@
               (xml/base (xml->tree))
               (book/base (book->tree))
               (java/base (java->tree))
+              (javascript/base (javascript->tree))
               (lisp-form/base (lisp-form->tree))
               (hu.dwim.walker::walked-form
                (sequential

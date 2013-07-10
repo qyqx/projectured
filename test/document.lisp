@@ -160,6 +160,13 @@
     (make-test-content/java)))
 
 ;;;;;;
+;;; Javascript
+
+(def function make-test-document/javascript ()
+  (test-document ()
+    (make-test-content/javascript)))
+
+;;;;;;
 ;;; Lisp form
 
 (def function make-test-document/lisp-form/empty ()
@@ -223,8 +230,9 @@
 ;;;;;;
 ;;; Demo
 
+;;(the sequence-position (pos (the string (title-of (the book/chapter (elt (the list (elements-of (the book/book (content-of (the document document))))) 0)))) 3))
 (def function make-test-document/demo ()
-  (test-document ()
+  (test-document (:selection '(the sequence-position (pos (the string (title-of (the book/book (content-of (the document document))))) 2)))
     (make-test-content/demo)))
 
 ;;;;;;

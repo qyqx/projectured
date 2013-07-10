@@ -142,13 +142,13 @@
 ;;; Book
 
 (def function make-test-content/book/empty ()
-  (book (:title"")))
+  (book/book (:title"")))
 
 (def function make-test-content/book ()
-  (book (:title "Lorem ipsum")
-    (chapter (:title "Chapter 1")
+  (book/book (:title "Lorem ipsum")
+    (book/chapter (:title "Chapter 1")
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras eu nunc nibh. Cras imperdiet faucibus tortor ac dictum. Aliquam sit amet justo nec ligula lobortis ornare. Aenean a odio id dolor adipiscing interdum. Maecenas nec nisl neque. Suspendisse interdum rutrum neque, in volutpat orci varius in. Praesent a ipsum ac erat pulvinar adipiscing quis sit amet magna. Etiam semper vulputate mi ac interdum. Nunc a tortor non purus fringilla aliquam.")
-    (chapter (:title "Chapter 2")
+    (book/chapter (:title "Chapter 2")
       "Morbi scelerisque, felis a viverra pharetra, arcu enim aliquet urna, mollis suscipit felis elit in neque. Aenean vel tempus nulla. Vestibulum magna nisi, cursus vel auctor eu, suscipit sit amet purus. Donec ligula purus, pulvinar id tristique ut, suscipit ornare diam. Maecenas sed justo turpis. Vivamus eu scelerisque dui. Pellentesque mollis rutrum est ac tempus. Sed venenatis, erat id elementum semper, nisl tortor malesuada orci, ac venenatis elit ipsum non augue. Praesent blandit purus est, id venenatis eros. Phasellus non dui dolor. Duis magna erat, pulvinar sed aliquam vitae, porta vel quam.")))
 
 ;;;;;;
@@ -158,22 +158,16 @@
   nil)
 
 (def function make-test-content/xml ()
-  (make-xml/element "person"
-                    (list (make-xml/attribute "name" "levy")
-                          (make-xml/attribute "sex" "male"))
-                    (list (make-xml/element "children"
-                                            nil
-                                            (list (make-xml/element "person"
-                                                                    (list (make-xml/attribute "name" "John")
-                                                                          (make-xml/attribute "sex" "female"))
-                                                                    nil)
-                                                  (make-xml/element "person"
-                                                                    (list (make-xml/attribute "name" "Mary")
-                                                                          (make-xml/attribute "sex" "male"))
-                                                                    nil)))
-                          (make-xml/element "pets"
-                                            nil
-                                            nil))))
+  (xml/element "person" ((xml/attribute "name" "levy")
+                         (xml/attribute "sex" "male"))
+    (xml/text "The beginning")
+    (xml/element "children" ()
+      (xml/element "person" ((xml/attribute "name" "John")
+                             (xml/attribute "sex" "female")))
+      (xml/element "person" ((xml/attribute "name" "Mary")
+                             (xml/attribute "sex" "male"))))
+    (xml/element "pets" ())
+    (xml/text "The end")))
 
 ;;;;;;
 ;;; JSON
@@ -213,6 +207,12 @@
                                                                                                                                                                     (make-java/expression/method-invocation "factorial"
                                                                                                                                                                                                             (list (make-java/expression/infix-operator "-" (list (make-java/expression/variable-reference "n")
                                                                                                                                                                                                                                                                  (make-java/literal/number 1)))))))))))))
+
+;;;;;;
+;;; Javascript
+
+(def function make-test-content/javascript ()
+  (make-javascript/statement/block nil))
 
 ;;;;;;
 ;;; Lisp form
@@ -303,45 +303,101 @@
   (declare (ignore request)))
 
 ;; KLUDGE:
-(def function write-http-response (body)
-  (declare (ignore body)))
+(def function make-http-response (content)
+  (declare (ignore content)))
 
 (def function make-test-content/demo ()
-  (bind ((walked-lisp-form (hu.dwim.walker:walk-form '(defun process-http-request (request)
-                                                       (let ((path (path-of request)))
-                                                         (write-http-response (if (string= "/" path)
-                                                                                  :html
-                                                                                  (if (string= "/data/" path)
-                                                                                      :json
-                                                                                      :error)))))))
-         (if-form (elt (hu.dwim.walker:arguments-of (elt (hu.dwim.walker:body-of (elt (hu.dwim.walker:body-of walked-lisp-form) 0)) 0)) 0)))
-    (setf (hu.dwim.walker:then-of if-form)
-          (xml/element "html" ()
-            (xml/element "head" ()
-              (xml/element "script" ((xml/attribute "type" "text/javascript") (xml/attribute "src" "https://www.google.com/jsapi")))
-              (xml/element "script" ((xml/attribute "type" "text/javascript"))
-                ;;      google.load("visualization", "1", { packages: ["corechart"] });
-                ;;      google.setOnLoadCallback(drawChart);
-                ;;      function drawChart() {
-                ;;        var data = get from URL
-                ;;        var chart = new google.visualization.PieChart(document.getElementById("chart_div"));
-                ;;        chart.draw(data, { title: "My Daily Activities"});
-                ;;      }))
-                (xml/element "body" ()
-                  (xml/element "div" ((xml/attribute "id" "chart_div") (xml/attribute "style" "width: 900px; height: 500px;"))))))))
-    (setf (hu.dwim.walker:then-of (hu.dwim.walker:else-of if-form))
-          (json/array
-            (json/array (json/string "Task") (json/string "Hours per Day"))
-            (json/array (json/string "Work") (json/number 11))
-            (json/array (json/string "Eat") (json/number 2))
-            (json/array (json/string "Commute") (json/number 2))
-            (json/array (json/string "Watch TV") (json/number 2))
-            (json/array (json/string "Sleep") (json/number 7))))
-    (setf (hu.dwim.walker:else-of (hu.dwim.walker:else-of if-form))
-          (xml/element "html" ()
-            (xml/element "head" ())
-            (xml/element "body" ())))
-    walked-lisp-form))
+  (bind ((chart-script (make-javascript/statement/block
+                        ;; google.load("visualization", "1", { packages: ["corechart"] });
+                        ;; google.setOnLoadCallback(drawPieChart);
+                        ;; function drawPieChart() {
+                        ;;    var json = $.ajax({
+                        ;;       url: "data",
+                        ;;       dataType: "json",
+                        ;;       async: false
+                        ;;    }).responseText;
+                        ;;    var data = new google.visualization.DataTable(json);
+                        ;;    var chart = new google.visualization.PieChart(document.getElementById("pie"));
+                        ;;    chart.draw(data, { title: "My Daily Activities" });
+                        ;; }
+                        (list (make-javascript/expression/method-invocation (make-javascript/expression/variable-reference "google")
+                                                                            "load"
+                                                                            (list (make-javascript/literal/string "visualization")
+                                                                                  (make-javascript/literal/string "1")
+                                                                                  (json/object
+                                                                                    ("packages" (json/array (json/string "corechart"))))))
+                              (make-javascript/expression/method-invocation (make-javascript/expression/variable-reference "google")
+                                                                            "setOnLoadCallback"
+                                                                            (list (make-javascript/expression/variable-reference "drawPieChart")))
+                              (make-javascript/declaration/function "drawPieChart"
+                                                                    nil
+                                                                    (make-javascript/statement/block
+                                                                     (list (make-javascript/declaration/variable "json" (make-javascript/expression/method-invocation (make-javascript/expression/variable-reference "$")
+                                                                                                                                                                      "ajax"
+                                                                                                                                                                      (list (json/object
+                                                                                                                                                                              ("async" (json/boolean #f))
+                                                                                                                                                                              ("url" (json/string "/data"))
+                                                                                                                                                                              ("dataType" (json/string "json"))))))
+                                                                           (make-javascript/declaration/variable "data" (make-javascript/expression/property-access (make-javascript/expression/property-access (make-javascript/expression/variable-reference "google") "visualization") "DataTable"))
+                                                                           (make-javascript/declaration/variable "chart" (make-javascript/expression/constuctor-invocation (make-javascript/expression/property-access (make-javascript/expression/property-access (make-javascript/expression/variable-reference "google") "visualization") "PieChart") nil))
+                                                                           (make-javascript/expression/method-invocation (make-javascript/expression/variable-reference "chart")
+                                                                                                                         "draw"
+                                                                                                                         (list (make-javascript/expression/variable-reference "data")
+                                                                                                                               (json/object
+                                                                                                                                 ("title" (json/string "My Daily Activities")))))))))))
+         (chart-page (xml/element "html" ()
+                       (xml/element "head" ()
+                         (xml/element "script" ((xml/attribute "type" "text/javascript") (xml/attribute "src" "https://www.google.com/jsapi"))
+                           (xml/text ""))
+                         (xml/element "script" ((xml/attribute "type" "text/javascript"))
+                           chart-script))
+                       (xml/element "body" ()
+                         (xml/element "h1" ()
+                           (xml/text "Pie Chart Example"))
+                         (xml/element "div" ((xml/attribute "id" "pie") (xml/attribute "style" "width: 800px; height: 600px;"))
+                           (xml/text "")))))
+         (error-page (xml/element "html" ()
+                       (xml/element "head" ()
+                         (xml/element "title" ()
+                           (xml/text "Error 404 (Not Found)")))
+                       (xml/element "body" ()
+                         (xml/element "p" ()
+                           (xml/text "We are sorry, the page you requested cannot be found.")))))
+         (chart-data (json/array
+                       (json/array (json/string "Task") (json/string "Hours per Day"))
+                       (json/array (json/string "Work") (json/number 11))
+                       (json/array (json/string "Eat") (json/number 2))
+                       (json/array (json/string "Commute") (json/number 2))
+                       (json/array (json/string "Watch TV") (json/number 2))
+                       (json/array (json/string "Sleep") (json/number 7))))
+         (lisp-function (make-instance 'hu.dwim.walker:function-definition-form
+                                       :name 'process-http-request
+                                       :bindings (list (make-instance 'hu.dwim.walker:required-function-argument-form :name 'request))
+                                       :body (list (make-walked-lisp-form/comment "dispatch on the path of the incoming HTTP request")
+                                                   (make-instance 'hu.dwim.walker:let-form
+                                                                  :bindings (list (make-instance 'hu.dwim.walker:lexical-variable-binding-form :name 'path
+                                                                                                 :initial-value (make-instance 'hu.dwim.walker:free-application-form :operator 'path-of
+                                                                                                                               :arguments (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'request))))
+                                                                  :body (list (make-instance 'hu.dwim.walker:free-application-form :operator 'make-http-response
+                                                                                             :arguments (list (make-instance 'hu.dwim.walker:if-form
+                                                                                                                             :condition (make-instance 'hu.dwim.walker:free-application-form :operator 'string=
+                                                                                                                                                       :arguments (list (make-instance 'hu.dwim.walker:constant-form :value "/pie/page")
+                                                                                                                                                                        (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'path)))
+                                                                                                                             :then chart-page
+                                                                                                                             :else (make-instance 'hu.dwim.walker:if-form
+                                                                                                                                                  :condition (make-instance 'hu.dwim.walker:free-application-form :operator 'string=
+                                                                                                                                                                            :arguments (list (make-instance 'hu.dwim.walker:constant-form :value "/pie/data")
+                                                                                                                                                                                             (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'path)))
+                                                                                                                                                  :then chart-data
+                                                                                                                                                  :else error-page))))))))))
+    (book/book (:title "ProjecturEd the Projectional Editor" :authors (list "Levente Mészáros"))
+      (book/chapter (:title "Introduction")
+        (text/paragraph
+          (make-styled-string/string "ProjecturEd is a general purpose projectional editor." :font *font/ubuntu/bold/18* :font-color *color/solarized/content/darker*)))
+      (book/chapter (:title "Examples")
+        (text/paragraph
+          (make-styled-string/string "This example demonstrates the capability of mixing multiple different problem domains." :font *font/ubuntu/bold/18* :font-color *color/solarized/content/darker*)
+          lisp-function)))))
 
 ;;;;;;
 ;;; Complex
@@ -356,41 +412,44 @@
 ;;; Wow
 
 (def function make-test-content/wow ()
-  (book (:title "Projection Editor" :authors (list "Levente Mészáros"))
-    (chapter (:title "Graphics Domain")
+  (book/book (:title "ProjecturEd the Projectional Editor" :authors (list "Levente Mészáros"))
+    (book/chapter (:title "Graphics Domain")
       "Some graphics"
       #+nil (make-test-content/graphics))
-    (chapter (:title "Text Domain")
+    (book/chapter (:title "Text Domain")
       "Some text"
       #+nil
       (make-test-content/text))
-    (chapter (:title "List Domain")
+    (book/chapter (:title "List Domain")
       "Some list"
       #+nil
       (make-test-content/list))
-    (chapter (:title "Tree Domain")
+    (book/chapter (:title "Tree Domain")
       "Some tree"
       (make-test-content/tree))
-    (chapter (:title "Table Domain")
+    (book/chapter (:title "Table Domain")
       "Some table"
       #+nil
       (make-test-content/table))
-    (chapter (:title "JSON Domain")
+    (book/chapter (:title "JSON Domain")
       "Some JSON"
       (make-test-content/json))
-    (chapter (:title "XML Domain")
+    (book/chapter (:title "XML Domain")
       "Some XML"
       (make-test-content/xml))
-    (chapter (:title "Java code Domain")
+    (book/chapter (:title "Java code Domain")
       "Some Java code"
       (make-test-content/java))
-    (chapter (:title "S-expression Domain")
+    (book/chapter (:title "Javascript code Domain")
+      "Some Javascript code"
+      (make-test-content/javascript))
+    (book/chapter (:title "S-expression Domain")
       "Some Lisp S-expression"
       (make-test-content/lisp-form))
-    (chapter (:title "Common Lisp code Domain")
+    (book/chapter (:title "Common Lisp code Domain")
       "Some Common Lisp code"
       (make-test-content/walked-lisp-form))
-    (chapter (:title "Object Domain")
+    (book/chapter (:title "Object Domain")
       "Some object"
       #+nil (make-test-content/t))))
 
@@ -431,6 +490,9 @@
 
 (def test test/content/java ()
   (test/content/print-document (make-test-content/java)))
+
+(def test test/content/javascript ()
+  (test/content/print-document (make-test-content/javascript)))
 
 (def test test/content/lisp-form ()
   (test/content/print-document (make-test-content/lisp-form)))

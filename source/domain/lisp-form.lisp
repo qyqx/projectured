@@ -16,6 +16,9 @@
 (def document lisp-form/base ()
   ())
 
+(def document lisp-form/comment (lisp-form/base)
+  ((content :type string)))
+
 (def document lisp-form/number (lisp-form/base)
   ((value :type number)))
 
@@ -34,6 +37,9 @@
 
 ;;;;;;
 ;;; Lisp form document constructors
+
+(def (function e) make-lisp-form/comment (content)
+  (make-instance 'lisp-form/comment :content content))
 
 (def (function e) make-lisp-form/number (value)
   (make-instance 'lisp-form/number :value value))
