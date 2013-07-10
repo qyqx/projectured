@@ -43,19 +43,22 @@
 ;;; Styled string
 
 (def function make-test-content/styled-string ()
-  (make-styled-string/document (list (make-styled-string/string "Hello" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*)
-                                     (make-styled-string/string " " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*)
-                                     (make-styled-string/string "World" :font *font/ubuntu/monospace/bold/18* :font-color *color/solarized/green*))))
+  (styled-string/document
+    (styled-string/string "Hello" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*)
+    (make-style/image (asdf:system-relative-pathname :projectured "etc/lisp.jpg"))
+    (styled-string/string "World" :font *font/ubuntu/monospace/bold/18* :font-color *color/solarized/green*)
+    (styled-string/string "
+New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
 
 ;;;;;;
 ;;; Text
 
 (def function make-test-content/text/empty ()
-  (make-text/document (list (make-text/paragraph (list (make-styled-string/string ""))))))
+  (make-text/document (list (make-text/paragraph (list (styled-string/string ""))))))
 
 (def function make-test-content/text ()
-  (make-text/document (list (make-text/paragraph (list (make-styled-string/string "first paragraph in a text document")))
-                            (make-text/paragraph (list (make-styled-string/string "second paragraph in a text document"))))))
+  (make-text/document (list (make-text/paragraph (list (styled-string/string "first paragraph in a text document")))
+                            (make-text/paragraph (list (styled-string/string "second paragraph in a text document"))))))
 
 ;;;;;;
 ;;; List
@@ -390,13 +393,21 @@
                                                                                                                                                                                              (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'path)))
                                                                                                                                                   :then chart-data
                                                                                                                                                   :else error-page))))))))))
-    (book/book (:title "ProjecturEd the Projectional Editor" :authors (list "Levente Mészáros"))
+    (book/book (:title "ProjecturEd, a Projectional Editor" :authors (list "Levente Mészáros"))
       (book/chapter (:title "Introduction")
         (text/paragraph
-          (make-styled-string/string "ProjecturEd is a general purpose projectional editor." :font *font/ubuntu/bold/18* :font-color *color/solarized/content/darker*)))
+          (styled-string/string "ProjecturEd is a general purpose projectional editor." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)))
       (book/chapter (:title "Examples")
         (text/paragraph
-          (make-styled-string/string "This example demonstrates the capability of mixing multiple different problem domains." :font *font/ubuntu/bold/18* :font-color *color/solarized/content/darker*)
+          (styled-string/document
+            (styled-string/string "This example demonstrates mixing multiple different problem domains in the same document. The document contains" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+            (styled-string/string " Word Processing, Common Lisp, HTML, JavaScript and JSON " :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/content/dark*)
+            (styled-string/string "parts nested into each other. It describes a Common Lisp web service using a single function that processes HTTP requests. When the function receives an HTTP request to the '/pie/page' path it sends an HTML page. This page contains a pie chart that utilizes the Google Charts JavaScript API. When the pie chart is shown in the browser it sends another HTTP request to the '/pie/data' path at the same web service using JavaScript. The web service returns another document in JSON format that provides the data for the pie chart. For all unknown HTTP requests the web service sends an HTML error page. The following screenshot shows how the page looks like." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+            (styled-string/newline)
+            ;; KLUDGE:
+            (tree/leaf () (style/image (asdf:system-relative-pathname :projectured "etc/pie.png")))
+            (styled-string/newline)
+            (styled-string/string "This example uses a projection that displays all used domains in their natural format. Proper Indentation and syntax highlight are automatically provided by this projection without escaping." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*))
           lisp-function)))))
 
 ;;;;;;

@@ -12,17 +12,11 @@
 (def (projection e) string->tree/leaf ()
   ())
 
-(def (projection e) styled-string->tree/leaf ()
-  ())
-
 ;;;;;;
 ;;; Construction
 
 (def (function e) make-projection/string->tree/leaf ()
   (make-projection 'string->tree/leaf))
-
-(def (function e) make-projection/styled-string->tree/leaf ()
-  (make-projection 'styled-string->tree/leaf))
 
 ;;;;;;
 ;;; Printer
@@ -38,19 +32,9 @@
                                                    input `(content-of (the tree/leaf ,output-reference)) 0
                                                    (length input))))))
 
-(def printer styled-string->tree/leaf (projection recursion iomap input input-reference output-reference)
-  (declare (ignore iomap))
-  (bind ((output (make-tree/leaf input)))
-    (make-iomap/recursive projection recursion input input-reference output output-reference
-                          (list (make-iomap/object projection recursion input input-reference output output-reference)))))
-
 ;;;;;;
 ;;; Reader
 
 (def reader string->tree/leaf (projection recursion printer-iomap projection-iomap gesture-queue operation document)
-  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
-  operation)
-
-(def reader styled-string->tree/leaf (projection recursion printer-iomap projection-iomap gesture-queue operation document)
   (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
   operation)

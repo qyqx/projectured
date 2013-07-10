@@ -217,13 +217,6 @@
   (:method ((instance graphics/text))
     (make-rectangle (location-of instance) (measure-text (text-of instance) (font-of instance))))
 
-  #+nil
-  (:method ((instance graphics/image))
-    ;; TODO: no sdl here please, move this code
-    (bind ((image (sdl-image:load-image (source-of instance) :color-key-at #(0 0)))
-           (rectangle (sdl:get-surface-rect :surface image)))
-      (make-rectangle (location-of instance) (make-2d (sdl:width rectangle) (sdl:height rectangle)))))
-
   (:method ((instance graphics/viewport))
     (make-rectangle (location-of instance) (size-of instance)))
 

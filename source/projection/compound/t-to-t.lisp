@@ -19,6 +19,17 @@
   '(make-projection/widget->graphics))
 
 ;;;;;;
+;;; Styled string
+
+(def (function e) make-projection/styled-string->tree ()
+  (type-dispatching
+    (styled-string/document (make-projection/styled-string/document->tree/node))
+    (styled-string/string (make-projection/styled-string/string->tree/leaf))))
+
+(def (macro e) styled-string->tree ()
+  '(make-projection/styled-string->tree))
+
+;;;;;;
 ;;; Book
 
 (def (function e) make-projection/book->tree ()
@@ -29,7 +40,6 @@
 
 (def (macro e) book->tree ()
   '(make-projection/book->tree))
-
 
 ;;;;;;
 ;;; Text
@@ -51,6 +61,7 @@
     (tree/leaf (make-projection/tree/leaf->styled-string :indentation-provider indentation-provider :delimiter-provider delimiter-provider))
     (tree/node (make-projection/tree/node->styled-string :indentation-provider indentation-provider :delimiter-provider delimiter-provider :separator-provider separator-provider))
     (styled-string/base (preserving))
+    (style/image (preserving))
     (string (preserving))))
 
 (def (macro e) tree->styled-string (&key delimiter-provider separator-provider indentation-provider)

@@ -48,7 +48,7 @@
                                                                                     `(elt (the list (children-of (the tree/node ,output-reference))) ,(1+ index))))
                                               (push element-iomap child-iomaps)
                                               ;; KLUDGE:
-                                              (setf (indentation-of (output-of element-iomap)) 2)
+                                              (setf (indentation-of (output-of element-iomap)) 0)
                                               (collect (output-of element-iomap)))))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference)
@@ -75,7 +75,7 @@
                                                                                     `(elt (the list (children-of (the tree/node ,output-reference))) ,(1+ index))))
                                               (push element-iomap child-iomaps)
                                               ;; KLUDGE:
-                                              (setf (indentation-of (output-of element-iomap)) 2)
+                                              (setf (indentation-of (output-of element-iomap)) 0)
                                               (collect (output-of element-iomap)))))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference)

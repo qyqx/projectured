@@ -39,7 +39,9 @@
          (output (labels ((write-element (element)
                             (push element elements)
                             (incf element-index)
-                            (incf string-position (length (content-of element)))))
+                            (typecase element
+                              (styled-string/string
+                               (incf string-position (length (content-of element)))))))
                    (iter (with format-string = (format nil "\~~~A,' D " line-number-length))
                          (with input-offset = 0)
                          (for index :from 0)

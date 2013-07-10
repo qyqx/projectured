@@ -35,6 +35,7 @@
       (string (make-iomap/recursive projection recursion input input-reference input output-reference
                                     (list (make-iomap/object projection recursion input input-reference input output-reference)
                                           (make-iomap/string input input-reference 0 input output-reference 0 (length input)))))
+      (pathname (make-iomap/object projection recursion input input-reference input output-reference))
       (style/color (make-iomap/object projection recursion input input-reference input output-reference))
       (style/font (make-iomap/object projection recursion input input-reference input output-reference))
       (cons

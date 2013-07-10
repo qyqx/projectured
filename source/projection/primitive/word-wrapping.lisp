@@ -39,10 +39,15 @@
                          (for whitespace-elements = (unless (first-iteration-p)
                                                       (elements-of (styled-string/substring input end-element-index end-character-index start-element-index start-character-index))))
                          (for whitespace-width = (iter (with sum = 0) (for element :in whitespace-elements)
-                                                       (when (find #\NewLine (content-of element))
-                                                         (setf x 0)
-                                                         (setf sum 0))
-                                                       (incf sum (2d-x (measure-text (content-of element) (font-of element))))
+                                                       (typecase element
+                                                         (styled-string/string
+                                                          (when (find #\NewLine (content-of element))
+                                                            (setf x 0)
+                                                            (setf sum 0))
+                                                          (incf sum (2d-x (measure-text (content-of element) (font-of element)))))
+                                                         (t
+                                                          ;; KLUDGE:
+                                                          (incf sum 100)))
                                                        (finally (return sum))))
                          (incf x whitespace-width)
                          (appending whitespace-elements)
@@ -51,7 +56,11 @@
                          (for (values end-element-index end-character-index) = (styled-string/find input start-element-index start-character-index 'whitespace?))
                          (for word-elements = (elements-of (styled-string/substring input start-element-index start-character-index end-element-index end-character-index)))
                          (for word-width = (iter (for element :in word-elements)
-                                                 (summing (2d-x (measure-text (content-of element) (font-of element))))))
+                                                 (summing
+                                                  (typecase element
+                                                    (styled-string/string (2d-x (measure-text (content-of element) (font-of element))))
+                                                    ;; KLUDGE:
+                                                    (t 100)))))
                          (incf x word-width)
                          (when (> x wrap-width)
                            (setf x word-width)

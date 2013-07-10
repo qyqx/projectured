@@ -708,7 +708,56 @@
           (recursive
             (type-dispatching
               (string (make-projection/string->tree/leaf))
-              (styled-string/base (make-projection/styled-string->tree/leaf))
+              (styled-string/base (styled-string->tree))
+              (text/base (text->tree))
+              (book/base (book->tree))
+              (tree/base (preserving))
+              (t (sequential
+                   (recursive
+                     (type-dispatching
+                       (string (make-projection/string->tree/leaf))
+                       (styled-string/base (styled-string->tree))
+                       (text/base (text->tree))
+                       (book/base (book->tree))
+                       (json/base (json->tree))
+                       (xml/base (xml->tree))
+                       (javascript/base (javascript->tree))
+                       (lisp-form/base (lisp-form->tree))
+                       (t (preserving))))
+                   (recursive (tree->styled-string))
+                   (styled-string->line-numbered-styled-string)
+                   (styled-string->tree))))))
+        (nesting
+          (document->document)
+          (recursive (tree->styled-string)))
+        #+nil
+        (nesting
+          (document->document)
+          (styled-string->line-numbered-styled-string))
+        (nesting
+          (document->document)
+          (word-wrapping :wrap-width 1024))
+        (nesting
+          (document->graphics)
+          (make-test-projection/styled-string->output))))))
+
+(def function make-test-projection/demo->graphics ()
+  (test-projection
+    (nesting
+      (widget->graphics)
+      (sequential
+        (nesting
+          (document->document)
+          (recursive
+            (type-dispatching
+              (hu.dwim.walker::walked-form (walked-lisp-form->lisp-form))
+              (t (copying)))))
+        (nesting
+          (document->document)
+          (recursive
+            (type-dispatching
+              (string (make-projection/string->tree/leaf))
+              (styled-string/base (styled-string->tree))
               (text/base (text->tree))
               (book/base (book->tree))
               (json/base (json->tree))

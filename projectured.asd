@@ -47,7 +47,8 @@
                              (:module "style"
                               :depends-on ("editor")
                               :components ((:file "color")
-                                           (:file "font")))
+                                           (:file "font")
+                                           (:file "image")))
                              (:module "domain"
                               :depends-on ("util" "style" "editor")
                               :components ((:file "book")
@@ -115,6 +116,7 @@
                                                          (:file "styled-string-to-graphics")
                                                          (:file "styled-string-to-line-numbered-styled-string")
                                                          (:file "styled-string-to-string")
+                                                         (:file "styled-string-to-tree")
                                                          (:file "t-to-class-name")
                                                          (:file "t-to-table")
                                                          (:file "table-to-string")

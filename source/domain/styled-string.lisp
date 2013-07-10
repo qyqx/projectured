@@ -26,7 +26,6 @@
 ;;; Construction
 
 (def (function e) make-styled-string/document (elements)
-  (assert (every (of-type 'styled-string/string) elements))
   (make-instance 'styled-string/document :elements elements))
 
 (def (function e) make-styled-string/string (content &key font font-color fill-color line-color)
@@ -43,12 +42,23 @@
 (def (macro e) styled-string/document (&body elements)
   `(make-styled-string/document (list ,@elements)))
 
+(def (macro e) styled-string/string (content &key font font-color fill-color line-color)
+  `(make-styled-string/string ,content :font ,font :font-color ,font-color :fill-color ,fill-color :line-color ,line-color))
+
+(def (macro e) styled-string/newline ()
+  `(make-styled-string/string "
+" :font *font/default* :font-color *color/default*))
+
 ;;;;;;
 ;;; API
 
 (def (function e) styled-string/length (styled-string)
   (iter (for element :in-sequence (elements-of styled-string))
-        (summing (length (content-of element)))))
+        (summing
+         (typecase element
+           (styled-string/string
+            (length (content-of element)))
+           (t 0)))))
 
 (def (function e) styled-string/substring (styled-string start-element-index start-character-index end-element-index end-character-index)
   (make-styled-string/document
@@ -56,44 +66,59 @@
          (for element-index :from start-element-index :to end-element-index)
          (until (= element-index (length elements)))
          (for element = (elt elements element-index))
-         (for font = (font-of element))
-         (for content = (content-of element))
-         (for word-part = (subseq content
-                                  (if (= element-index start-element-index)
-                                      start-character-index
-                                      0)
-                                  (if (= element-index end-element-index)
-                                      end-character-index
-                                      (length content))))
-         (unless (zerop (length word-part))
-           (collect (make-styled-string/string word-part :font font
-                                               :font-color (font-color-of element)
-                                               :fill-color (fill-color-of element)
-                                               :line-color (line-color-of element)))))))
+         (typecase element
+           (styled-string/string
+            (for font = (font-of element))
+            (for content = (content-of element))
+            (for word-part = (subseq content
+                                     (if (= element-index start-element-index)
+                                         start-character-index
+                                         0)
+                                     (if (= element-index end-element-index)
+                                         end-character-index
+                                         (length content))))
+            (unless (zerop (length word-part))
+              (collect (make-styled-string/string word-part :font font
+                                                  :font-color (font-color-of element)
+                                                  :fill-color (fill-color-of element)
+                                                  :line-color (line-color-of element)))))
+           (t
+            (collect element))))))
 
 (def (function e) styled-string/find (styled-string start-element-index start-character-index test)
   (iter (with elements = (elements-of styled-string))
         (with element-index = start-element-index)
         (for element = (elt elements element-index))
-        (for content = (content-of element))
         (for character-index :from start-character-index)
-        (when (= character-index (length content))
-          (setf character-index -1)
-          (incf element-index)
-          (if (= element-index (length elements))
-              (return (values element-index 0))
-              (next-iteration)))
-        (when (funcall test (elt content character-index))
-          (return (values element-index character-index)))))
+        (typecase element
+          (styled-string/string
+           (for content = (content-of element))
+           (when (= character-index (length content))
+             (setf character-index -1)
+             (incf element-index)
+             (if (= element-index (length elements))
+                 (return (values element-index 0))
+                 (next-iteration)))
+           (when (funcall test (elt content character-index))
+             (return (values element-index character-index))))
+          (t
+           (setf character-index -1)
+           (incf element-index)))))
 
 (def (function e) styled-string/count (styled-string character)
   (iter (for element :in-sequence (elements-of styled-string))
-        (summing (funcall 'count character (content-of element)))))
+        (summing
+         (typecase element
+           (styled-string/string
+            (funcall 'count character (content-of element)))
+           (t 0)))))
 
-(def (function e) styled-string/string (styled-string)
+(def (function e) styled-string/as-string (styled-string)
   (with-output-to-string (stream)
     (iter (for element :in-sequence (elements-of styled-string))
-          (write-string (content-of element) stream))))
+          (typecase element
+            (styled-string/string
+             (write-string (content-of element) stream))))))
 
 (def (function e) styled-string/split (styled-string split-character)
   (iter (with length = (styled-string/length styled-string))
@@ -112,19 +137,26 @@
 (def (function e) styled-string/element-index (styled-string index)
   (iter (for element-index :from 0)
         (for element :in-sequence (elements-of styled-string))
-        (decf index (length (content-of element)))
+        (typecase element
+          (styled-string/string (decf index (length (content-of element)))))
         (when (<= index 0)
           (return element-index))))
 
 (def (function e) styled-string/character-index (styled-string index)
   (iter (for element :in-sequence (elements-of styled-string))
-        (for length = (length (content-of element)))
-        (if (<= index length)
-            (return index)
-            (decf index length))))
+        (typecase element
+          (styled-string/string
+           (for length = (length (content-of element)))
+           (if (<= index length)
+               (return index)
+               (decf index length))))))
 
 (def (function e) styled-string/index (styled-string element-index character-index)
   (+ (iter (for index :from 0 :below element-index)
            (for element :in-sequence (elements-of styled-string))
-           (summing (length (content-of element))))
+           (summing
+            (typecase element
+              (styled-string/string
+               (length (content-of element)))
+              (t 0))))
      character-index))

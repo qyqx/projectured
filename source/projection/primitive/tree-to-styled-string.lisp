@@ -88,7 +88,9 @@
                                 (elements nil))
                            (labels ((write-element (element)
                                       (push element elements)
-                                      (incf element-index)
+                                      (incf element-index))
+                                    (write-styled-string (element)
+                                      (write-element element)
                                       (incf string-position (length (content-of element))))
                                     (next-line (indentation typed-input-reference)
                                       (when line-index
@@ -97,7 +99,7 @@
                                                                    content `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                    1)
                                                 indentation-iomaps)
-                                          (write-element (make-styled-string/string content :font *font/default* :font-color *color/default*)))
+                                          (write-styled-string (make-styled-string/string content :font *font/default* :font-color *color/default*)))
                                         (setf line-position string-position))
                                       (bind ((indentation-string (make-string-of-spaces indentation)))
                                         (unless (string= indentation-string "")
@@ -105,7 +107,7 @@
                                                                    indentation-string `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                    indentation)
                                                 indentation-iomaps)
-                                          (write-element (make-styled-string/string indentation-string :font *font/default* :font-color *color/default*))))
+                                          (write-styled-string (make-styled-string/string indentation-string :font *font/default* :font-color *color/default*))))
                                       (if line-index
                                           (incf line-index)
                                           (setf line-index 0)))
@@ -120,13 +122,13 @@
                                                                       it `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                       (length it))
                                                    delimiter-iomaps)
-                                             (write-element (make-styled-string/string it :font *font/default* :font-color *color/default*)))
+                                             (write-styled-string (make-styled-string/string it :font *font/default* :font-color *color/default*)))
                                             (styled-string/string
                                              (push (make-iomap/string (content-of it) `(content-of (the styled-string/string (opening-delimiter ,typed-input-reference ,(content-of it)))) 0
                                                                       (content-of it) `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                       (length (content-of it)))
                                                    delimiter-iomaps)
-                                             (write-element it))))
+                                             (write-styled-string it))))
                                         (bind ((content (content-of input)))
                                           (etypecase content
                                             (string
@@ -137,12 +139,14 @@
                                                                             line `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                             (length line))
                                                          child-iomaps)
-                                                   (write-element (make-styled-string/string line :font *font/default* :font-color *color/default*))))
+                                                   (write-styled-string (make-styled-string/string line :font *font/default* :font-color *color/default*))))
                                             (styled-string/string
                                              (push (make-iomap/string (content-of content) `(content-of (the styled-string/string (content-of ,typed-input-reference))) 0
                                                                       (content-of content) `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                       (length (content-of content)))
                                                    child-iomaps)
+                                             (write-styled-string content))
+                                            (style/image
                                              (write-element content))))
                                         (awhen (or (closing-delimiter-of input)
                                                    (awhen (delimiter-provider-of projection)
@@ -153,13 +157,13 @@
                                                                       it `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                       (length it))
                                                    delimiter-iomaps)
-                                             (write-element (make-styled-string/string it :font *font/default* :font-color *color/default*)))
+                                             (write-styled-string (make-styled-string/string it :font *font/default* :font-color *color/default*)))
                                             (styled-string/string
                                              (push (make-iomap/string (content-of it) `(content-of (the styled-string/string (closing-delimiter ,typed-input-reference ,(content-of it)))) 0
                                                                       (content-of it) `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                       (length (content-of it)))
                                                    delimiter-iomaps)
-                                             (write-element it)))))))
+                                             (write-styled-string it)))))))
                              (next-line 0 typed-input-reference)
                              (if input
                                  (recurse input input-reference 0)
@@ -191,7 +195,9 @@
                                 (elements nil))
                            (labels ((write-element (element)
                                       (push element elements)
-                                      (incf element-index)
+                                      (incf element-index))
+                                    (write-styled-string (element)
+                                      (write-element element)
                                       (incf string-position (length (content-of element))))
                                     (next-line (indentation typed-input-reference)
                                       (when line-index
@@ -200,7 +206,7 @@
                                                                    content `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                    1)
                                                 indentation-iomaps)
-                                          (write-element (make-styled-string/string content :font *font/default* :font-color *color/default*)))
+                                          (write-styled-string (make-styled-string/string content :font *font/default* :font-color *color/default*)))
                                         (setf line-position string-position))
                                       (bind ((indentation-string (make-string-of-spaces indentation)))
                                         (unless (string= indentation-string "")
@@ -208,7 +214,7 @@
                                                                    indentation-string `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                    indentation)
                                                 indentation-iomaps)
-                                          (write-element (make-styled-string/string indentation-string :font *font/default* :font-color *color/default*))))
+                                          (write-styled-string (make-styled-string/string indentation-string :font *font/default* :font-color *color/default*))))
                                       (if line-index
                                           (incf line-index)
                                           (setf line-index 0)))
@@ -223,13 +229,13 @@
                                                                       it `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                       (length it))
                                                    delimiter-iomaps)
-                                             (write-element (make-styled-string/string it :font *font/default* :font-color *color/default*)))
+                                             (write-styled-string (make-styled-string/string it :font *font/default* :font-color *color/default*)))
                                             (styled-string/string
                                              (push (make-iomap/string (content-of it) `(content-of (the styled-string/string (opening-delimiter ,typed-input-reference ,(content-of it)))) 0
                                                                       (content-of it) `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                       (length (content-of it)))
                                                    delimiter-iomaps)
-                                             (write-element it))))
+                                             (write-styled-string it))))
                                         (etypecase input
                                           (tree/node
                                            (if (expanded-p input)
@@ -252,14 +258,14 @@
                                                                                      it `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                                      (length it))
                                                                   separator-iomaps)
-                                                            (write-element (make-styled-string/string it :font *font/default* :font-color *color/default*)))
+                                                            (write-styled-string (make-styled-string/string it :font *font/default* :font-color *color/default*)))
                                                            (styled-string/string
                                                             ;; KLUDGE: unfortunatly iomap/object of later stages can't substitute both arguments of separator, so backward/forward mapping won't work this way
                                                             (push (make-iomap/string (content-of it) `(content-of (the styled-string/string (separator nil #+nil ,previous-child-reference ,child-reference ,(content-of it)))) 0
                                                                                      (content-of it) `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                                      (length (content-of it)))
                                                                   separator-iomaps)
-                                                            (write-element it)))))
+                                                            (write-styled-string it)))))
                                                      (when indentation
                                                        (next-line (+ parent-indentation indentation) child-reference))
                                                      (recurse child child-path (- string-position line-position))
@@ -271,7 +277,7 @@
                                                               (awhen (indentation-provider-of projection)
                                                                 (funcall it iomap child-reference nil input)))
                                                         (next-line indentation previous-child-reference))))
-                                               (write-element (make-styled-string/string "..." :font *font/default* :font-color *color/default*))))
+                                               (write-styled-string (make-styled-string/string "..." :font *font/default* :font-color *color/default*))))
                                           (tree/leaf
                                            (bind ((content (output-of (recurse-printer recursion iomap (content-of input) `(content-of typed-input-reference) output-reference))))
                                              (etypecase content
@@ -283,12 +289,14 @@
                                                                                line `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                                (length line))
                                                             child-iomaps)
-                                                      (write-element (make-styled-string/string line :font *font/default* :font-color *color/default*))))
+                                                      (write-styled-string (make-styled-string/string line :font *font/default* :font-color *color/default*))))
                                                (styled-string/string
                                                 (push (make-iomap/string (content-of content) `(content-of (the styled-string/string (content-of ,typed-input-reference))) 0
                                                                          (content-of content) `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                          (length (content-of content)))
                                                       child-iomaps)
+                                                (write-styled-string content))
+                                               (style/image
                                                 (write-element content))))))
                                         (awhen (or (closing-delimiter-of input)
                                                    (awhen (delimiter-provider-of projection)
@@ -299,13 +307,13 @@
                                                                       it `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                       (length it))
                                                    delimiter-iomaps)
-                                             (write-element (make-styled-string/string it :font *font/default* :font-color *color/default*)))
+                                             (write-styled-string (make-styled-string/string it :font *font/default* :font-color *color/default*)))
                                             (styled-string/string
                                              (push (make-iomap/string (content-of it) `(content-of (the styled-string/string (closing-delimiter ,typed-input-reference ,(content-of it)))) 0
                                                                       (content-of it) `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                                       (length (content-of it)))
                                                    delimiter-iomaps)
-                                             (write-element it)))))))
+                                             (write-styled-string it)))))))
                              (next-line 0 typed-input-reference)
                              (if input
                                  (recurse input input-reference 0)
