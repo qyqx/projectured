@@ -310,7 +310,13 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
   (declare (ignore content)))
 
 (def function make-test-content/demo ()
-  (bind ((chart-script (make-javascript/statement/block
+  (bind ((trace-amounts (make-walked-lisp-form/comment
+                         (styled-string/document
+                           (styled-string/string "This part contain trace amounts of Lisp." :font *font/ubuntu/monospace/bold/18* :font-color *color/solarized/gray*)
+                           ;; TODO:
+                           #+nil
+                           (style/image (asdf:system-relative-pathname :projectured "etc/pie.png")))))
+         (chart-script (make-javascript/statement/block
                         ;; google.load("visualization", "1", { packages: ["corechart"] });
                         ;; google.setOnLoadCallback(drawPieChart);
                         ;; function drawPieChart() {
@@ -376,6 +382,35 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                                        (list (make-javascript/expression/variable-reference "data")
                                              (json/object
                                                ("title" (json/string "My Daily Activities")))))))))))
+         (dispatch-table (table/table ()
+                           (table/row ()
+                             (table/cell ()
+                               (styled-string/document
+                                 (styled-string/string "HTTP request" :font *font/ubuntu/monospace/bold/18* :font-color *color/default*)))
+                             (table/cell ()
+                               (styled-string/document
+                                 (styled-string/string "HTTP response" :font *font/ubuntu/monospace/bold/18* :font-color *color/default*))))
+                           (table/row ()
+                             (table/cell ()
+                               (styled-string/document
+                                 (styled-string/string "/page" :font *font/default* :font-color *color/solarized/blue*)))
+                             (table/cell ()
+                               (styled-string/document
+                                 (styled-string/string "HTML page that contains a pie chart" :font *font/default* :font-color *color/default*))))
+                           (table/row ()
+                             (table/cell ()
+                               (styled-string/document
+                                 (styled-string/string "/data" :font *font/default* :font-color *color/solarized/blue*)))
+                             (table/cell ()
+                               (styled-string/document
+                                 (styled-string/string "JSON data describing my daily activities" :font *font/default* :font-color *color/default*))))
+                           (table/row ()
+                             (table/cell ()
+                               (styled-string/document
+                                 (styled-string/string "<otherwise>" :font *font/default* :font-color *color/solarized/blue*)))
+                             (table/cell ()
+                               (styled-string/document
+                                 (styled-string/string "HTML error page" :font *font/default* :font-color *color/default*))))))
          (chart-page (xml/element "html" ()
                        (xml/element "head" ()
                          (xml/element "script" ((xml/attribute "type" "text/javascript") (xml/attribute "src" "https://www.google.com/jsapi"))
@@ -386,24 +421,43 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                          (xml/element "h1" ()
                            (xml/text "Pie Chart Example"))
                          (xml/element "div" ((xml/attribute "id" "pie") (xml/attribute "style" "width: 800px; height: 600px;"))
-                           (xml/text "")))))
+                           (xml/text ""))
+                         (xml/element "p" ()
+                           (xml/text "Last refresh: ")
+                           ;; TODO: fix indentation
+                           ;; TODO: add lisp logo here, fix (make-style/image (asdf:system-relative-pathname :projectured "etc/lisp.jpg"))
+                           trace-amounts
+                           (make-instance 'hu.dwim.walker:free-application-form :operator 'local-time:format-timestring
+                                          :arguments (list (make-instance 'hu.dwim.walker:constant-form :value t)
+                                                           (make-instance 'hu.dwim.walker:free-application-form :operator 'local-time:now :arguments nil)
+                                                           (make-instance 'hu.dwim.walker:constant-form :value :format)
+                                                           (make-instance 'hu.dwim.walker:constant-form :value 'local-time:+asctime-format+)))))))
          (chart-data (json/array
                        (json/array (json/string "Task") (json/string "Hours per Day"))
                        (json/array (json/string "Work") (json/number 11))
-                       (json/array (json/string "Eat") (json/number 2))
+                       (json/array (json/string "Eat")
+                                   trace-amounts
+                                   (make-instance 'hu.dwim.walker:free-application-form :operator '+
+                                                  :arguments (list (make-instance 'hu.dwim.walker:constant-form :value 1)
+                                                                   (make-instance 'hu.dwim.walker:constant-form :value 1))))
                        (json/array (json/string "Commute") (json/number 2))
                        (json/array (json/string "Watch TV") (json/number 2))
                        (json/array (json/string "Sleep") (json/number 7))))
          (error-page (xml/element "html" ()
                        (xml/element "head" ()
                          (xml/element "title" ()
-                           (xml/text "Error 404 (Not Found)")))
+                           (xml/text "Error 404 (Not Found): ")
+                           ;; TODO: fix indentation
+                           ;; TODO: add lisp logo here, fix (make-style/image (asdf:system-relative-pathname :projectured "etc/lisp.jpg"))
+                           trace-amounts
+                           (make-instance 'hu.dwim.walker:variable-reference-form :name 'path)))
                        (xml/element "body" ()
                          (xml/element "p" ()
                            (xml/text "We are sorry, the page you requested cannot be found.")))))
          (lisp-function (make-instance 'hu.dwim.walker:function-definition-form
                                        :name 'process-http-request
                                        :bindings (list (make-instance 'hu.dwim.walker:required-function-argument-form :name 'request))
+                                       ;; TODO: put dispatch table here
                                        :body (list (make-walked-lisp-form/comment "dispatch on the path of the incoming HTTP request and send an HTML page or the JSON data as response")
                                                    (make-instance 'hu.dwim.walker:let-form
                                                                   :bindings (list (make-instance 'hu.dwim.walker:lexical-variable-binding-form :name 'path
@@ -424,18 +478,21 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
     (book/book (:title "ProjecturEd" :authors (list "Levente Mészáros"))
       (book/chapter (:title "Introduction")
         (styled-string/document
-          (styled-string/string "ProjecturEd" :font *font/ubuntu/italic/18* :font-color *color/solarized/content/darker*)
+          (styled-string/string "ProjecturEd" :font *font/ubuntu/italic/18* :font-color *color/solarized/violet*)
           (styled-string/string " is a generic purpose projectional editor written in Common Lisp. It provides editing for different problem domains represented in unrestricted arbitrary data structures. It uses multiple bidirectional projections providing different notations varying from textual to graphics." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)))
       (book/chapter (:title "Literate Programming")
         (styled-string/document
           (styled-string/string "This example demonstrates mixing multiple different problem domains in the same document. The document contains" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
-          (styled-string/string " Word Processing, Common Lisp, HTML, JavaScript and JSON " :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/content/darker*)
-          (styled-string/string "parts nested into each other. It describes a Common Lisp web service using a single function that processes HTTP requests. When the function receives an HTTP request to the '/page' path it sends an HTML page. This page contains a pie chart that utilizes the Google Charts JavaScript API. When the pie chart is shown in the browser it sends another HTTP request using JavaScript to the '/data' path at the same web service. The web service returns another document in JSON format that provides the data for the pie chart. For all unknown HTTP requests the web service sends an HTML error page. The following screenshot shows how the page looks like." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+          (styled-string/string " Common Lisp, HTML, JavaScript, JSON, tables, images and styled text" :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/violet*)
+          (styled-string/string " nested into each other. It describes a web service implemented with a single Common Lisp function that processes HTTP requests. When the function receives a request to the '/page' path it sends an HTML page in response. This page contains a pie chart that utilizes the Google Charts JavaScript API. When the pie chart is shown in the browser it sends another request to the '/data' path using JavaScript. For this request the web service returns another document in JSON format that provides the data for the pie chart. For all other unknown requests the web service sends an HTML error page. The following screenshot shows how the page looks like." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
           (styled-string/newline)
           ;; KLUDGE:
           (tree/leaf () (style/image (asdf:system-relative-pathname :projectured "etc/pie.png")))
           (styled-string/newline)
-          (styled-string/string "This example uses a projection that displays all used domains in their natural format. Proper indentation and syntax highlight are automatically provided without escape sequences." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*))
+          (styled-string/string "This example uses a compound projection that displays all used domains in their natural notation. Proper indentation and syntax highlight are automatically provided without inserting escape sequences that would make reading harder. Note that the edited document" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+          (styled-string/string " is not text" :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/violet*)
+          (styled-string/string " , it's a complex data structure that precisely captures the intentions. The projections keep track of what is what to make navigation and editing possible." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*))
+        dispatch-table
         lisp-function))))
 
 ;;;;;;

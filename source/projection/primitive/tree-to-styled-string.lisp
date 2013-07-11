@@ -296,6 +296,13 @@
                                                                          (length (content-of content)))
                                                       child-iomaps)
                                                 (write-styled-string content))
+                                               (styled-string/document
+                                                 (iter (for element :in-sequence (elements-of content))
+                                                       (etypecase element
+                                                         (styled-string/string
+                                                          (write-styled-string element))
+                                                         (style/image
+                                                          (write-element element)))))
                                                (style/image
                                                 (write-element content))))))
                                         (awhen (or (closing-delimiter-of input)

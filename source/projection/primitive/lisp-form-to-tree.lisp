@@ -76,9 +76,12 @@
   (declare (ignore iomap))
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
          (content (content-of input))
-         (output (make-tree/leaf (make-styled-string/string content :font *font/ubuntu/regular/18* :font-color *color/solarized/gray*)
+         ;; TODO:
+         (output (make-tree/leaf content #+nil(make-styled-string/string content :font *font/ubuntu/regular/18* :font-color *color/solarized/gray*)
                                  :opening-delimiter (make-styled-string/string ";; " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
+                          nil
+                          #+nil
                           (list (make-iomap/string* content `(the string (value-of ,typed-input-reference)) 0
                                                     content `(the string (content-of (the tree/leaf ,output-reference))) 0
                                                     (length content))
@@ -100,7 +103,10 @@
   (declare (ignore iomap))
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
          (output-content (string-downcase (value-of input)))
-         (output (make-tree/leaf (make-styled-string/string output-content :font (or (font-of input) *font/ubuntu/monospace/regular/18*) :font-color (or (font-color-of input) *color/solarized/violet*)))))
+         (font-color (or (font-color-of input) *color/solarized/violet*))
+         (output (make-tree/leaf (make-styled-string/string output-content :font (or (font-of input) *font/ubuntu/monospace/regular/18*) :font-color font-color)
+                                 :opening-delimiter (when (keywordp (value-of input))
+                                                      (make-styled-string/string ":" :font *font/ubuntu/monospace/regular/18* :font-color font-color)))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)
                                 (make-iomap/string* input `(the string (string-downcase (the symbol (value-of ,typed-input-reference)))) 0

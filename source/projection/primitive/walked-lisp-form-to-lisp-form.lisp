@@ -284,7 +284,8 @@
 
 (def printer walked-lisp-form/application-form->lisp-form/list (projection recursion iomap input input-reference output-reference)
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
-         (argument-iomaps (recurse/slot recursion iomap input 'hu.dwim.walker::arguments input-reference output-reference 1))
+         (argument-iomaps (when (hu.dwim.walker:arguments-of input)
+                            (recurse/slot recursion iomap input 'hu.dwim.walker::arguments input-reference output-reference 1)))
          (output (make-lisp-form/list (cons (make-lisp-form/symbol (hu.dwim.walker:operator-of input) :font-color *color/solarized/violet*)
                                             (iter (for argument-iomap :in-sequence argument-iomaps)
                                                   (for argument-output = (output-of argument-iomap))

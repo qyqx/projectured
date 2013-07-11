@@ -706,6 +706,7 @@
           (recursive
             (type-dispatching
               (hu.dwim.walker::walked-form (walked-lisp-form->lisp-form))
+              (table/base (table->string))
               (t (copying)))))
         (nesting
           (document->document)
