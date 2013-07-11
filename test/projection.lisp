@@ -741,6 +741,7 @@
           (document->graphics)
           (make-test-projection/styled-string->output))))))
 
+#+nil
 (def function make-test-projection/demo->graphics ()
   (test-projection
     (nesting

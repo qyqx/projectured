@@ -327,7 +327,7 @@
             (return `(the character (elt (the string (text-of (the ,(form-type instance) ,reference))) ,(1- index)))))))
 
   (:method ((instance graphics/image) location reference)
-    (not-yet-implemented))
+    `(the ,(form-type instance) ,reference))
 
   (:method ((instance graphics/viewport) location reference)
     (make-reference (content-of instance) (- location

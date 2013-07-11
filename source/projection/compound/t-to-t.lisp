@@ -215,6 +215,7 @@
     (hu.dwim.walker:variable-reference-form (make-projection/walked-lisp-form/variable-reference-form->lisp-form/string))
     (hu.dwim.walker:if-form (make-projection/walked-lisp-form/if-form->lisp-form/list))
     (hu.dwim.walker:the-form (make-projection/walked-lisp-form/the-form->lisp-form/list))
+    (hu.dwim.walker:lexical-variable-binding-form (make-projection/walked-lisp-form/lexical-variable-binding-form->lisp-form/list))
     (hu.dwim.walker:let-form (make-projection/walked-lisp-form/let-form->lisp-form/list))
     (hu.dwim.walker:application-form (make-projection/walked-lisp-form/application-form->lisp-form/list))
     (hu.dwim.walker:function-definition-form (make-projection/walked-lisp-form/function-definition-form->lisp-form/list))

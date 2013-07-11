@@ -323,31 +323,59 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                         ;;    var chart = new google.visualization.PieChart(document.getElementById("pie"));
                         ;;    chart.draw(data, { title: "My Daily Activities" });
                         ;; }
-                        (list (make-javascript/expression/method-invocation (make-javascript/expression/variable-reference "google")
-                                                                            "load"
-                                                                            (list (make-javascript/literal/string "visualization")
-                                                                                  (make-javascript/literal/string "1")
-                                                                                  (json/object
-                                                                                    ("packages" (json/array (json/string "corechart"))))))
-                              (make-javascript/expression/method-invocation (make-javascript/expression/variable-reference "google")
-                                                                            "setOnLoadCallback"
-                                                                            (list (make-javascript/expression/variable-reference "drawPieChart")))
-                              (make-javascript/declaration/function "drawPieChart"
-                                                                    nil
-                                                                    (make-javascript/statement/block
-                                                                     (list (make-javascript/declaration/variable "json" (make-javascript/expression/method-invocation (make-javascript/expression/variable-reference "$")
-                                                                                                                                                                      "ajax"
-                                                                                                                                                                      (list (json/object
-                                                                                                                                                                              ("async" (json/boolean #f))
-                                                                                                                                                                              ("url" (json/string "/data"))
-                                                                                                                                                                              ("dataType" (json/string "json"))))))
-                                                                           (make-javascript/declaration/variable "data" (make-javascript/expression/property-access (make-javascript/expression/property-access (make-javascript/expression/variable-reference "google") "visualization") "DataTable"))
-                                                                           (make-javascript/declaration/variable "chart" (make-javascript/expression/constuctor-invocation (make-javascript/expression/property-access (make-javascript/expression/property-access (make-javascript/expression/variable-reference "google") "visualization") "PieChart") nil))
-                                                                           (make-javascript/expression/method-invocation (make-javascript/expression/variable-reference "chart")
-                                                                                                                         "draw"
-                                                                                                                         (list (make-javascript/expression/variable-reference "data")
-                                                                                                                               (json/object
-                                                                                                                                 ("title" (json/string "My Daily Activities")))))))))))
+                        (list (make-javascript/expression/method-invocation
+                               (make-javascript/expression/variable-reference "google")
+                               "load"
+                               (list (make-javascript/literal/string "visualization")
+                                     (make-javascript/literal/string "1")
+                                     (json/object
+                                       ("packages" (json/array (json/string "corechart"))))))
+                              (make-javascript/expression/method-invocation
+                               (make-javascript/expression/variable-reference "google")
+                               "setOnLoadCallback"
+                               (list (make-javascript/expression/variable-reference "drawPieChart")))
+                              (make-javascript/declaration/function
+                               "drawPieChart"
+                               nil
+                               (make-javascript/statement/block
+                                (list (make-javascript/declaration/variable
+                                       "json"
+                                       (make-javascript/expression/property-access
+                                        (make-javascript/expression/method-invocation
+                                         (make-javascript/expression/variable-reference "$")
+                                         "ajax"
+                                         (list (json/object
+                                                 ("async" (json/boolean #f))
+                                                 ("url" (json/string "/data"))
+                                                 ("dataType" (json/string "json")))))
+                                        "responseText"))
+                                      (make-javascript/declaration/variable
+                                       "data"
+                                       (make-javascript/expression/constuctor-invocation
+                                        (make-javascript/expression/property-access
+                                         (make-javascript/expression/property-access
+                                          (make-javascript/expression/variable-reference "google")
+                                          "visualization")
+                                         "DataTable")
+                                        (list (make-javascript/expression/variable-reference "json"))))
+                                      (make-javascript/declaration/variable
+                                       "chart"
+                                       (make-javascript/expression/constuctor-invocation
+                                        (make-javascript/expression/property-access
+                                         (make-javascript/expression/property-access
+                                          (make-javascript/expression/variable-reference "google")
+                                          "visualization")
+                                         "PieChart")
+                                        (list (make-javascript/expression/method-invocation
+                                               (make-javascript/expression/variable-reference "document")
+                                               "getElementById"
+                                               (list (make-javascript/literal/string "pie"))))))
+                                      (make-javascript/expression/method-invocation
+                                       (make-javascript/expression/variable-reference "chart")
+                                       "draw"
+                                       (list (make-javascript/expression/variable-reference "data")
+                                             (json/object
+                                               ("title" (json/string "My Daily Activities")))))))))))
          (chart-page (xml/element "html" ()
                        (xml/element "head" ()
                          (xml/element "script" ((xml/attribute "type" "text/javascript") (xml/attribute "src" "https://www.google.com/jsapi"))
@@ -359,13 +387,6 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                            (xml/text "Pie Chart Example"))
                          (xml/element "div" ((xml/attribute "id" "pie") (xml/attribute "style" "width: 800px; height: 600px;"))
                            (xml/text "")))))
-         (error-page (xml/element "html" ()
-                       (xml/element "head" ()
-                         (xml/element "title" ()
-                           (xml/text "Error 404 (Not Found)")))
-                       (xml/element "body" ()
-                         (xml/element "p" ()
-                           (xml/text "We are sorry, the page you requested cannot be found.")))))
          (chart-data (json/array
                        (json/array (json/string "Task") (json/string "Hours per Day"))
                        (json/array (json/string "Work") (json/number 11))
@@ -373,6 +394,13 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                        (json/array (json/string "Commute") (json/number 2))
                        (json/array (json/string "Watch TV") (json/number 2))
                        (json/array (json/string "Sleep") (json/number 7))))
+         (error-page (xml/element "html" ()
+                       (xml/element "head" ()
+                         (xml/element "title" ()
+                           (xml/text "Error 404 (Not Found)")))
+                       (xml/element "body" ()
+                         (xml/element "p" ()
+                           (xml/text "We are sorry, the page you requested cannot be found.")))))
          (lisp-function (make-instance 'hu.dwim.walker:function-definition-form
                                        :name 'process-http-request
                                        :bindings (list (make-instance 'hu.dwim.walker:required-function-argument-form :name 'request))
@@ -380,34 +408,36 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                                                    (make-instance 'hu.dwim.walker:let-form
                                                                   :bindings (list (make-instance 'hu.dwim.walker:lexical-variable-binding-form :name 'path
                                                                                                  :initial-value (make-instance 'hu.dwim.walker:free-application-form :operator 'path-of
-                                                                                                                               :arguments (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'request))))
+                                                                                                                               :arguments (list (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'request)))))
                                                                   :body (list (make-instance 'hu.dwim.walker:free-application-form :operator 'make-http-response
                                                                                              :arguments (list (make-instance 'hu.dwim.walker:if-form
                                                                                                                              :condition (make-instance 'hu.dwim.walker:free-application-form :operator 'string=
-                                                                                                                                                       :arguments (list (make-instance 'hu.dwim.walker:constant-form :value "/pie/page")
+                                                                                                                                                       :arguments (list (make-instance 'hu.dwim.walker:constant-form :value "/page")
                                                                                                                                                                         (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'path)))
                                                                                                                              :then chart-page
                                                                                                                              :else (make-instance 'hu.dwim.walker:if-form
                                                                                                                                                   :condition (make-instance 'hu.dwim.walker:free-application-form :operator 'string=
-                                                                                                                                                                            :arguments (list (make-instance 'hu.dwim.walker:constant-form :value "/pie/data")
+                                                                                                                                                                            :arguments (list (make-instance 'hu.dwim.walker:constant-form :value "/data")
                                                                                                                                                                                              (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'path)))
                                                                                                                                                   :then chart-data
                                                                                                                                                   :else error-page))))))))))
-    (book/book (:title "ProjecturEd, a Projectional Editor" :authors (list "Levente Mészáros"))
+    (book/book (:title "ProjecturEd" :authors (list "Levente Mészáros"))
       (book/chapter (:title "Introduction")
         (text/paragraph
-          (styled-string/string "ProjecturEd is a general purpose projectional editor." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)))
-      (book/chapter (:title "Examples")
+          (styled-string/document
+            (styled-string/string "ProjecturEd" :font *font/ubuntu/italic/18* :font-color *color/solarized/content/darker*)
+            (styled-string/string " is a generic purpose projectional editor written in Common Lisp. It provides editing for different problem domains represented in unrestricted arbitrary data structures. It uses multiple bidirectional projections providing different notations varying from textual to graphics." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*))))
+      (book/chapter (:title "Literate Programming")
         (text/paragraph
           (styled-string/document
             (styled-string/string "This example demonstrates mixing multiple different problem domains in the same document. The document contains" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
-            (styled-string/string " Word Processing, Common Lisp, HTML, JavaScript and JSON " :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/content/dark*)
-            (styled-string/string "parts nested into each other. It describes a Common Lisp web service using a single function that processes HTTP requests. When the function receives an HTTP request to the '/pie/page' path it sends an HTML page. This page contains a pie chart that utilizes the Google Charts JavaScript API. When the pie chart is shown in the browser it sends another HTTP request to the '/pie/data' path at the same web service using JavaScript. The web service returns another document in JSON format that provides the data for the pie chart. For all unknown HTTP requests the web service sends an HTML error page. The following screenshot shows how the page looks like." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+            (styled-string/string " Word Processing, Common Lisp, HTML, JavaScript and JSON " :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/content/darker*)
+            (styled-string/string "parts nested into each other. It describes a Common Lisp web service using a single function that processes HTTP requests. When the function receives an HTTP request to the '/page' path it sends an HTML page. This page contains a pie chart that utilizes the Google Charts JavaScript API. When the pie chart is shown in the browser it sends another HTTP request using JavaScript to the '/data' path at the same web service. The web service returns another document in JSON format that provides the data for the pie chart. For all unknown HTTP requests the web service sends an HTML error page. The following screenshot shows how the page looks like." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
             (styled-string/newline)
             ;; KLUDGE:
             (tree/leaf () (style/image (asdf:system-relative-pathname :projectured "etc/pie.png")))
             (styled-string/newline)
-            (styled-string/string "This example uses a projection that displays all used domains in their natural format. Proper Indentation and syntax highlight are automatically provided by this projection without escaping." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*))
+            (styled-string/string "This example uses a projection that displays all used domains in their natural format. Proper indentation and syntax highlight are automatically provided without escape sequences." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*))
           lisp-function)))))
 
 ;;;;;;

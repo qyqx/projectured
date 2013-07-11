@@ -100,7 +100,7 @@
   (declare (ignore iomap))
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
          (output-content (string-downcase (value-of input)))
-         (output (make-tree/leaf (make-styled-string/string output-content :font *font/ubuntu/monospace/regular/18* :font-color (or (font-color-of input) *color/solarized/violet*)))))
+         (output (make-tree/leaf (make-styled-string/string output-content :font (or (font-of input) *font/ubuntu/monospace/regular/18*) :font-color (or (font-color-of input) *color/solarized/violet*)))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)
                                 (make-iomap/string* input `(the string (string-downcase (the symbol (value-of ,typed-input-reference)))) 0
@@ -135,7 +135,9 @@
                                        (push iomap child-iomaps)
                                        (when (and deep-list (not (first-iteration-p)))
                                          ;; KLUDGE:
-                                         (setf (indentation-of (output-of iomap)) 2))
+                                         (setf (indentation-of (output-of iomap)) (typecase element
+                                                                                    (lisp-form/base (indentation-of element))
+                                                                                    (t 2))))
                                        (collect (output-of iomap)))
                                  :opening-delimiter (make-styled-string/string "(" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
                                  :closing-delimiter (make-styled-string/string ")" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)

@@ -70,8 +70,8 @@
                                    (for cell :in-sequence (cells-of row))
                                    ;; TODO: reuse iomap
                                    (for cell-iomap = (recurse-printer recursion iomap (content-of cell)
-                                                                 `(content-of (the table/cell (elt (the list (cells-of (the table/row (elt (the list (rows-of ,typed-input-reference)) ,row-index)))) ,cell-index)))
-                                                                 `(the string ,output-reference)))
+                                                                      `(content-of (the table/cell (elt (the list (cells-of (the table/row (elt (the list (rows-of ,typed-input-reference)) ,row-index)))) ,cell-index)))
+                                                                      `(the string ,output-reference)))
                                    (for content = (output-of cell-iomap))
                                    (push cell-iomap child-iomaps)
                                    (for column-width = (elt column-widths cell-index))

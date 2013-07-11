@@ -10,7 +10,7 @@
 ;;; Document
 
 (def document json/base ()
-  ())
+  ((indentation :type number)))
 
 (def document json/null (json/base)
   ())

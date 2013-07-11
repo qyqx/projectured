@@ -14,7 +14,7 @@
 ;;; Lisp form document classes
 
 (def document lisp-form/base ()
-  ())
+  ((indentation :type number)))
 
 (def document lisp-form/comment (lisp-form/base)
   ((content :type string)))
@@ -27,31 +27,32 @@
 
 (def document lisp-form/symbol (lisp-form/base)
   ((value :type symbol)
+   (font :type style/font)
    (font-color :type style/color)))
-
-(def document lisp-form/list (lisp-form/base)
-  ((elements :type list)))
 
 (def document lisp-form/object (lisp-form/base)
   ((value :type standard-object)))
 
+(def document lisp-form/list (lisp-form/base)
+  ((elements :type list)))
+
 ;;;;;;
 ;;; Lisp form document constructors
 
-(def (function e) make-lisp-form/comment (content)
-  (make-instance 'lisp-form/comment :content content))
+(def (function e) make-lisp-form/comment (content &key indentation)
+  (make-instance 'lisp-form/comment :content content :indentation indentation))
 
-(def (function e) make-lisp-form/number (value)
-  (make-instance 'lisp-form/number :value value))
+(def (function e) make-lisp-form/number (value &key indentation)
+  (make-instance 'lisp-form/number :value value :indentation indentation))
 
-(def (function e) make-lisp-form/string (value)
-  (make-instance 'lisp-form/string :value value))
+(def (function e) make-lisp-form/string (value &key indentation)
+  (make-instance 'lisp-form/string :value value :indentation indentation))
 
-(def (function e) make-lisp-form/symbol (value &key font-color)
-  (make-instance 'lisp-form/symbol :value value :font-color font-color))
+(def (function e) make-lisp-form/symbol (value &key indentation font font-color)
+  (make-instance 'lisp-form/symbol :value value :indentation indentation :font font :font-color font-color))
 
-(def (function e) make-lisp-form/list (elements)
-  (make-instance 'lisp-form/list :elements elements))
+(def (function e) make-lisp-form/object (value &key indentation)
+  (make-instance 'lisp-form/object :value value :indentation indentation))
 
-(def (function e) make-lisp-form/object (value)
-  (make-instance 'lisp-form/object :value value))
+(def (function e) make-lisp-form/list (elements &key indentation)
+  (make-instance 'lisp-form/list :elements elements :indentation indentation))

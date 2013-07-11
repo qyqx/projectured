@@ -76,10 +76,10 @@
                                        ;; KLUDGE:
                                        (setf (indentation-of (output-of iomap)) 2)
                                        (collect (output-of iomap)))
+                                 :indentation 2
                                  :opening-delimiter (make-styled-string/string "{" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
                                  ;; KLUDGE:
-                                 :closing-delimiter (make-styled-string/string "
-}" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))
+                                 :closing-delimiter (make-styled-string/string "}" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))
 

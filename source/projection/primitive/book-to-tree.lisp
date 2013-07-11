@@ -41,6 +41,10 @@
                                                                    (length title))
                                                 child-iomaps)
                                           output)
+                                        (make-tree/node (iter (for author :in-sequence (authors-of input))
+                                                              (collect (make-tree/leaf (make-styled-string/string author :font *font/ubuntu/italic/14* :font-color *color/solarized/content/darker*))))
+                                                        :opening-delimiter (make-styled-string/string "Written by " :font *font/ubuntu/italic/14* :font-color *color/solarized/content/darker*)
+                                                        :indentation 0)
                                         (iter (for index :from 0)
                                               (for element :in-sequence (elements-of input))
                                               (for element-iomap = (recurse-printer recursion iomap element
