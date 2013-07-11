@@ -148,7 +148,7 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
   (book/book (:title"")))
 
 (def function make-test-content/book ()
-  (book/book (:title "Lorem ipsum")
+  (book/book (:title "Lorem ipsum" :authors (list "me"))
     (book/chapter (:title "Chapter 1")
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras eu nunc nibh. Cras imperdiet faucibus tortor ac dictum. Aliquam sit amet justo nec ligula lobortis ornare. Aenean a odio id dolor adipiscing interdum. Maecenas nec nisl neque. Suspendisse interdum rutrum neque, in volutpat orci varius in. Praesent a ipsum ac erat pulvinar adipiscing quis sit amet magna. Etiam semper vulputate mi ac interdum. Nunc a tortor non purus fringilla aliquam.")
     (book/chapter (:title "Chapter 2")

@@ -37,14 +37,9 @@
                                                        :fill-color-provider fill-color-provider
                                                        :line-color-provider line-color-provider)))
     (if (search "SLIME" (symbol-name (class-name (class-of (make-editor)))))
+        string->styled-string
         (sequential
           string->styled-string
-          ;; TODO:
-          #+nil(word-wrapping :wrap-width 1024))
-        (sequential
-          string->styled-string
-          ;; TODO:
-          #+nil(word-wrapping :wrap-width 1024)
           (styled-string->graphics)))))
 
 (def function make-test-projection/styled-string->output ()
@@ -314,6 +309,9 @@
         (nesting
           (document->document)
           (make-test-projection/book->styled-string))
+        (nesting
+          (document->document)
+          (word-wrapping :wrap-width 1024))
         (nesting
           (document->graphics)
           (make-test-projection/styled-string->output))))))
@@ -730,10 +728,6 @@
         (nesting
           (document->document)
           (recursive (tree->styled-string)))
-        #+nil
-        (nesting
-          (document->document)
-          (styled-string->line-numbered-styled-string))
         (nesting
           (document->document)
           (word-wrapping :wrap-width 1024))

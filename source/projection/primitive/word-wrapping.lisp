@@ -30,7 +30,10 @@
 (def printer word-wrapping (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
   ;; TODO: child-iomaps
-  (bind ((elements (iter (with x = 0)
+  (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
+         (child-iomaps nil)
+         (elements (iter (with x = 0)
+                         (with output-index = 0)
                          (with elements = (elements-of input))
                          (with wrap-width = (wrap-width-of projection))
                          (for (values start-element-index start-character-index)
@@ -50,6 +53,17 @@
                                                           (incf sum 100)))
                                                        (finally (return sum))))
                          (incf x whitespace-width)
+                         (iter (for index :from 0)
+                               (for element :in-sequence whitespace-elements)
+                               (typecase element
+                                 (styled-string/string
+                                  (for content = (content-of element))
+                                  (push (make-iomap/string content `(content-of (the styled-string/string (elt (the list (elements-of ,typed-input-reference)) ,(+ end-element-index index))))
+                                                           (if (zerop index) end-character-index 0)
+                                                           content `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,(+ output-index index)))) 0
+                                                           (length content))
+                                        child-iomaps))))
+                         (incf output-index (length whitespace-elements))
                          (appending whitespace-elements)
                          (until (and (= start-element-index (length elements))
                                      (= start-character-index 0)))
@@ -64,12 +78,25 @@
                          (incf x word-width)
                          (when (> x wrap-width)
                            (setf x word-width)
+                           (incf output-index)
                            (collect (make-styled-string/string (string #\NewLine) :font *font/default* :font-color *color/default*)))
+                         (iter (for index :from 0)
+                               (for element :in-sequence word-elements)
+                               (typecase element
+                                 (styled-string/string
+                                  (for content = (content-of element))
+                                  (push (make-iomap/string content `(content-of (the styled-string/string (elt (the list (elements-of ,typed-input-reference)) ,(+ start-element-index index))))
+                                                           (if (zerop index) start-character-index 0)
+                                                           content `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,(+ output-index index)))) 0
+                                                           (length content))
+                                        child-iomaps))))
+                         (incf output-index (length word-elements))
                          (appending word-elements)
                          (until (and (= end-element-index (length elements))
                                      (= end-character-index 0)))))
          (output (make-styled-string/document elements)))
-    (make-iomap/object projection recursion input input-reference output output-reference)))
+    (make-iomap/recursive projection recursion input input-reference output output-reference
+                          (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))
 
 ;;;;;;
 ;;; Reader

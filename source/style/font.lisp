@@ -51,9 +51,19 @@
 (def (font e) *font/ubuntu/monospace/regular/18* ("etc/UbuntuMono-R.ttf" 18))
 (def (font e) *font/ubuntu/monospace/italic/18* ("etc/UbuntuMono-RI.ttf" 18))
 (def (font e) *font/ubuntu/monospace/bold/18* ("etc/UbuntuMono-B.ttf" 18))
-(def (font e) *font/ubuntu/regular/18* ("etc/Ubuntu-R.ttf" 18))
+
+(def (font e) *font/ubuntu/regular/14* ("etc/Ubuntu-R.ttf" 14))
 (def (font e) *font/ubuntu/italic/14* ("etc/Ubuntu-RI.ttf" 14))
+(def (font e) *font/ubuntu/bold/14* ("etc/Ubuntu-B.ttf" 14))
+
+(def (font e) *font/ubuntu/regular/18* ("etc/Ubuntu-R.ttf" 18))
 (def (font e) *font/ubuntu/italic/18* ("etc/Ubuntu-RI.ttf" 18))
 (def (font e) *font/ubuntu/bold/18* ("etc/Ubuntu-B.ttf" 18))
+
+(def (font e) *font/ubuntu/regular/24* ("etc/Ubuntu-R.ttf" 24))
+(def (font e) *font/ubuntu/italic/24* ("etc/Ubuntu-RI.ttf" 24))
 (def (font e) *font/ubuntu/bold/24* ("etc/Ubuntu-B.ttf" 24))
+
+(def (font e) *font/ubuntu/regular/36* ("etc/Ubuntu-R.ttf" 36))
+(def (font e) *font/ubuntu/italic/36* ("etc/Ubuntu-RI.ttf" 36))
 (def (font e) *font/ubuntu/bold/36* ("etc/Ubuntu-B.ttf" 36))

@@ -54,10 +54,12 @@
       (call-next-method)
       (sdl:update-display))))
 
-;; KLUDGE: what shall dispatch on here? this is obviously wrong...
+;; KLUDGE: what shall we dispatch on here? this is obviously wrong...
 (def method read-event ((devices sequence))
   (bind ((sdl:*sdl-event* (sdl:new-event)))
     (sdl:enable-unicode)
+    (sdl-cffi::sdl-wait-event sdl:*sdl-event*)
+    #+nil ;; TODO: poll or wait?
     (sdl-cffi::sdl-poll-event sdl:*sdl-event*)
     (prog1
         (case (sdl:event-type sdl:*sdl-event*)
