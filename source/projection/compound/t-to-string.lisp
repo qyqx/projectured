@@ -6,58 +6,19 @@
 
 (in-package :projectured)
 
-(def method make-projection/t->string ((instance string))
-  (preserving))
-
-(def method make-projection/t->string ((instance text/base))
-  (recursive (text->string)))
-
-(def method make-projection/t->string ((instance list/base))
-  (recursive (list->string)))
-
-(def method make-projection/t->string ((instance table/table))
-  (recursive (table->string)))
-
-(def method make-projection/t->string ((instance tree/node))
-  (tree->string))
-
-(def method make-projection/t->string ((instance book/base))
+(def (function e) make-projection/t->string ()
   (sequential
-    (recursive (book->tree))
-    (recursive (tree->styled-string))
+    (recursive
+      (type-dispatching
+        (string (preserving))
+        (text/base (text->tree))
+        (styled-string/base (styled-string->tree))
+        (book/base (book->tree))
+        (xml/base (xml->tree))
+        (json/base (json->tree))
+        (java/base (java->tree))
+        (javascript/base (javascript->tree))
+        (lisp-form/base (lisp-form->tree))))
+    (recursive
+      (tree->styled-string))
     (styled-string->string)))
-
-(def method make-projection/t->string ((instance xml/base))
-  (sequential
-    (recursive (xml->tree))
-    (recursive (tree->styled-string))
-    (styled-string->string)))
-
-(def method make-projection/t->string ((instance java/base))
-  (sequential
-    (recursive (java->tree))
-    (recursive (tree->styled-string))
-    (styled-string->string)))
-
-(def method make-projection/t->string ((instance javascript/base))
-  (sequential
-    (recursive (javascript->tree))
-    (recursive (tree->styled-string))
-    (styled-string->string)))
-
-(def method make-projection/t->string ((instance json/base))
-  (sequential
-    (recursive (json->tree))
-    (recursive (tree->styled-string))
-    (styled-string->string)))
-
-(def method make-projection/t->string ((instance sequence))
-  (sequential
-    (recursive (lisp-form->tree))
-    (tree->string)))
-
-(def method make-projection/t->string ((instance hu.dwim.walker::walked-form))
-  (sequential
-    (recursive (walked-lisp-form->lisp-form))
-    (recursive (lisp-form->tree))
-    (tree->string)))

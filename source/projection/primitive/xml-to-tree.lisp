@@ -139,6 +139,7 @@
                                                                               name `(content-of (the styled-string/string (content-of (the tree/leaf (elt (the list (children-of (the tree/node ,output-reference))) ,(+ (length children) (if attributes 2 1))))))) 0
                                                                               (length name))
                                                            child-iomaps)))))
+                                 :indentation 4
                                  :separator (make-styled-string/string " " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))

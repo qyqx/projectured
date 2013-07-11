@@ -132,13 +132,16 @@
                                        (for iomap = (recurse-printer recursion iomap element
                                                                      `(elt (the list (elements-of ,typed-input-reference)) ,index)
                                                                      `(elt (the list (children-of (the tree/node ,output-reference))) ,index)))
+                                       (for element-output = (output-of iomap))
                                        (push iomap child-iomaps)
-                                       (when (and deep-list (not (first-iteration-p)))
+                                       (when (and deep-list
+                                                  (not (first-iteration-p))
+                                                  (not (indentation-of element-output)))
                                          ;; KLUDGE:
-                                         (setf (indentation-of (output-of iomap)) (typecase element
-                                                                                    (lisp-form/base (indentation-of element))
-                                                                                    (t 2))))
-                                       (collect (output-of iomap)))
+                                         (setf (indentation-of element-output) (typecase element
+                                                                                 (lisp-form/base (indentation-of element))
+                                                                                 (t 2))))
+                                       (collect element-output))
                                  :opening-delimiter (make-styled-string/string "(" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
                                  :closing-delimiter (make-styled-string/string ")" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
                                  :separator (make-styled-string/string " " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))

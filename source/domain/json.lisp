@@ -37,26 +37,26 @@
 ;;;;;;
 ;;; Construction
 
-(def (function e) make-json/null ()
-  (make-instance 'json/null))
+(def (function e) make-json/null (&key indentation)
+  (make-instance 'json/null :indentation indentation))
 
-(def (function e) make-json/boolean (value)
-  (make-instance 'json/boolean :value value))
+(def (function e) make-json/boolean (value &key indentation)
+  (make-instance 'json/boolean :value value :indentation indentation))
 
-(def (function e) make-json/number (value)
-  (make-instance 'json/number :value value))
+(def (function e) make-json/number (value &key indentation)
+  (make-instance 'json/number :value value :indentation indentation))
 
-(def (function e) make-json/string (text)
-  (make-instance 'json/string :text text))
+(def (function e) make-json/string (text &key indentation)
+  (make-instance 'json/string :text text :indentation indentation))
 
-(def (function e) make-json/array (elements)
-  (make-instance 'json/array :elements elements))
+(def (function e) make-json/array (elements &key indentation)
+  (make-instance 'json/array :elements elements :indentation indentation))
 
-(def (function e) make-json/object-entry (key value)
-  (make-instance 'json/object-entry :key key :value value))
+(def (function e) make-json/object-entry (key value &key indentation)
+  (make-instance 'json/object-entry :key key :value value :indentation indentation))
 
-(def (function e) make-json/object (entries)
-  (make-instance 'json/object :entries entries))
+(def (function e) make-json/object (entries &key indentation)
+  (make-instance 'json/object :entries entries :indentation indentation))
 
 ;;;;;;
 ;;; Construction

@@ -44,19 +44,24 @@
                                (incf string-position (length (content-of element)))))))
                    (iter (with format-string = (format nil "\~~~A,' D " line-number-length))
                          (with input-offset = 0)
-                         (for index :from 0)
+                         (with input-index = 0)
+                         (for line-index :from 0)
                          (for line :in (styled-string/split input #\NewLine))
-                         (for line-number = (format nil format-string (1+ index)))
-                         (push (make-iomap/string line-number `(line-number ,typed-input-reference ,line-number ,index) 0
-                                                  line-number output-reference string-position
+                         (for line-number = (format nil format-string (1+ line-index)))
+                         (push (make-iomap/string line-number `(line-number ,typed-input-reference ,line-index) 0
+                                                  line-number `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
                                                   (length line-number))
                                child-iomaps)
                          (write-element (make-styled-string/string line-number :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/content/light* :fill-color *color/solarized/background/light*))
-                         (push (make-iomap/string input input-reference input-offset
-                                                  input output-reference string-position
-                                                  (1+ (styled-string/length line)))
-                               child-iomaps)
                          (iter (for line-element :in-sequence (elements-of line))
+                               (typecase line-element
+                                 (styled-string/string
+                                  (for line-content = (content-of line-element))
+                                  (push (make-iomap/string line-content `(content-of (the styled-string/string (elt (the list (elements-of ,typed-input-reference)) ,input-index))) 0
+                                                           line-content `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,element-index))) 0
+                                                           (length line-content))
+                                        child-iomaps)))
+                               (incf input-index)
                                (write-element line-element))
                          (write-element (make-styled-string/string (string #\NewLine) :font *font/default* :font-color *color/default*))
                          (incf input-offset (1+ (styled-string/length line))))

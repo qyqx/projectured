@@ -37,10 +37,10 @@
          (temporary (with-output-to-string (stream)
                       (iter (with format-string = (format nil "\~~~A,' D " line-number-length))
                             (with input-offset = 0)
-                            (for index :from 0)
+                            (for line-index :from 0)
                             (for line :in (split-sequence #\NewLine input))
-                            (for line-number = (format nil format-string index))
-                            (push (make-iomap/string line-number `(line-number ,typed-input-reference ,line-number ,index) 0
+                            (for line-number = (format nil format-string line-index))
+                            (push (make-iomap/string line-number `(line-number ,typed-input-reference ,line-index) 0
                                                      output output-reference (file-position stream)
                                                      (length line-number))
                                   child-iomaps)

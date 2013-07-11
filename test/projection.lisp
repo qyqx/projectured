@@ -113,6 +113,9 @@
       (widget->graphics)
       (sequential
         (nesting
+          (document->document)
+          (styled-string->line-numbered-styled-string))
+        (nesting
           (document->graphics)
           (styled-string->graphics))))))
 
@@ -312,6 +315,9 @@
         (nesting
           (document->document)
           (word-wrapping :wrap-width 1024))
+        (nesting
+          (document->document)
+          (styled-string->line-numbered-styled-string))
         (nesting
           (document->graphics)
           (make-test-projection/styled-string->output))))))

@@ -145,7 +145,8 @@
                                        (collect (output-of element-iomap)))
                                  :opening-delimiter (make-styled-string/string "[" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
                                  :closing-delimiter (make-styled-string/string "]" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
-                                 :separator (make-styled-string/string ", " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))
+                                 :separator (make-styled-string/string ", " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
+                                 :indentation (indentation-of input))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))
 

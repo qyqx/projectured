@@ -404,7 +404,7 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
          (lisp-function (make-instance 'hu.dwim.walker:function-definition-form
                                        :name 'process-http-request
                                        :bindings (list (make-instance 'hu.dwim.walker:required-function-argument-form :name 'request))
-                                       :body (list (make-walked-lisp-form/comment "dispatch on the path of the incoming HTTP request")
+                                       :body (list (make-walked-lisp-form/comment "dispatch on the path of the incoming HTTP request and send an HTML page or the JSON data as response")
                                                    (make-instance 'hu.dwim.walker:let-form
                                                                   :bindings (list (make-instance 'hu.dwim.walker:lexical-variable-binding-form :name 'path
                                                                                                  :initial-value (make-instance 'hu.dwim.walker:free-application-form :operator 'path-of
@@ -423,22 +423,20 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                                                                                                                                                   :else error-page))))))))))
     (book/book (:title "ProjecturEd" :authors (list "Levente Mészáros"))
       (book/chapter (:title "Introduction")
-        (text/paragraph
-          (styled-string/document
-            (styled-string/string "ProjecturEd" :font *font/ubuntu/italic/18* :font-color *color/solarized/content/darker*)
-            (styled-string/string " is a generic purpose projectional editor written in Common Lisp. It provides editing for different problem domains represented in unrestricted arbitrary data structures. It uses multiple bidirectional projections providing different notations varying from textual to graphics." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*))))
+        (styled-string/document
+          (styled-string/string "ProjecturEd" :font *font/ubuntu/italic/18* :font-color *color/solarized/content/darker*)
+          (styled-string/string " is a generic purpose projectional editor written in Common Lisp. It provides editing for different problem domains represented in unrestricted arbitrary data structures. It uses multiple bidirectional projections providing different notations varying from textual to graphics." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)))
       (book/chapter (:title "Literate Programming")
-        (text/paragraph
-          (styled-string/document
-            (styled-string/string "This example demonstrates mixing multiple different problem domains in the same document. The document contains" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
-            (styled-string/string " Word Processing, Common Lisp, HTML, JavaScript and JSON " :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/content/darker*)
-            (styled-string/string "parts nested into each other. It describes a Common Lisp web service using a single function that processes HTTP requests. When the function receives an HTTP request to the '/page' path it sends an HTML page. This page contains a pie chart that utilizes the Google Charts JavaScript API. When the pie chart is shown in the browser it sends another HTTP request using JavaScript to the '/data' path at the same web service. The web service returns another document in JSON format that provides the data for the pie chart. For all unknown HTTP requests the web service sends an HTML error page. The following screenshot shows how the page looks like." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
-            (styled-string/newline)
-            ;; KLUDGE:
-            (tree/leaf () (style/image (asdf:system-relative-pathname :projectured "etc/pie.png")))
-            (styled-string/newline)
-            (styled-string/string "This example uses a projection that displays all used domains in their natural format. Proper indentation and syntax highlight are automatically provided without escape sequences." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*))
-          lisp-function)))))
+        (styled-string/document
+          (styled-string/string "This example demonstrates mixing multiple different problem domains in the same document. The document contains" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+          (styled-string/string " Word Processing, Common Lisp, HTML, JavaScript and JSON " :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/content/darker*)
+          (styled-string/string "parts nested into each other. It describes a Common Lisp web service using a single function that processes HTTP requests. When the function receives an HTTP request to the '/page' path it sends an HTML page. This page contains a pie chart that utilizes the Google Charts JavaScript API. When the pie chart is shown in the browser it sends another HTTP request using JavaScript to the '/data' path at the same web service. The web service returns another document in JSON format that provides the data for the pie chart. For all unknown HTTP requests the web service sends an HTML error page. The following screenshot shows how the page looks like." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+          (styled-string/newline)
+          ;; KLUDGE:
+          (tree/leaf () (style/image (asdf:system-relative-pathname :projectured "etc/pie.png")))
+          (styled-string/newline)
+          (styled-string/string "This example uses a projection that displays all used domains in their natural format. Proper indentation and syntax highlight are automatically provided without escape sequences." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*))
+        lisp-function))))
 
 ;;;;;;
 ;;; Complex

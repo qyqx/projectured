@@ -63,25 +63,30 @@
 (def (function e) styled-string/substring (styled-string start-element-index start-character-index end-element-index end-character-index)
   (make-styled-string/document
    (iter (with elements = (elements-of styled-string))
+         (with elements-length = (length elements))
          (for element-index :from start-element-index :to end-element-index)
-         (until (= element-index (length elements)))
+         (until (= element-index elements-length))
          (for element = (elt elements element-index))
          (typecase element
            (styled-string/string
-            (for font = (font-of element))
-            (for content = (content-of element))
-            (for word-part = (subseq content
-                                     (if (= element-index start-element-index)
-                                         start-character-index
-                                         0)
-                                     (if (= element-index end-element-index)
-                                         end-character-index
-                                         (length content))))
-            (unless (zerop (length word-part))
-              (collect (make-styled-string/string word-part :font font
-                                                  :font-color (font-color-of element)
-                                                  :fill-color (fill-color-of element)
-                                                  :line-color (line-color-of element)))))
+            (bind ((content (content-of element))
+                   (content-length (length content))
+                   (element-start-character-index (if (= element-index start-element-index)
+                                                      start-character-index
+                                                      0))
+                   (element-end-character-index (if (= element-index end-element-index)
+                                                    end-character-index
+                                                    content-length)))
+              (if (and (= element-start-character-index 0)
+                       (= element-end-character-index content-length))
+                  (collect element)
+                  (bind ((word-part (subseq content element-start-character-index element-end-character-index)))
+                    (unless (zerop (length word-part))
+                      (collect (make-styled-string/string word-part
+                                                          :font (font-of element)
+                                                          :font-color (font-color-of element)
+                                                          :fill-color (fill-color-of element)
+                                                          :line-color (line-color-of element))))))))
            (t
             (collect element))))))
 
