@@ -12,7 +12,7 @@
       (type-dispatching
         (string (preserving))
         (text/base (text->tree))
-        (styled-string/base (styled-string->tree))
+        (text/base (styled-string->tree))
         (book/base (book->tree))
         (xml/base (xml->tree))
         (json/base (json->tree))

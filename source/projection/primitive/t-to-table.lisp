@@ -92,17 +92,17 @@
 
 (def printer t/null->string (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
-  (bind ((output (make-styled-string/document (list (make-styled-string/string "NIL" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*)))))
+  (bind ((output (make-text/text (list (make-text/string "NIL" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*)))))
     (make-iomap/object projection recursion input input-reference output output-reference)))
 
 (def printer t/number->string (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
-  (bind ((output (make-styled-string/document (list (make-styled-string/string (write-to-string input) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/magenta*)))))
+  (bind ((output (make-text/text (list (make-text/string (write-to-string input) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/magenta*)))))
     (make-iomap/object projection recursion input input-reference output output-reference)))
 
 (def printer t/string->string (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
-  (bind ((output (make-styled-string/document (list (make-styled-string/string (string+ "\"" input "\"") :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/green*)))))
+  (bind ((output (make-text/text (list (make-text/string (string+ "\"" input "\"") :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/green*)))))
     (make-iomap/object projection recursion input input-reference output output-reference)))
 
 (def printer t/symbol->string (projection recursion iomap input input-reference output-reference)
@@ -112,14 +112,14 @@
 
 (def printer t/sequence->table/table (projection recursion iomap input input-reference output-reference)
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
-         (output (make-table/table (list* (make-table/row (list (make-table/cell (make-styled-string/document (list (make-styled-string/string "TYPE" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))))
-                                                                (make-table/cell (make-styled-string/document (list (make-styled-string/string (if (consp input)
+         (output (make-table/table (list* (make-table/row (list (make-table/cell (make-text/text (list (make-text/string "TYPE" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))))
+                                                                (make-table/cell (make-text/text (list (make-text/string (if (consp input)
                                                                                                                                                    "LIST"
                                                                                                                                                    "SEQUENCE")
                                                                                                                                                :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*))))))
                                           (iter (for index :from 0)
                                                 (for element :in-sequence input)
-                                                (collect (make-table/row (list (make-table/cell (make-styled-string/document (list (make-styled-string/string (write-to-string index) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))))
+                                                (collect (make-table/row (list (make-table/cell (make-text/text (list (make-text/string (write-to-string index) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))))
                                                                                (make-table/cell (output-of (recurse-printer recursion iomap (elt input index)
                                                                                                                             `(elt ,typed-input-reference ,index)
                                                                                                                             `(content-of (the table/cell (elt (the list (cells-of (the table/row (elt (the list (rows-of (the table/table ,output-reference))) ,(1+ index))))) 1))))))))))))))
@@ -136,18 +136,18 @@
 
 (def printer t/object->table (projection recursion iomap input input-reference output-reference)
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
-         (output (make-table/table (list* (make-table/row (list (make-table/cell (make-styled-string/document (list (make-styled-string/string "TYPE" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))))
-                                                                (make-table/cell (make-styled-string/document (list (make-styled-string/string (symbol-name (class-name (class-of input))) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*))))))
+         (output (make-table/table (list* (make-table/row (list (make-table/cell (make-text/text (list (make-text/string "TYPE" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))))
+                                                                (make-table/cell (make-text/text (list (make-text/string (symbol-name (class-name (class-of input))) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*))))))
                                           (iter (with class = (class-of input))
                                                 (for index :from 0)
                                                 (for slot :in (class-slots class))
                                                 (for slot-name = (slot-definition-name slot))
-                                                (collect (make-table/row (list (make-table/cell (make-styled-string/document (list (make-styled-string/string (symbol-name slot-name) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))))
+                                                (collect (make-table/row (list (make-table/cell (make-text/text (list (make-text/string (symbol-name slot-name) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))))
                                                                                (make-table/cell (if (slot-boundp-using-class class input slot)
                                                                                                     (output-of (recurse-printer recursion iomap (slot-value-using-class class input slot)
                                                                                                                                 `(slot-value ,typed-input-reference ,slot-name)
                                                                                                                                 `(content-of (the table/cell (elt (the list (cells-of (the table/row (elt (the list (rows-of (the table/table ,output-reference))) ,(1+ index))))) 1)))))
-                                                                                                    (make-styled-string/document (list (make-styled-string/string "<unbound>" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)))))))))))))
+                                                                                                    (make-text/text (list (make-text/string "<unbound>" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)))))))))))))
     (make-iomap/object projection recursion input input-reference output output-reference)))
 
 ;;;;;;

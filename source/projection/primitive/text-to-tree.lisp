@@ -9,7 +9,7 @@
 ;;;;;;
 ;;; Projection
 
-(def (projection e) text/document->tree/node ()
+(def (projection e) text/text->tree/node ()
   ())
 
 (def (projection e) text/paragraph->tree/node ()
@@ -18,8 +18,8 @@
 ;;;;;;
 ;;; Construction
 
-(def (function e) make-projection/text/document->tree/node ()
-  (make-projection 'text/document->tree/node))
+(def (function e) make-projection/text/text->tree/node ()
+  (make-projection 'text/text->tree/node))
 
 (def (function e) make-projection/text/paragraph->tree/node ()
   (make-projection 'text/paragraph->tree/node))
@@ -27,7 +27,7 @@
 ;;;;;;
 ;;; Printer
 
-(def printer text/document->tree/node (projection recursion iomap input input-reference output-reference)
+(def printer text/text->tree/node (projection recursion iomap input input-reference output-reference)
   (bind ((child-iomaps nil)
          (typed-input-reference `(the ,(form-type input) ,input-reference))
          (output (make-tree/node (iter (for index :from 0)
@@ -62,7 +62,7 @@
 ;;;;;;
 ;;; Reader
 
-(def reader text/document->tree/node (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+(def reader text/text->tree/node (projection recursion printer-iomap projection-iomap gesture-queue operation document)
   (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
   operation)
 

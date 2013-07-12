@@ -86,47 +86,47 @@
 (def printer json/null->string (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
   (bind ((output-content "null")
-         (output (make-tree/leaf (make-styled-string/string output-content :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*)))
+         (output (make-tree/leaf (make-text/string output-content :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*)))
          (name-reference `(value (the ,(form-type input) ,input-reference) ,output-content)))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)
                                 (make-iomap/string output-content name-reference 0
-                                                   output-content `(content-of (the styled-string/string (content-of (the tree/leaf ,output-reference)))) 0
+                                                   output-content `(content-of (the text/string (content-of (the tree/leaf ,output-reference)))) 0
                                                    (length output-content))))))
 
 (def printer json/boolean->string (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
   (bind ((output-content (boolean-to-string (value-p input)))
-         (output (make-tree/leaf (make-styled-string/string output-content :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*)))
+         (output (make-tree/leaf (make-text/string output-content :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*)))
          (name-reference `(boolean-to-string (the boolean (value-p (the ,(form-type input) ,input-reference))))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)
                                 (make-iomap/string output-content name-reference 0
-                                                   output-content `(content-of (the styled-string/string (content-of (the tree/leaf ,output-reference)))) 0
+                                                   output-content `(content-of (the text/string (content-of (the tree/leaf ,output-reference)))) 0
                                                    (length output-content))))))
 
 (def printer json/number->string (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
   (bind ((output-content (write-to-string (value-of input)))
-         (output (make-tree/leaf (make-styled-string/string output-content :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/magenta*)))
+         (output (make-tree/leaf (make-text/string output-content :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/magenta*)))
          (value-reference `(write-to-string (the number (value-of (the ,(form-type input) ,input-reference))))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)
                                 (make-iomap/string output-content value-reference 0
-                                                   output-content `(content-of (the styled-string/string (content-of (the tree/leaf ,output-reference)))) 0
+                                                   output-content `(content-of (the text/string (content-of (the tree/leaf ,output-reference)))) 0
                                                    (length output-content))))))
 
 (def printer json/string->string (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
   (bind ((output-content (text-of input))
-         (output (make-tree/leaf (make-styled-string/string output-content :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/green*)
-                                 :opening-delimiter (make-styled-string/string "\"" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
-                                 :closing-delimiter (make-styled-string/string "\"" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)))
+         (output (make-tree/leaf (make-text/string output-content :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/green*)
+                                 :opening-delimiter (make-text/string "\"" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
+                                 :closing-delimiter (make-text/string "\"" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)))
          (text-reference `(text-of (the ,(form-type input) ,input-reference))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)
                                 (make-iomap/string output-content text-reference 0
-                                                   output-content `(content-of (the styled-string/string (content-of (the tree/leaf ,output-reference)))) 0
+                                                   output-content `(content-of (the text/string (content-of (the tree/leaf ,output-reference)))) 0
                                                    (length (text-of input)))))))
 
 (def printer json/array->tree/node (projection recursion iomap input input-reference output-reference)
@@ -143,9 +143,9 @@
                                          ;; KLUDGE:
                                          (setf (indentation-of (output-of element-iomap)) 1))
                                        (collect (output-of element-iomap)))
-                                 :opening-delimiter (make-styled-string/string "[" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
-                                 :closing-delimiter (make-styled-string/string "]" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
-                                 :separator (make-styled-string/string ", " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
+                                 :opening-delimiter (make-text/string "[" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
+                                 :closing-delimiter (make-text/string "]" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
+                                 :separator (make-text/string ", " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
                                  :indentation (indentation-of input))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))
@@ -157,18 +157,18 @@
                                  `(value-of ,typed-input-reference)
                                  `(elt (the list (children-of (the tree/node ,output-reference))) 1)))
          (key-node-reference `(elt (the list (children-of (the tree/node ,output-reference))) 0))
-         (output (make-tree/node (list (make-tree/leaf (make-styled-string/string key :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*)
-                                                       :opening-delimiter (make-styled-string/string "\"" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
-                                                       :closing-delimiter (make-styled-string/string "\"" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))
+         (output (make-tree/node (list (make-tree/leaf (make-text/string key :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*)
+                                                       :opening-delimiter (make-text/string "\"" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
+                                                       :closing-delimiter (make-text/string "\"" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))
                                        (output-of iomap))
-                                 :separator (make-styled-string/string " : " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))
+                                 :separator (make-text/string " : " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)
                                 iomap
                                 (make-iomap/object* projection recursion input `(the string (key-of ,typed-input-reference))
                                                     key `(the string (content-of (the tree/leaf ,key-node-reference))))
                                 (make-iomap/string key `(key-of ,typed-input-reference) 0
-                                                   key `(content-of (the styled-string/string (content-of (the tree/leaf ,key-node-reference)))) 0
+                                                   key `(content-of (the text/string (content-of (the tree/leaf ,key-node-reference)))) 0
                                                    (length key))))))
 
 (def printer json/object->tree/node (projection recursion iomap input input-reference output-reference)
@@ -184,9 +184,9 @@
                                          ;; KLUDGE:
                                          (setf (indentation-of (output-of entry-iomap)) 1))
                                        (collect (output-of entry-iomap)))
-                                 :opening-delimiter (make-styled-string/string "{" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
-                                 :closing-delimiter (make-styled-string/string "}" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
-                                 :separator (make-styled-string/string ", " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))
+                                 :opening-delimiter (make-text/string "{" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
+                                 :closing-delimiter (make-text/string "}" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
+                                 :separator (make-text/string ", " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))
 

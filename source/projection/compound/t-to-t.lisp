@@ -23,8 +23,8 @@
 
 (def (function e) make-projection/styled-string->tree ()
   (type-dispatching
-    (styled-string/document (make-projection/styled-string/document->tree/node))
-    (styled-string/string (make-projection/styled-string/string->tree/leaf))))
+    (text/text (make-projection/text/text->tree/node))
+    (text/string (make-projection/text/string->tree/leaf))))
 
 (def (macro e) styled-string->tree ()
   '(make-projection/styled-string->tree))
@@ -46,9 +46,10 @@
 
 (def (function e) make-projection/text->tree ()
   (type-dispatching
-    (text/document (make-projection/text/document->tree/node))
-    (text/paragraph (make-projection/text/paragraph->tree/node))
-    (string (make-projection/string->tree/leaf))))
+    (string (make-projection/string->tree/leaf))
+    (text/string (make-projection/text/string->tree/leaf))
+    (text/text (make-projection/text/text->tree/node))
+    (text/paragraph (make-projection/text/paragraph->tree/node))))
 
 (def (macro e) text->tree ()
   '(make-projection/text->tree))
@@ -60,7 +61,7 @@
   (type-dispatching
     (tree/leaf (make-projection/tree/leaf->styled-string :indentation-provider indentation-provider :delimiter-provider delimiter-provider))
     (tree/node (make-projection/tree/node->styled-string :indentation-provider indentation-provider :delimiter-provider delimiter-provider :separator-provider separator-provider))
-    (styled-string/base (preserving))
+    (text/base (preserving))
     (style/image (preserving))
     (string (preserving))))
 

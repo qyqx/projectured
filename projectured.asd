@@ -64,7 +64,6 @@
                                            (:file "sequence")
                                            (:file "state-machine")
                                            (:file "string")
-                                           (:file "styled-string")
                                            (:file "table")
                                            (:file "text")
                                            (:file "tree")

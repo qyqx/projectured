@@ -46,18 +46,18 @@
 ;;; Styled string
 
 (def function make-test-document/styled-string ()
-  (test-document (:selection '(the sequence-position (pos (the string (content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document (content-of (the document document))))) 0)))) 2)))
+  (test-document (:selection '(the sequence-position (pos (the string (content-of (the text/string (elt (the list (elements-of (the text/text (content-of (the document document))))) 0)))) 2)))
     (make-test-content/styled-string)))
 
 ;;;;;;
 ;;; Text
 
 (def function make-test-document/text/empty ()
-  (test-document (:selection '(the sequence-position (pos (the string (content-of (the make-styled-string/string (elt (the list (elements-of (the text/paragraph (elt (the list (elements-of (the text/document (content-of (the document document))))) 0)))) 0)))) 0)))
+  (test-document (:selection '(the sequence-position (pos (the string (content-of (the make-text/string (elt (the list (elements-of (the text/paragraph (elt (the list (elements-of (the text/text (content-of (the document document))))) 0)))) 0)))) 0)))
     (make-test-content/text/empty)))
 
 (def function make-test-document/text ()
-  (test-document (:selection '(the sequence-position (pos (the string (content-of (the styled-string/string (elt (the list (elements-of (the text/paragraph (elt (the list (elements-of (the text/document (content-of (the document document))))) 1)))) 0)))) 4)))
+  (test-document (:selection '(the sequence-position (pos (the string (content-of (the text/string (elt (the list (elements-of (the text/paragraph (elt (the list (elements-of (the text/text (content-of (the document document))))) 1)))) 0)))) 4)))
     (make-test-content/text)))
 
 ;;;;;;

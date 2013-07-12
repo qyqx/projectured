@@ -62,7 +62,7 @@
                            (for content = (content-of cell))
                            (unless (stringp content)
                              (setf content (output-of (recurse-printer projection iomap content nil nil))))
-                           (maximizing (+ (styled-string/count content #\NewLine)
+                           (maximizing (+ (text/count content #\NewLine)
                                           ;; TODO:
                                           1
                                           #+nil
@@ -79,5 +79,5 @@
                            (for content = (content-of (elt (cells-of row) index)))
                            (unless (stringp content)
                              (setf content (output-of (recurse-printer projection iomap content nil nil))))
-                           (maximizing (iter (for line :in (styled-string/split content #\NewLine))
-                                             (maximizing (styled-string/length line))))))))))
+                           (maximizing (iter (for line :in (text/split content #\NewLine))
+                                             (maximizing (text/length line))))))))))

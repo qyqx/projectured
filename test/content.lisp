@@ -43,22 +43,27 @@
 ;;; Styled string
 
 (def function make-test-content/styled-string ()
-  (styled-string/document
-    (styled-string/string "Hello" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*)
-    (make-style/image (asdf:system-relative-pathname :projectured "etc/lisp.jpg"))
-    (styled-string/string "World" :font *font/ubuntu/monospace/bold/18* :font-color *color/solarized/green*)
-    (styled-string/string "
+  (text/text ()
+    (text/string "Hello" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*)
+    (make-style/image (asdf:system-relative-pathname :projectured "etc/lisp-flag.jpg"))
+    (text/string "World" :font *font/ubuntu/monospace/bold/18* :font-color *color/solarized/green*)
+    (text/string "
 New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
 
 ;;;;;;
 ;;; Text
 
 (def function make-test-content/text/empty ()
-  (make-text/document (list (make-text/paragraph (list (styled-string/string ""))))))
+  (text/text ()
+    (text/paragraph ()
+      (text/string ""))))
 
 (def function make-test-content/text ()
-  (make-text/document (list (make-text/paragraph (list (styled-string/string "first paragraph in a text document")))
-                            (make-text/paragraph (list (styled-string/string "second paragraph in a text document"))))))
+  (text/text ()
+    (text/paragraph ()
+      (text/string "first paragraph in a text document"))
+    (text/paragraph ()
+      (text/string "second paragraph in a text document"))))
 
 ;;;;;;
 ;;; List
@@ -311,24 +316,10 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
 
 (def function make-test-content/demo ()
   (bind ((trace-amounts (make-walked-lisp-form/comment
-                         (styled-string/document
-                           (styled-string/string "This part contain trace amounts of Lisp." :font *font/ubuntu/monospace/bold/18* :font-color *color/solarized/gray*)
-                           ;; TODO:
-                           #+nil
-                           (style/image (asdf:system-relative-pathname :projectured "etc/pie.png")))))
+                         (text/text ()
+                           (text/string "This part contains trace amounts of " :font *font/ubuntu/regular/18* :font-color *color/solarized/gray*)
+                           (style/image (asdf:system-relative-pathname :projectured "etc/lisp-flag.jpg")))))
          (chart-script (make-javascript/statement/block
-                        ;; google.load("visualization", "1", { packages: ["corechart"] });
-                        ;; google.setOnLoadCallback(drawPieChart);
-                        ;; function drawPieChart() {
-                        ;;    var json = $.ajax({
-                        ;;       url: "data",
-                        ;;       dataType: "json",
-                        ;;       async: false
-                        ;;    }).responseText;
-                        ;;    var data = new google.visualization.DataTable(json);
-                        ;;    var chart = new google.visualization.PieChart(document.getElementById("pie"));
-                        ;;    chart.draw(data, { title: "My Daily Activities" });
-                        ;; }
                         (list (make-javascript/expression/method-invocation
                                (make-javascript/expression/variable-reference "google")
                                "load"
@@ -385,32 +376,32 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
          (dispatch-table (table/table ()
                            (table/row ()
                              (table/cell ()
-                               (styled-string/document
-                                 (styled-string/string "HTTP request" :font *font/ubuntu/monospace/bold/18* :font-color *color/default*)))
+                               (text/text ()
+                                 (text/string "HTTP request" :font *font/ubuntu/monospace/bold/18* :font-color *color/default*)))
                              (table/cell ()
-                               (styled-string/document
-                                 (styled-string/string "HTTP response" :font *font/ubuntu/monospace/bold/18* :font-color *color/default*))))
+                               (text/text ()
+                                 (text/string "HTTP response" :font *font/ubuntu/monospace/bold/18* :font-color *color/default*))))
                            (table/row ()
                              (table/cell ()
-                               (styled-string/document
-                                 (styled-string/string "/page" :font *font/default* :font-color *color/solarized/blue*)))
+                               (text/text ()
+                                 (text/string "/page" :font *font/default* :font-color *color/solarized/blue*)))
                              (table/cell ()
-                               (styled-string/document
-                                 (styled-string/string "HTML page that contains a pie chart" :font *font/default* :font-color *color/default*))))
+                               (text/text ()
+                                 (text/string "HTML page that contains a pie chart" :font *font/default* :font-color *color/default*))))
                            (table/row ()
                              (table/cell ()
-                               (styled-string/document
-                                 (styled-string/string "/data" :font *font/default* :font-color *color/solarized/blue*)))
+                               (text/text ()
+                                 (text/string "/data" :font *font/default* :font-color *color/solarized/blue*)))
                              (table/cell ()
-                               (styled-string/document
-                                 (styled-string/string "JSON data describing my daily activities" :font *font/default* :font-color *color/default*))))
+                               (text/text ()
+                                 (text/string "JSON data describing my daily activities" :font *font/default* :font-color *color/default*))))
                            (table/row ()
                              (table/cell ()
-                               (styled-string/document
-                                 (styled-string/string "<otherwise>" :font *font/default* :font-color *color/solarized/blue*)))
+                               (text/text ()
+                                 (text/string "<otherwise>" :font *font/default* :font-color *color/solarized/blue*)))
                              (table/cell ()
-                               (styled-string/document
-                                 (styled-string/string "HTML error page" :font *font/default* :font-color *color/default*))))))
+                               (text/text ()
+                                 (text/string "HTML error page" :font *font/default* :font-color *color/default*))))))
          (chart-page (xml/element "html" ()
                        (xml/element "head" ()
                          (xml/element "script" ((xml/attribute "type" "text/javascript") (xml/attribute "src" "https://www.google.com/jsapi"))
@@ -425,21 +416,22 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                          (xml/element "p" ()
                            (xml/text "Last refresh: ")
                            ;; TODO: fix indentation
-                           ;; TODO: add lisp logo here, fix (make-style/image (asdf:system-relative-pathname :projectured "etc/lisp.jpg"))
-                           trace-amounts
-                           (make-instance 'hu.dwim.walker:free-application-form :operator 'local-time:format-timestring
-                                          :arguments (list (make-instance 'hu.dwim.walker:constant-form :value t)
-                                                           (make-instance 'hu.dwim.walker:free-application-form :operator 'local-time:now :arguments nil)
-                                                           (make-instance 'hu.dwim.walker:constant-form :value :format)
-                                                           (make-instance 'hu.dwim.walker:constant-form :value 'local-time:+asctime-format+)))))))
+                           (text/text ()
+                             trace-amounts
+                             (make-instance 'hu.dwim.walker:free-application-form :operator 'local-time:format-timestring
+                                            :arguments (list (make-instance 'hu.dwim.walker:constant-form :value t)
+                                                             (make-instance 'hu.dwim.walker:free-application-form :operator 'local-time:now :arguments nil)
+                                                             (make-instance 'hu.dwim.walker:constant-form :value :format)
+                                                             (make-instance 'hu.dwim.walker:constant-form :value 'local-time:+asctime-format+))))))))
          (chart-data (json/array
                        (json/array (json/string "Task") (json/string "Hours per Day"))
                        (json/array (json/string "Work") (json/number 11))
                        (json/array (json/string "Eat")
-                                   trace-amounts
-                                   (make-instance 'hu.dwim.walker:free-application-form :operator '+
-                                                  :arguments (list (make-instance 'hu.dwim.walker:constant-form :value 1)
-                                                                   (make-instance 'hu.dwim.walker:constant-form :value 1))))
+                                   (text/text ()
+                                     trace-amounts
+                                     (make-instance 'hu.dwim.walker:free-application-form :operator '+
+                                                    :arguments (list (make-instance 'hu.dwim.walker:constant-form :value 1)
+                                                                     (make-instance 'hu.dwim.walker:constant-form :value 1)))))
                        (json/array (json/string "Commute") (json/number 2))
                        (json/array (json/string "Watch TV") (json/number 2))
                        (json/array (json/string "Sleep") (json/number 7))))
@@ -448,17 +440,20 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                          (xml/element "title" ()
                            (xml/text "Error 404 (Not Found): ")
                            ;; TODO: fix indentation
-                           ;; TODO: add lisp logo here, fix (make-style/image (asdf:system-relative-pathname :projectured "etc/lisp.jpg"))
-                           trace-amounts
-                           (make-instance 'hu.dwim.walker:variable-reference-form :name 'path)))
+                           (text/text ()
+                             trace-amounts
+                             (make-instance 'hu.dwim.walker:variable-reference-form :name 'path))))
                        (xml/element "body" ()
                          (xml/element "p" ()
                            (xml/text "We are sorry, the page you requested cannot be found.")))))
          (lisp-function (make-instance 'hu.dwim.walker:function-definition-form
                                        :name 'process-http-request
                                        :bindings (list (make-instance 'hu.dwim.walker:required-function-argument-form :name 'request))
-                                       ;; TODO: put dispatch table here
-                                       :body (list (make-walked-lisp-form/comment "dispatch on the path of the incoming HTTP request and send an HTML page or the JSON data as response")
+                                       :body (list (text/text ()
+                                                     (make-walked-lisp-form/comment "dispatch on the path of the incoming HTTP request and send an HTML page or the JSON data as response")
+                                                     ;; TODO: put dispatch table here
+                                                     #+nil
+                                                     dispatch-table)
                                                    (make-instance 'hu.dwim.walker:let-form
                                                                   :bindings (list (make-instance 'hu.dwim.walker:lexical-variable-binding-form :name 'path
                                                                                                  :initial-value (make-instance 'hu.dwim.walker:free-application-form :operator 'path-of
@@ -477,23 +472,33 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                                                                                                                                                   :else error-page))))))))))
     (book/book (:title "ProjecturEd" :authors (list "Levente Mészáros"))
       (book/chapter (:title "Introduction")
-        (styled-string/document
-          (styled-string/string "ProjecturEd" :font *font/ubuntu/italic/18* :font-color *color/solarized/violet*)
-          (styled-string/string " is a generic purpose projectional editor written in Common Lisp. It provides editing for different problem domains represented in unrestricted arbitrary data structures. It uses multiple bidirectional projections providing different notations varying from textual to graphics." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)))
+        (text/paragraph ()
+          (text/text ()
+            (text/string "ProjecturEd" :font *font/ubuntu/italic/18* :font-color *color/solarized/violet*)
+            (text/string " is a generic purpose projectional editor written in Common Lisp. It provides editing for different problem domains represented in unrestricted arbitrary data structures. It uses multiple bidirectional projections providing different notations varying from textual to graphics." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+            ;; KLUDGE:
+            (tree/leaf () (style/image (asdf:system-relative-pathname :projectured "etc/lisp-alien.jpg"))))))
       (book/chapter (:title "Literate Programming")
-        (styled-string/document
-          (styled-string/string "This example demonstrates mixing multiple different problem domains in the same document. The document contains" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
-          (styled-string/string " Common Lisp, HTML, JavaScript, JSON, tables, images and styled text" :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/violet*)
-          (styled-string/string " nested into each other. It describes a web service implemented with a single Common Lisp function that processes HTTP requests. When the function receives a request to the '/page' path it sends an HTML page in response. This page contains a pie chart that utilizes the Google Charts JavaScript API. When the pie chart is shown in the browser it sends another request to the '/data' path using JavaScript. For this request the web service returns another document in JSON format that provides the data for the pie chart. For all other unknown requests the web service sends an HTML error page. The following screenshot shows how the page looks like." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
-          (styled-string/newline)
-          ;; KLUDGE:
-          (tree/leaf () (style/image (asdf:system-relative-pathname :projectured "etc/pie.png")))
-          (styled-string/newline)
-          (styled-string/string "This example uses a compound projection that displays all used domains in their natural notation. Proper indentation and syntax highlight are automatically provided without inserting escape sequences that would make reading harder. Note that the edited document" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
-          (styled-string/string " is not text" :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/violet*)
-          (styled-string/string " , it's a complex data structure that precisely captures the intentions. The projections keep track of what is what to make navigation and editing possible." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*))
-        dispatch-table
-        lisp-function))))
+        (text/paragraph ()
+          (text/text ()
+            (text/string "This example demonstrates mixing multiple different problem domains in the same document. The document contains" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+            (text/string " Common Lisp, HTML, JavaScript, JSON, tables, images and styled text" :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/violet*)
+            (text/string " nested into each other. It describes a web service implemented with a single Common Lisp function that processes HTTP requests. When the function receives a request to the '/page' path it sends an HTML page in response. This page contains a pie chart that utilizes the Google Charts JavaScript API. When the pie chart is shown in the browser it sends another request to the '/data' path using JavaScript. For this request the web service returns another document in JSON format that provides the data for the pie chart. For all other unknown requests the web service sends an HTML error page. The following screenshot shows how the page looks like." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+            (text/newline)
+            ;; KLUDGE:
+            (tree/leaf () (style/image (asdf:system-relative-pathname :projectured "etc/pie.png")))
+            (text/newline)
+            (text/string "This example uses a compound projection that displays all used domains in their natural notation. Proper indentation and syntax highlight are automatically provided without inserting escape sequences that would make reading harder. Note that the edited document" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+            (text/string " is not text" :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/violet*)
+            (text/string " , it's a complex data structure that precisely captures the intentions. The projections keep track of what is what to make navigation and editing possible." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)))
+        chart-data
+        error-page
+        #+nil
+        lisp-function)
+      (book/chapter (:title "Further Reading")
+        (text/paragraph ()
+          (text/text ()
+            (text/string "Visit our web site at http://projectured.org or http://projectured.com" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)))))))
 
 ;;;;;;
 ;;; Complex

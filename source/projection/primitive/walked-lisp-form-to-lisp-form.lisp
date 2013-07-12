@@ -290,7 +290,8 @@
                                             (iter (for argument-iomap :in-sequence argument-iomaps)
                                                   (for argument-output = (output-of argument-iomap))
                                                   ;; KLUDGE:
-                                                  (setf (indentation-of argument-output) 2)
+                                                  (unless (first-iteration-p)
+                                                    (setf (indentation-of argument-output) (+ 2 (length (symbol-name (hu.dwim.walker:operator-of input))))))
                                                   (collect argument-output))))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference)
@@ -311,7 +312,7 @@
          (output (make-lisp-form/list (append (list (make-lisp-form/symbol 'defun :font-color *color/solarized/blue*)
                                                     (make-lisp-form/symbol (hu.dwim.walker:name-of input) :font *font/ubuntu/monospace/italic/18* :font-color *color/solarized/violet*)
                                                     (make-lisp-form/list (mapcar 'output-of binding-iomaps)))
-                                              (when docstring (list (make-lisp-form/string docstring)))
+                                              (when docstring (list (make-lisp-form/string docstring :indentation 2)))
                                               (iter (for body-iomap :in-sequence body-iomaps)
                                                     (for body-output = (output-of body-iomap))
                                                     ;; KLUDGE:
@@ -367,7 +368,7 @@
   (declare (ignore projection recursion iomap))
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
          (name (hu.dwim.walker:name-of input))
-         (output (make-lisp-form/symbol name :font-color *color/solarized/red*)))
+         (output (make-lisp-form/symbol name :font *font/ubuntu/italic/14* :font-color *color/solarized/red*)))
     (make-iomap/string* input `(the string (string-downcase (the symbol (slot-value ,typed-input-reference 'hu.dwim.walker::name)))) 0
                         output `(the string (string-downcase (the symbol (value-of (the lisp-form/symbol ,output-reference))))) 0
                         (length (string-downcase name)))))

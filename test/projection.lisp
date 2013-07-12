@@ -712,17 +712,28 @@
           (document->document)
           (recursive
             (type-dispatching
-              (string (make-projection/string->tree/leaf))
-              (styled-string/base (styled-string->tree))
               (text/base (text->tree))
+              (book/base (book->tree))
+              (xml/base (xml->tree))
+              (json/base (json->tree))
+              (lisp-form/base (lisp-form->tree))
+              (t (preserving)))))
+        #+nil
+        (nesting
+          (document->document)
+          (recursive
+            (type-dispatching
+              (string (make-projection/string->tree/leaf))
+              (text/paragraph (text->tree))
+                                        ;(text/base (styled-string->tree))
               (book/base (book->tree))
               (tree/base (preserving))
               (t (sequential
                    (recursive
                      (type-dispatching
                        (string (make-projection/string->tree/leaf))
-                       (styled-string/base (styled-string->tree))
                        (text/base (text->tree))
+                                        ;(text/base (styled-string->tree))
                        (book/base (book->tree))
                        (json/base (json->tree))
                        (xml/base (xml->tree))
@@ -730,7 +741,9 @@
                        (lisp-form/base (lisp-form->tree))
                        (t (preserving))))
                    (recursive (tree->styled-string))
+                   #+nil
                    (styled-string->line-numbered-styled-string)
+                   #+nil
                    (styled-string->tree))))))
         (nesting
           (document->document)
@@ -759,7 +772,7 @@
           (recursive
             (type-dispatching
               (string (make-projection/string->tree/leaf))
-              (styled-string/base (styled-string->tree))
+              (text/base (styled-string->tree))
               (text/base (text->tree))
               (book/base (book->tree))
               (json/base (json->tree))

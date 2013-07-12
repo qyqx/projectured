@@ -29,11 +29,11 @@
 
 (def printer test-result->table (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
-  (bind ((output (make-table/table (list* (make-table/row (list (make-table/cell (make-styled-string/document (list (make-styled-string/string "Name" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))))
-                                                                (make-table/cell (make-styled-string/document (list (make-styled-string/string "Failures" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))))))
+  (bind ((output (make-table/table (list* (make-table/row (list (make-table/cell (make-text/text (list (make-text/string "Name" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))))
+                                                                (make-table/cell (make-text/text (list (make-text/string "Failures" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))))))
                                           (iter (for (test test-run) :in-hashtable (hu.dwim.stefil::run-tests-of input))
-                                                (collect (make-table/row (list (make-table/cell (make-styled-string/document (list (make-styled-string/string (string-downcase (symbol-name (hu.dwim.stefil::name-of test))) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*))))
-                                                                               (make-table/cell (make-styled-string/document (list (make-styled-string/string (write-to-string (hu.dwim.stefil::number-of-added-failure-descriptions-of test-run)) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*))))))))))))
+                                                (collect (make-table/row (list (make-table/cell (make-text/text (list (make-text/string (string-downcase (symbol-name (hu.dwim.stefil::name-of test))) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*))))
+                                                                               (make-table/cell (make-text/text (list (make-text/string (write-to-string (hu.dwim.stefil::number-of-added-failure-descriptions-of test-run)) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*))))))))))))
     (make-iomap/recursive projection recursion input input-reference output output-reference nil)))
 
 ;;;;;;

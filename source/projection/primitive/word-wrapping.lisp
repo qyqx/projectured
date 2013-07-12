@@ -38,12 +38,12 @@
                          (with wrap-width = (wrap-width-of projection))
                          (for (values start-element-index start-character-index)
                               :initially (values 0 0)
-                              :then (styled-string/find input end-element-index end-character-index (lambda (c) (not (whitespace? c)))))
+                              :then (text/find input end-element-index end-character-index (lambda (c) (not (whitespace? c)))))
                          (for whitespace-elements = (unless (first-iteration-p)
-                                                      (elements-of (styled-string/substring input end-element-index end-character-index start-element-index start-character-index))))
+                                                      (elements-of (text/substring input end-element-index end-character-index start-element-index start-character-index))))
                          (for whitespace-width = (iter (with sum = 0) (for element :in whitespace-elements)
                                                        (typecase element
-                                                         (styled-string/string
+                                                         (text/string
                                                           (when (find #\NewLine (content-of element))
                                                             (setf x 0)
                                                             (setf sum 0))
@@ -56,45 +56,45 @@
                          (iter (for index :from 0)
                                (for element :in-sequence whitespace-elements)
                                (typecase element
-                                 (styled-string/string
+                                 (text/string
                                   (for content = (content-of element))
-                                  (push (make-iomap/string content `(content-of (the styled-string/string (elt (the list (elements-of ,typed-input-reference)) ,(+ end-element-index index))))
+                                  (push (make-iomap/string content `(content-of (the text/string (elt (the list (elements-of ,typed-input-reference)) ,(+ end-element-index index))))
                                                            (if (zerop index) end-character-index 0)
-                                                           content `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,(+ output-index index)))) 0
+                                                           content `(content-of (the text/string (elt (the list (elements-of (the text/text ,output-reference))) ,(+ output-index index)))) 0
                                                            (length content))
                                         child-iomaps))))
                          (incf output-index (length whitespace-elements))
                          (appending whitespace-elements)
                          (until (and (= start-element-index (length elements))
                                      (= start-character-index 0)))
-                         (for (values end-element-index end-character-index) = (styled-string/find input start-element-index start-character-index 'whitespace?))
-                         (for word-elements = (elements-of (styled-string/substring input start-element-index start-character-index end-element-index end-character-index)))
+                         (for (values end-element-index end-character-index) = (text/find input start-element-index start-character-index 'whitespace?))
+                         (for word-elements = (elements-of (text/substring input start-element-index start-character-index end-element-index end-character-index)))
                          (for word-width = (iter (for element :in word-elements)
                                                  (summing
                                                   (typecase element
-                                                    (styled-string/string (2d-x (measure-text (content-of element) (font-of element))))
+                                                    (text/string (2d-x (measure-text (content-of element) (font-of element))))
                                                     ;; KLUDGE:
                                                     (t 100)))))
                          (incf x word-width)
                          (when (> x wrap-width)
                            (setf x word-width)
                            (incf output-index)
-                           (collect (make-styled-string/string (string #\NewLine) :font *font/default* :font-color *color/default*)))
+                           (collect (make-text/string (string #\NewLine) :font *font/default* :font-color *color/default*)))
                          (iter (for index :from 0)
                                (for element :in-sequence word-elements)
                                (typecase element
-                                 (styled-string/string
+                                 (text/string
                                   (for content = (content-of element))
-                                  (push (make-iomap/string content `(content-of (the styled-string/string (elt (the list (elements-of ,typed-input-reference)) ,(+ start-element-index index))))
+                                  (push (make-iomap/string content `(content-of (the text/string (elt (the list (elements-of ,typed-input-reference)) ,(+ start-element-index index))))
                                                            (if (zerop index) start-character-index 0)
-                                                           content `(content-of (the styled-string/string (elt (the list (elements-of (the styled-string/document ,output-reference))) ,(+ output-index index)))) 0
+                                                           content `(content-of (the text/string (elt (the list (elements-of (the text/text ,output-reference))) ,(+ output-index index)))) 0
                                                            (length content))
                                         child-iomaps))))
                          (incf output-index (length word-elements))
                          (appending word-elements)
                          (until (and (= end-element-index (length elements))
                                      (= end-character-index 0)))))
-         (output (make-styled-string/document elements)))
+         (output (make-text/text elements)))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))
 
