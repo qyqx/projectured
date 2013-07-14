@@ -44,8 +44,8 @@
 ;;;;;;
 ;;; Construction
 
-(def (macro e) tree/leaf (() content)
-  `(make-tree/leaf ,content))
+(def (macro e) tree/leaf (() &body content)
+  `(make-tree/leaf ,(first content)))
 
 (def (macro e) tree/node (() &body children)
   `(make-tree/node (list ,@children)))

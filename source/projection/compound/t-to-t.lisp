@@ -62,7 +62,7 @@
     (tree/leaf (make-projection/tree/leaf->styled-string :indentation-provider indentation-provider :delimiter-provider delimiter-provider))
     (tree/node (make-projection/tree/node->styled-string :indentation-provider indentation-provider :delimiter-provider delimiter-provider :separator-provider separator-provider))
     (text/base (preserving))
-    (style/image (preserving))
+    (image/image (preserving))
     (string (preserving))))
 
 (def (macro e) tree->styled-string (&key delimiter-provider separator-provider indentation-provider)
@@ -216,6 +216,7 @@
     (hu.dwim.walker:variable-reference-form (make-projection/walked-lisp-form/variable-reference-form->lisp-form/string))
     (hu.dwim.walker:if-form (make-projection/walked-lisp-form/if-form->lisp-form/list))
     (hu.dwim.walker:the-form (make-projection/walked-lisp-form/the-form->lisp-form/list))
+    (hu.dwim.walker:progn-form (make-projection/walked-lisp-form/progn-form->lisp-form/list))
     (hu.dwim.walker:lexical-variable-binding-form (make-projection/walked-lisp-form/lexical-variable-binding-form->lisp-form/list))
     (hu.dwim.walker:let-form (make-projection/walked-lisp-form/let-form->lisp-form/list))
     (hu.dwim.walker:application-form (make-projection/walked-lisp-form/application-form->lisp-form/list))

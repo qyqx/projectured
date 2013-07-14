@@ -24,6 +24,9 @@
 (def (projection e) walked-lisp-form/the-form->lisp-form/list ()
   ())
 
+(def (projection e) walked-lisp-form/progn-form->lisp-form/list ()
+  ())
+
 (def (projection e) walked-lisp-form/lexical-variable-binding-form->lisp-form/list ()
   ())
 
@@ -60,6 +63,9 @@
 (def (function e) make-projection/walked-lisp-form/the-form->lisp-form/list ()
   (make-projection 'walked-lisp-form/the-form->lisp-form/list))
 
+(def (function e) make-projection/walked-lisp-form/progn-form->lisp-form/list ()
+  (make-projection 'walked-lisp-form/progn-form->lisp-form/list))
+
 (def (function e) make-projection/walked-lisp-form/lexical-variable-binding-form->lisp-form/list ()
   (make-projection 'walked-lisp-form/lexical-variable-binding-form->lisp-form/list))
 
@@ -95,6 +101,9 @@
 
 (def (macro e) walked-lisp-form/the-form->lisp-form/list ()
   '(make-projection/walked-lisp-form/the-form->lisp-form/list))
+
+(def (macro e) walked-lisp-form/progn-form->lisp-form/list ()
+  '(make-projection/walked-lisp-form/progn-form->lisp-form/list))
 
 (def (macro e) walked-lisp-form/lexical-variable-binding-form->lisp-form/list ()
   '(make-projection/walked-lisp-form/lexical-variable-binding-form->lisp-form/list))
@@ -180,8 +189,7 @@
                                 (ensure-&allow-other-keys)))))))
 
 (def printer walked-lisp-form/comment->lisp-form/comment (projection recursion iomap input input-reference output-reference)
-  (declare (ignore iomap))
-  (bind ((output (make-lisp-form/comment (content-of input))))
+  (bind ((output (make-lisp-form/comment (output-of (recurse-printer recursion iomap (content-of input) input-reference output-reference)))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)))))
 
@@ -253,6 +261,17 @@
   (bind ((output (make-lisp-form/list (list (make-lisp-form/symbol 'the :font-color *color/solarized/blue*)
                                             (make-lisp-form/symbol (hu.dwim.walker::declared-type-of input) :font-color *color/solarized/violet*)
                                             (output-of (recurse/slot recursion iomap input 'hu.dwim.walker::value input-reference `(elt (the list ,output-reference) 2)))))))
+    (make-iomap/object projection recursion input input-reference output output-reference)))
+
+(def printer walked-lisp-form/progn-form->lisp-form/list (projection recursion iomap input input-reference output-reference)
+  (bind ((body-iomaps (recurse/slot recursion iomap input 'hu.dwim.walker::body input-reference `(elt (the list ,output-reference) 1)))
+         (output (make-lisp-form/list (list* (make-lisp-form/symbol 'progn :font-color *color/solarized/blue*)
+                                             (iter (for body-iomap :in-sequence body-iomaps)
+                                                   (for body-output = (output-of body-iomap))
+                                                   ;; KLUDGE:
+                                                   (setf (indentation-of body-output) 2)
+                                                   (collect body-output))
+                                             ))))
     (make-iomap/object projection recursion input input-reference output output-reference)))
 
 (def printer walked-lisp-form/lexical-variable-binding-form->lisp-form/list (projection recursion iomap input input-reference output-reference)
@@ -368,7 +387,7 @@
   (declare (ignore projection recursion iomap))
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
          (name (hu.dwim.walker:name-of input))
-         (output (make-lisp-form/symbol name :font *font/ubuntu/italic/14* :font-color *color/solarized/red*)))
+         (output (make-lisp-form/symbol name :font *font/ubuntu/monospace/italic/18* :font-color *color/solarized/red*)))
     (make-iomap/string* input `(the string (string-downcase (the symbol (slot-value ,typed-input-reference 'hu.dwim.walker::name)))) 0
                         output `(the string (string-downcase (the symbol (value-of (the lisp-form/symbol ,output-reference))))) 0
                         (length (string-downcase name)))))
@@ -393,6 +412,10 @@
   operation)
 
 (def reader walked-lisp-form/the-form->lisp-form/list (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
+
+(def reader walked-lisp-form/progn-form->lisp-form/list (projection recursion printer-iomap projection-iomap gesture-queue operation document)
   (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
   operation)
 

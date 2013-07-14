@@ -316,9 +316,6 @@
           (document->document)
           (word-wrapping :wrap-width 1024))
         (nesting
-          (document->document)
-          (styled-string->line-numbered-styled-string))
-        (nesting
           (document->graphics)
           (make-test-projection/styled-string->output))))))
 
@@ -712,80 +709,28 @@
           (document->document)
           (recursive
             (type-dispatching
+              (book/base (book->tree))
               (text/base (text->tree))
-              (book/base (book->tree))
-              (xml/base (xml->tree))
-              (json/base (json->tree))
-              (lisp-form/base (lisp-form->tree))
-              (t (preserving)))))
-        #+nil
-        (nesting
-          (document->document)
-          (recursive
-            (type-dispatching
-              (string (make-projection/string->tree/leaf))
-              (text/paragraph (text->tree))
-                                        ;(text/base (styled-string->tree))
-              (book/base (book->tree))
               (tree/base (preserving))
-              (t (sequential
-                   (recursive
-                     (type-dispatching
-                       (string (make-projection/string->tree/leaf))
-                       (text/base (text->tree))
-                                        ;(text/base (styled-string->tree))
-                       (book/base (book->tree))
-                       (json/base (json->tree))
-                       (xml/base (xml->tree))
-                       (javascript/base (javascript->tree))
-                       (lisp-form/base (lisp-form->tree))
-                       (t (preserving))))
-                   (recursive (tree->styled-string))
-                   #+nil
-                   (styled-string->line-numbered-styled-string)
-                   #+nil
-                   (styled-string->tree))))))
+              (image/image (make-projection/image/image->tree/leaf))
+              (lisp-form/base
+               (sequential
+                 (recursive
+                   (type-dispatching
+                     (text/base (text->tree))
+                     (book/base (book->tree))
+                     (xml/base (xml->tree))
+                     (json/base (json->tree))
+                     (javascript/base (javascript->tree))
+                     (lisp-form/base (lisp-form->tree))
+                     (image/image (make-projection/image/image->tree/leaf))
+                     (t (preserving))))
+                 (recursive (tree->styled-string))
+                 (styled-string->line-numbered-styled-string)
+                 (make-projection 't->tree/leaf))))))
         (nesting
           (document->document)
           (recursive (tree->styled-string)))
-        (nesting
-          (document->document)
-          (word-wrapping :wrap-width 1024))
-        (nesting
-          (document->graphics)
-          (make-test-projection/styled-string->output))))))
-
-#+nil
-(def function make-test-projection/demo->graphics ()
-  (test-projection
-    (nesting
-      (widget->graphics)
-      (sequential
-        (nesting
-          (document->document)
-          (recursive
-            (type-dispatching
-              (hu.dwim.walker::walked-form (walked-lisp-form->lisp-form))
-              (t (copying)))))
-        (nesting
-          (document->document)
-          (recursive
-            (type-dispatching
-              (string (make-projection/string->tree/leaf))
-              (text/base (styled-string->tree))
-              (text/base (text->tree))
-              (book/base (book->tree))
-              (json/base (json->tree))
-              (xml/base (xml->tree))
-              (javascript/base (javascript->tree))
-              (lisp-form/base (lisp-form->tree))
-              (t (preserving)))))
-        (nesting
-          (document->document)
-          (recursive (tree->styled-string)))
-        (nesting
-          (document->document)
-          (styled-string->line-numbered-styled-string))
         (nesting
           (document->document)
           (word-wrapping :wrap-width 1024))

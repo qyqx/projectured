@@ -62,7 +62,7 @@
                                     (in outer (collect text))
                                     (incf output-index)
                                     (incf content-index (1+ (length line))))))
-                           (style/image
+                           (image/image
                             (bind ((image (make-graphics/image (make-2d x y) (filename-of element)))
                                    (size (size-of (make-bounding-rectangle image))))
                              (in outer (collect image))

@@ -15,6 +15,9 @@
 (def (projection e) text/string->tree/leaf ()
   ())
 
+(def (projection e) image/image->tree/leaf ()
+  ())
+
 ;;;;;;
 ;;; Construction
 
@@ -23,6 +26,9 @@
 
 (def (function e) make-projection/text/string->tree/leaf ()
   (make-projection 'text/string->tree/leaf))
+
+(def (function e) make-projection/image/image->tree/leaf ()
+  (make-projection 'image/image->tree/leaf))
 
 ;;;;;;
 ;;; Printer
@@ -44,6 +50,12 @@
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)))))
 
+(def printer image/image->tree/leaf (projection recursion iomap input input-reference output-reference)
+  (declare (ignore iomap))
+  (bind ((output (make-tree/leaf input)))
+    (make-iomap/recursive projection recursion input input-reference output output-reference
+                          (list (make-iomap/object projection recursion input input-reference output output-reference)))))
+
 ;;;;;;
 ;;; Reader
 
@@ -52,5 +64,9 @@
   operation)
 
 (def reader text/string->tree/leaf (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
+
+(def reader image/image->tree/leaf (projection recursion printer-iomap projection-iomap gesture-queue operation document)
   (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
   operation)

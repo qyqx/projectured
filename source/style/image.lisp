@@ -9,20 +9,20 @@
 ;;;;;;
 ;;; Document
 
-(def document style/image ()
+(def document image/image ()
   ((filename :type pathname)
    (raw :type t)))
 
 ;;;;;;
 ;;; Construction
 
-(def (function e) make-style/image (filename)
-  (make-instance 'style/image
+(def (function e) make-image/image (filename)
+  (make-instance 'image/image
                  :filename filename
                  :raw nil))
 
 ;;;;;;
 ;;; Construction
 
-(def (macro e) style/image (filename)
-  `(make-style/image ,filename))
+(def (macro e) image/image (filename)
+  `(make-image/image ,filename))

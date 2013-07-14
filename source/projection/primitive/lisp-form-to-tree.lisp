@@ -73,11 +73,10 @@
 ;;; Printer
 
 (def printer lisp-form/comment->string (projection recursion iomap input input-reference output-reference)
-  (declare (ignore iomap))
-  (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
-         (content (content-of input))
+  (bind ((content (content-of input))
          ;; TODO:
-         (output (make-tree/leaf content #+nil(make-text/string content :font *font/ubuntu/regular/18* :font-color *color/solarized/gray*)
+         (output (make-tree/node (list (output-of (recurse-printer recursion iomap content input-reference output-reference)))
+                                 #+nil(make-text/string content :font *font/ubuntu/regular/18* :font-color *color/solarized/gray*)
                                  :opening-delimiter (make-text/string ";; " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           nil
@@ -140,13 +139,11 @@
                                                                      `(elt (the list (children-of (the tree/node ,output-reference))) ,index)))
                                        (for element-output = (output-of iomap))
                                        (push iomap child-iomaps)
-                                       (when (and deep-list
-                                                  (not (first-iteration-p))
-                                                  (not (indentation-of element-output)))
-                                         ;; KLUDGE:
-                                         (setf (indentation-of element-output) (typecase element
-                                                                                 (lisp-form/base (indentation-of element))
-                                                                                 (t 2))))
+                                       (setf (indentation-of element-output)
+                                             (typecase element
+                                               (lisp-form/base (indentation-of element))
+                                               (t (when (and deep-list (not (first-iteration-p)))
+                                                    2))))
                                        (collect element-output))
                                  :opening-delimiter (make-text/string "(" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
                                  :closing-delimiter (make-text/string ")" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)

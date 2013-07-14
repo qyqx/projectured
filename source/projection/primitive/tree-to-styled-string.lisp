@@ -20,6 +20,9 @@
 (def (projection e) tree/node->styled-string (tree/base->styled-string)
   ((separator-provider :type function)))
 
+(def (projection e) t->tree/leaf ()
+  ())
+
 ;;;;;;
 ;;; Construction
 
@@ -73,6 +76,11 @@
 
 ;;;;;;
 ;;; Printer
+
+(def printer t->tree/leaf (projection recursion iomap input input-reference output-reference)
+  (declare (ignore iomap))
+  (bind ((output (make-tree/leaf input)))
+    (make-iomap/recursive projection recursion input input-reference output output-reference nil)))
 
 ;; TODO: KLUDGE: copied, needs factoring
 (def printer tree/leaf->styled-string (projection recursion iomap input input-reference output-reference)
@@ -146,7 +154,7 @@
                                                                       (length (content-of content)))
                                                    child-iomaps)
                                              (write-styled-string content))
-                                            (style/image
+                                            (image/image
                                              (write-element content))))
                                         (awhen (or (closing-delimiter-of input)
                                                    (awhen (delimiter-provider-of projection)
@@ -301,9 +309,9 @@
                                                        (etypecase element
                                                          (text/string
                                                           (write-styled-string element))
-                                                         (style/image
+                                                         (image/image
                                                           (write-element element)))))
-                                               (style/image
+                                               (image/image
                                                 (write-element content))))))
                                         (awhen (or (closing-delimiter-of input)
                                                    (awhen (delimiter-provider-of projection)
@@ -355,6 +363,10 @@
   (pattern-case reference
     ((the ?type (?if (subtypep ?type 'tree/base)) (elt (the list (children-of (the tree/node ?a))) ?b))
      `(the tree/node ,?a))))
+
+(def reader t->tree/leaf (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
 
 (def reader tree/leaf->styled-string (projection recursion printer-iomap projection-iomap gesture-queue operation document)
   (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))

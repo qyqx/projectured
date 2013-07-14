@@ -38,7 +38,7 @@
                   (nreverse
                    (prog1-bind elements nil
                      (flet ((push-character (character)
-                              (push (make-text/string (string character) :font *font/default* :font-color *color/default*) elements)))
+                              (push (make-text/string (string character) :font *font/default* :font-color *color/solarized/gray*) elements)))
                        (iter (for row-index :from 0)
                              (for row :in-sequence (rows-of input))
                              (for row-height = (elt row-heights row-index))
@@ -79,14 +79,14 @@
                                    (iter (for text-line-index :from 0 :below row-height)
                                          (setf (elt cell-text-lines text-line-index)
                                                (text/concatenate (elt cell-text-lines text-line-index)
-                                                                          ;; TODO: map this separator to output
-                                                                          (make-text/text (list (make-text/string (string #\U2502) :font *font/default* :font-color *color/default*)))
-                                                                          (bind ((lines (text/split content #\NewLine)))
-                                                                            (if (< text-line-index (length lines))
-                                                                                (bind ((line (elt lines text-line-index))
-                                                                                       (padding (make-text/text (list (make-text/string (make-string-of-spaces (max 0 (- column-width (text/length line)))) :font *font/default* :font-color *color/default*)))))
-                                                                                  (text/concatenate line padding))
-                                                                                (make-text/text (list (make-text/string (make-string-of-spaces column-width) :font *font/default* :font-color *color/default*))))))))
+                                                                 ;; TODO: map this separator to output
+                                                                 (make-text/text (list (make-text/string (string #\U2502) :font *font/default* :font-color *color/solarized/gray*)))
+                                                                 (bind ((lines (text/split content #\NewLine)))
+                                                                   (if (< text-line-index (length lines))
+                                                                       (bind ((line (elt lines text-line-index))
+                                                                              (padding (make-text/text (list (make-text/string (make-string-of-spaces (max 0 (- column-width (text/length line)))) :font *font/default* :font-color *color/default*)))))
+                                                                         (text/concatenate line padding))
+                                                                       (make-text/text (list (make-text/string (make-string-of-spaces column-width) :font *font/default* :font-color *color/default*))))))))
                                    (finally
                                     (iter (for text-line :in-sequence cell-text-lines)
                                           (iter (for element :in-sequence (elements-of text-line))
