@@ -26,6 +26,7 @@
                              (:module "device"
                               :depends-on ("util")
                               :components ((:file "display")
+                                           (:file "file")
                                            (:file "keyboard")
                                            (:file "mouse")
                                            (:file "timer")))

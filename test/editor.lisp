@@ -12,7 +12,7 @@
 (def suite* (test/editor :in test))
 
 (def test test/editor/read-eval-print-loop (document projection)
-  (finishes (run-read-evaluate-print-loop (make-editor) document projection)))
+  (finishes (run-read-evaluate-print-loop (make-editor :filename "/tmp/projectured.bmp") document projection)))
 
 (def test test/editor/graphics ()
   (test/editor/read-eval-print-loop (make-test-document/graphics) (make-test-projection/graphics->graphics)))
