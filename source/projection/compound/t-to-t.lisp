@@ -180,6 +180,7 @@
 (def (function e) make-projection/javascript->tree ()
   (type-dispatching
     (javascript/statement/block (make-projection/javascript/statement/block->tree/node))
+    (javascript/statement/top-level (make-projection/javascript/statement/top-level->tree/node))
     (javascript/expression/variable-reference (make-projection/javascript/expression/variable-reference->tree/leaf))
     (javascript/expression/property-access (make-projection/javascript/expression/property-access->tree/node))
     (javascript/expression/constructor-invocation (make-projection/javascript/expression/constructor-invocation->tree/node))
@@ -201,7 +202,8 @@
     (lisp-form/symbol (make-projection/lisp-form/symbol->string))
     (lisp-form/string (make-projection/lisp-form/string->string))
     (lisp-form/list (make-projection/lisp-form/list->tree/node))
-    (lisp-form/object (make-projection/lisp-form/object->string))))
+    (lisp-form/object (make-projection/lisp-form/object->string))
+    (lisp-form/top-level (make-projection/lisp-form/top-level->tree/node))))
 
 (def (macro e) lisp-form->tree ()
   '(make-projection/lisp-form->tree))
@@ -211,7 +213,6 @@
 
 (def (function e) make-projection/walked-lisp-form->lisp-form ()
   (type-dispatching
-    (walked-lisp-form/comment (make-projection/walked-lisp-form/comment->lisp-form/comment))
     (hu.dwim.walker:constant-form (make-projection/walked-lisp-form/constant-form->lisp-form/string))
     (hu.dwim.walker:variable-reference-form (make-projection/walked-lisp-form/variable-reference-form->lisp-form/string))
     (hu.dwim.walker:if-form (make-projection/walked-lisp-form/if-form->lisp-form/list))
@@ -222,7 +223,9 @@
     (hu.dwim.walker:application-form (make-projection/walked-lisp-form/application-form->lisp-form/list))
     (hu.dwim.walker:function-definition-form (make-projection/walked-lisp-form/function-definition-form->lisp-form/list))
     (hu.dwim.walker:lambda-function-form (make-projection/walked-lisp-form/lambda-function-form->lisp-form/list))
-    (hu.dwim.walker:function-argument-form (make-projection/walked-lisp-form/function-argument-form->lisp-form/string))))
+    (hu.dwim.walker:function-argument-form (make-projection/walked-lisp-form/function-argument-form->lisp-form/string))
+    (walked-lisp-form/comment (make-projection/walked-lisp-form/comment->lisp-form/comment))
+    (walked-lisp-form/top-level-forms (make-projection/walked-lisp-form/top-level-forms->lisp-form/top-level))))
 
 (def (macro e) walked-lisp-form->lisp-form ()
   '(make-projection/walked-lisp-form->lisp-form))

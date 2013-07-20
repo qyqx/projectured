@@ -10,7 +10,7 @@
 ;;; Document
 
 (def document xml/base ()
-  ((indentation :type number)))
+  ((indentation :type integer)))
 
 (def document xml/element (xml/base)
   ((name :type string)

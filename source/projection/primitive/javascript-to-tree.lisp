@@ -12,6 +12,9 @@
 (def (projection e) javascript/statement/block->tree/node ()
   ())
 
+(def (projection e) javascript/statement/top-level->tree/node ()
+  ())
+
 (def (projection e) javascript/expression/variable-reference->tree/leaf ()
   ())
 
@@ -38,6 +41,9 @@
 
 (def (function e) make-projection/javascript/statement/block->tree/node ()
   (make-projection 'javascript/statement/block->tree/node))
+
+(def (function e) make-projection/javascript/statement/top-level->tree/node ()
+  (make-projection 'javascript/statement/top-level->tree/node))
 
 (def (function e) make-projection/javascript/expression/variable-reference->tree/leaf ()
   (make-projection 'javascript/expression/variable-reference->tree/leaf))
@@ -83,6 +89,23 @@
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))
 
+(def printer javascript/statement/top-level->tree/node (projection recursion iomap input input-reference output-reference)
+  (declare (ignore iomap))
+  (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
+         (child-iomaps nil)
+         (output (make-tree/node (iter (for index :from 0)
+                                       (for element :in-sequence (elements-of input))
+                                       (for iomap = (recurse-printer recursion iomap element
+                                                                     `(elt (elements-of ,typed-input-reference) ,index)
+                                                                     `(elt (the list (children-of (the tree/node ,output-reference))) ,index)))
+                                       (push iomap child-iomaps)
+                                       ;; KLUDGE:
+                                       (setf (indentation-of (output-of iomap)) 0)
+                                       (collect (output-of iomap)))
+                                 :indentation 2)))
+    (make-iomap/recursive projection recursion input input-reference output output-reference
+                          (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))
+
 (def printer javascript/expression/variable-reference->tree/leaf (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
   (bind ((typed-input-reference `(the ,(form-type input) ,input-reference))
@@ -112,7 +135,7 @@
   (bind ((child-iomaps nil)
          (typed-input-reference `(the ,(form-type input) ,input-reference))
          (object-iomap (recurse-printer recursion iomap (object-of input) `(object-of ,typed-input-reference) `(elt (the list (children-of (the tree/node ,output-reference))) 0)))
-         (output (make-tree/node (list (make-tree/leaf (make-text/string "new" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/violet*))
+         (output (make-tree/node (list (make-tree/leaf (make-text/string "new" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))
                                        (output-of object-iomap)
                                        (make-tree/node (list (make-tree/node (iter (for index :from 0)
                                                                                    (for argument :in-sequence (arguments-of input))
@@ -169,7 +192,7 @@
          (child-iomaps nil)
          (body-iomap (recurse-printer recursion iomap (body-of input) `(body-of ,typed-input-reference) `(elt (the list (children-of (the tree/node ,output-reference))) 4)))
          (output (make-tree/node (list (make-tree/leaf (make-text/string "var" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))
-                                       (make-tree/leaf (make-text/string (name-of input) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*))
+                                       (make-tree/leaf (make-text/string (name-of input) :font *font/ubuntu/monospace/italic/18* :font-color *color/solarized/red*))
                                        (make-tree/leaf (make-text/string "=" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))
                                        (output-of body-iomap))
                                  :separator (make-text/string " " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))))
@@ -186,7 +209,7 @@
          (child-iomaps nil)
          (body-iomap (recurse-printer recursion iomap (body-of input) `(body-of ,typed-input-reference) `(elt (the list (children-of (the tree/node ,output-reference))) 4)))
          (output (make-tree/node (list (make-tree/leaf (make-text/string "function" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/blue*))
-                                       (make-tree/leaf (make-text/string (name-of input) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/red*))
+                                       (make-tree/leaf (make-text/string (name-of input) :font *font/ubuntu/monospace/italic/18* :font-color *color/solarized/violet*))
                                        (make-tree/node (iter (for index :from 0)
                                                              (for argument :in-sequence (arguments-of input))
                                                              (for iomap = (recurse-printer recursion iomap argument
@@ -214,6 +237,10 @@
 ;;; Reader
 
 (def reader javascript/statement/block->tree/node (projection recursion input input-reference output-reference)
+  (declare (ignore projection recursion input input-reference output-reference))
+  nil)
+
+(def reader javascript/statement/top-level->tree/node (projection recursion input input-reference output-reference)
   (declare (ignore projection recursion input input-reference output-reference))
   nil)
 

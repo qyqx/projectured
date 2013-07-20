@@ -76,10 +76,28 @@
 ;;; Reader
 
 (def reader styled-string->graphics (projection recursion printer-iomap projection-iomap gesture-queue operation document)
-  (declare (ignore projection recursion printer-iomap operation))
+  (declare (ignore projection recursion operation))
   (bind ((input (input-of projection-iomap))
          (latest-gesture (first (gestures-of gesture-queue))))
-    (cond ((and (typep latest-gesture 'gesture/keyboard/key-press)
+    (cond ((and (typep latest-gesture 'gesture/mouse/button/click)
+                (eq (button-of latest-gesture) :button-left))
+           (bind ((graphics-reference (make-reference (output-of printer-iomap) (location-of latest-gesture)
+                                                      `(printer-output (the ,(form-type (input-of printer-iomap)) document)
+                                                                       ,(projection-of printer-iomap)
+                                                                       ,(recursion-of printer-iomap))))
+                  (domain-reference nil))
+             (map-backward projection-iomap graphics-reference
+                           (lambda (iomap reference)
+                             (declare (ignore iomap))
+                             (setf domain-reference reference)))
+             (pattern-case domain-reference
+               ((the character (elt (the string ?a) ?b))
+                (make-operation/replace-selection document
+                                                  ;; KLUDGE: get document reference
+                                                  (tree-replace `(the sequence-position (pos (the string ,?a) ,?b))
+                                                                (input-reference-of projection-iomap)
+                                                                '(content-of (the document document))))))))
+          ((and (typep latest-gesture 'gesture/keyboard/key-press)
                 (member (key-of latest-gesture) '(:sdl-key-home :sdl-key-end))
                 (equal '(:sdl-key-mod-lctrl) (modifiers-of latest-gesture)))
            (make-operation/replace-selection document
@@ -89,7 +107,7 @@
                                                 `(the sequence-position (pos (the string (content-of (the text/string (elt (the list (elements-of (the text/text (content-of (the document document))))) 0)))) 0)))
                                                (:sdl-key-end
                                                 `(the sequence-position (pos (the string (content-of (the text/string (elt (the list (elements-of (the text/text (content-of (the document document)))))
-                                                                                                                                    ,(1- (length (elements-of input)))))))
+                                                                                                                           ,(1- (length (elements-of input)))))))
                                                                              ,(length (content-of (last-elt (elements-of input))))))))))
           ((and (typep latest-gesture 'gesture/keyboard/key-press)
                 (member (key-of latest-gesture) '(:sdl-key-left :sdl-key-right :sdl-key-up :sdl-key-down :sdl-key-home :sdl-key-end :sdl-key-pageup :sdl-key-pagedown))
@@ -136,7 +154,7 @@
                                                                                 x))))
                                               (setf line-begin-index line-end-index)))
                        (selection `(the sequence-position (pos (the string (content-of (the text/string (elt (the list (elements-of (the text/text ,?a)))
-                                                                                                                      ,(text/element-index input character-index)))))
+                                                                                                             ,(text/element-index input character-index)))))
                                                                ,(text/character-index input character-index)))))
                   (make-operation/replace-selection document selection))))))
           ((and (typep latest-gesture 'gesture/keyboard/key-press)

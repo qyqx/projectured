@@ -702,7 +702,7 @@
           (document->document)
           (recursive
             (type-dispatching
-              (hu.dwim.walker::walked-form (walked-lisp-form->lisp-form))
+              ((or hu.dwim.walker::walked-form walked-lisp-form/base) (walked-lisp-form->lisp-form))
               (table/base (table->string))
               (t (copying)))))
         (nesting
@@ -713,7 +713,7 @@
               (text/base (text->tree))
               (tree/base (preserving))
               (image/image (make-projection/image/image->tree/leaf))
-              (lisp-form/base
+              (t
                (sequential
                  (recursive
                    (type-dispatching

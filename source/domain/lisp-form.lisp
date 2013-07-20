@@ -14,7 +14,7 @@
 ;;; Lisp form document classes
 
 (def document lisp-form/base ()
-  ((indentation :type number)))
+  ((indentation :type integer)))
 
 (def document lisp-form/comment (lisp-form/base)
   ((content :type string)))
@@ -34,7 +34,10 @@
   ((value :type standard-object)))
 
 (def document lisp-form/list (lisp-form/base)
-  ((elements :type list)))
+  ((elements :type sequence)))
+
+(def document lisp-form/top-level (lisp-form/base)
+  ((elements :type sequence)))
 
 ;;;;;;
 ;;; Lisp form document constructors
@@ -56,3 +59,6 @@
 
 (def (function e) make-lisp-form/list (elements &key indentation)
   (make-instance 'lisp-form/list :elements elements :indentation indentation))
+
+(def (function e) make-lisp-form/top-level (elements &key indentation)
+  (make-instance 'lisp-form/top-level :elements elements :indentation indentation))

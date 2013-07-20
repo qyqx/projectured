@@ -10,7 +10,7 @@
 ;;; Data structure
 
 (def document text/base ()
-  ((indentation :type number)))
+  ((indentation :type integer)))
 
 (def document text/element (text/base)
   ((font :type style/font)

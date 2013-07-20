@@ -134,7 +134,7 @@
     (make-test-content/xml/empty)))
 
 (def function make-test-document/xml ()
-  (test-document (:selection '(the sequence-position (pos (the string (value-of (the xml/attribute (elt (the list (attributes-of (the xml/element (elt (the list (children-of (the xml/element (elt (the list (children-of (the xml/element (content-of (the document document))))) 0)))) 1)))) 1)))) 2)))
+  (test-document (:selection '(the sequence-position (pos (the string (value-of (the xml/attribute (elt (the list (attributes-of (the xml/element (elt (the list (children-of (the xml/element (elt (the list (children-of (the xml/element (content-of (the document document))))) 1)))) 1)))) 1)))) 2)))
     (make-test-content/xml)))
 
 ;;;;;;

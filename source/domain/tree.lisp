@@ -12,7 +12,7 @@
 (def document tree/base ()
   ((opening-delimiter :type string)
    (closing-delimiter :type string)
-   (indentation :type positive-integer)))
+   (indentation :type integer)))
 
 (def document tree/leaf (tree/base)
   ((content :type t)))

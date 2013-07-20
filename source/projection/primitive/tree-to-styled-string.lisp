@@ -155,7 +155,14 @@
                                                    child-iomaps)
                                              (write-styled-string content))
                                             (image/image
-                                             (write-element content))))
+                                             (write-element content))
+                                            (text/text
+                                                (iter (for element :in-sequence (elements-of content))
+                                                      (etypecase element
+                                                        (text/string
+                                                         (write-styled-string element))
+                                                        (image/image
+                                                         (write-element element)))))))
                                         (awhen (or (closing-delimiter-of input)
                                                    (awhen (delimiter-provider-of projection)
                                                      (funcall it iomap `(closing-delimiter ,typed-input-reference))))

@@ -9,6 +9,7 @@
 ;;;;;;
 ;;; Projection
 
+;; TODO: rename these to ->tree/leaf
 (def (projection e) lisp-form/comment->string ()
   ())
 
@@ -25,6 +26,9 @@
   ())
 
 (def (projection e) lisp-form/object->string ()
+  ())
+
+(def (projection e) lisp-form/top-level->tree/node ()
   ())
 
 ;;;;;;
@@ -48,6 +52,9 @@
 (def (function e) make-projection/lisp-form/object->string ()
   (make-projection 'lisp-form/object->string))
 
+(def (function e) make-projection/lisp-form/top-level->tree/node ()
+  (make-projection 'lisp-form/top-level->tree/node))
+
 ;;;;;;
 ;;; Construction
 
@@ -68,6 +75,9 @@
 
 (def (macro e) lisp-form/object->tree/node ()
   '(make-projection/lisp-form/object->string))
+
+(def (macro e) lisp-form/top-level->tree/node ()
+  '(make-projection/lisp-form/top-level->tree/node))
 
 ;;;;;;
 ;;; Printer
@@ -162,6 +172,27 @@
                                                     output-content `(the string (content-of (the tree/leaf ,output-reference))) 0
                                                     (length output-content))))))
 
+(def printer lisp-form/top-level->tree/node (projection recursion iomap input input-reference output-reference)
+  (declare (ignore iomap))
+  (bind ((child-iomaps nil)
+         (typed-input-reference `(the ,(form-type input) ,input-reference))
+         (output (make-tree/node (iter (for index :from 0)
+                                       (for element :in (elements-of input))
+                                       (for iomap = (recurse-printer recursion iomap element
+                                                                     `(elt (the list (elements-of ,typed-input-reference)) ,index)
+                                                                     `(elt (the list (children-of (the tree/node ,output-reference))) ,index)))
+                                       (for element-output = (output-of iomap))
+                                       (push iomap child-iomaps)
+                                       (setf (indentation-of element-output)
+                                             (typecase element
+                                               (lisp-form/base (indentation-of element))
+                                               (t 0)))
+                                       (collect element-output))
+                                 :separator (make-text/string " " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
+                                 :indentation 2)))
+    (make-iomap/recursive projection recursion input input-reference output output-reference
+                          (list* (make-iomap/object projection recursion input input-reference output output-reference) (nreverse child-iomaps)))))
+
 ;;;;;;
 ;;; Reader
 
@@ -186,5 +217,9 @@
   operation)
 
 (def reader lisp-form/object->string (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
+
+(def reader lisp-form/top-level->tree/node (projection recursion printer-iomap projection-iomap gesture-queue operation document)
   (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
   operation)

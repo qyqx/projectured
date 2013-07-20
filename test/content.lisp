@@ -315,11 +315,13 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
   (declare (ignore content)))
 
 (def function make-test-content/demo ()
-  (bind ((trace-amounts (make-walked-lisp-form/comment
+  (bind ((page-path (make-adjustable-string "/page"))
+         (data-path (make-adjustable-string "/data"))
+         (trace-amounts (make-walked-lisp-form/comment
                          (text/text ()
                            (text/string "This part contains trace amounts of " :font projectured::*font/ubuntu/regular/18* :font-color *color/solarized/gray*)
                            (image/image (asdf:system-relative-pathname :projectured "etc/lisp-flag.jpg")))))
-         (chart-script (make-javascript/statement/block
+         (chart-script (make-javascript/statement/top-level
                         (list (make-javascript/expression/method-invocation
                                (make-javascript/expression/variable-reference "google")
                                "load"
@@ -343,7 +345,7 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                                          "ajax"
                                          (list (json/object
                                                  ("async" (json/boolean #f))
-                                                 ("url" (json/string "/data"))
+                                                 ("url" (json/string data-path))
                                                  ("dataType" (json/string "json")))))
                                         "responseText"))
                                       (make-javascript/declaration/variable
@@ -384,14 +386,14 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                            (table/row ()
                              (table/cell ()
                                (text/text ()
-                                 (text/string "/page" :font *font/default* :font-color *color/solarized/blue*)))
+                                 (text/string page-path :font *font/default* :font-color *color/solarized/blue*)))
                              (table/cell ()
                                (text/text ()
                                  (text/string "HTML page that contains a pie chart" :font *font/default* :font-color *color/solarized/gray*))))
                            (table/row ()
                              (table/cell ()
                                (text/text ()
-                                 (text/string "/data" :font *font/default* :font-color *color/solarized/blue*)))
+                                 (text/string data-path :font *font/default* :font-color *color/solarized/blue*)))
                              (table/cell ()
                                (text/text ()
                                  (text/string "JSON data describing daily activities" :font *font/default* :font-color *color/solarized/gray*))))
@@ -415,25 +417,29 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                            (xml/text ""))
                          (xml/element "p" ()
                            (xml/text "Last refresh: ")
-                           (make-instance 'hu.dwim.walker::progn-form
-                                          :body (list trace-amounts
-                                                      (make-instance 'hu.dwim.walker:free-application-form :operator 'local-time:format-timestring
-                                                                     :arguments (list (make-instance 'hu.dwim.walker:constant-form :value t)
-                                                                                      (make-instance 'hu.dwim.walker:free-application-form :operator 'local-time:now :arguments nil)
-                                                                                      (make-instance 'hu.dwim.walker:constant-form :value :format)
-                                                                                      (make-instance 'hu.dwim.walker:constant-form :value 'local-time:+asctime-format+)))))))))
+                           (make-walked-lisp-form/top-level-forms
+                            (list trace-amounts
+                                  (make-instance 'hu.dwim.walker:free-application-form :operator 'local-time:format-timestring
+                                                 :arguments (list (make-instance 'hu.dwim.walker:constant-form :value t)
+                                                                  (make-instance 'hu.dwim.walker:free-application-form :operator 'local-time:now :arguments nil)
+                                                                  (make-instance 'hu.dwim.walker:constant-form :value :format)
+                                                                  (make-instance 'hu.dwim.walker:constant-form :value 'local-time:+asctime-format+)))))))))
          (chart-data (json/array
                        (json/array (json/string "Task") (json/string "Hours per Day"))
                        (json/array (json/string "Work") (json/number 11))
-                       (json/array (json/string "Eat")
-                                   (make-instance 'hu.dwim.walker::progn-form
-                                                  :body (list trace-amounts
-                                                              (make-instance 'hu.dwim.walker:free-application-form :operator '+
-                                                                             :arguments (list (make-instance 'hu.dwim.walker:constant-form :value 1)
-                                                                                              (make-instance 'hu.dwim.walker:constant-form :value 1))))))
+                       (json/array (json/string "Eat") (json/number 2))
                        (json/array (json/string "Commute") (json/number 2))
                        (json/array (json/string "Watch TV") (json/number 2))
-                       (json/array (json/string "Sleep") (json/number 7))))
+                       (json/array (json/string "Sleep")
+                                   (make-walked-lisp-form/top-level-forms
+                                    (list trace-amounts
+                                          (make-instance 'hu.dwim.walker:free-application-form :operator '-
+                                                         :arguments (list (make-instance 'hu.dwim.walker:constant-form :value 24)
+                                                                          (make-instance 'hu.dwim.walker:free-application-form :operator '+
+                                                                                         :arguments (list (make-instance 'hu.dwim.walker:constant-form :value 11)
+                                                                                                          (make-instance 'hu.dwim.walker:constant-form :value 2)
+                                                                                                          (make-instance 'hu.dwim.walker:constant-form :value 2)
+                                                                                                          (make-instance 'hu.dwim.walker:constant-form :value 2))))))))))
          (error-page (xml/element "html" ()
                        (xml/element "head" ()
                          (xml/element "title" ()
@@ -441,9 +447,9 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                        (xml/element "body" ()
                          (xml/element "p" ()
                            (xml/text "We are sorry, page ")
-                           (make-instance 'hu.dwim.walker::progn-form
-                                          :body (list trace-amounts
-                                                      (make-instance 'hu.dwim.walker:variable-reference-form :name 'path)))
+                           (make-walked-lisp-form/top-level-forms
+                            (list trace-amounts
+                                  (make-instance 'hu.dwim.walker:variable-reference-form :name 'path)))
                            (xml/text " cannot be found.")))))
          (lisp-function (make-instance 'hu.dwim.walker:function-definition-form
                                        :name 'process-http-request
@@ -460,12 +466,12 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                                                                   :body (list (make-instance 'hu.dwim.walker:free-application-form :operator 'make-http-response
                                                                                              :arguments (list (make-instance 'hu.dwim.walker:if-form
                                                                                                                              :condition (make-instance 'hu.dwim.walker:free-application-form :operator 'string=
-                                                                                                                                                       :arguments (list (make-instance 'hu.dwim.walker:constant-form :value "/page")
+                                                                                                                                                       :arguments (list (make-instance 'hu.dwim.walker:constant-form :value page-path)
                                                                                                                                                                         (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'path)))
                                                                                                                              :then chart-page
                                                                                                                              :else (make-instance 'hu.dwim.walker:if-form
                                                                                                                                                   :condition (make-instance 'hu.dwim.walker:free-application-form :operator 'string=
-                                                                                                                                                                            :arguments (list (make-instance 'hu.dwim.walker:constant-form :value "/data")
+                                                                                                                                                                            :arguments (list (make-instance 'hu.dwim.walker:constant-form :value data-path)
                                                                                                                                                                                              (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'path)))
                                                                                                                                                   :then chart-data
                                                                                                                                                   :else error-page))))))))))
@@ -480,7 +486,11 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
         (text/text ()
           (text/string "This example demonstrates mixing multiple different problem domains in the same document. The document contains" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
           (text/string " Common Lisp, HTML, JavaScript, JSON, table, image and styled text" :font projectured::*font/ubuntu/italic/18* :font-color *color/solarized/violet*)
-          (text/string " nested into each other. It describes a web service implemented with a single Common Lisp function that processes HTTP requests. When the function receives a request to the '/page' path it sends an HTML page in response. This page contains a pie chart that utilizes the Google Charts JavaScript API. When the pie chart is shown in the browser it sends another request to the '/data' path using JavaScript. For this request the web service returns another document in JSON format that provides the data for the pie chart. For all other unknown requests the web service sends an HTML error page. The following screenshot shows how the page looks like." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+          (text/string " nested into each other. It describes a web service implemented with a single Common Lisp function that processes HTTP requests. When the function receives a request to the '" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+          (text/string page-path :font *font/ubuntu/italic/18* :font-color *color/solarized/violet*)
+          (text/string "' path it sends an HTML page in response. This page contains a pie chart that utilizes the Google Charts JavaScript API. When the pie chart is shown in the browser it sends another request to the '" :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
+          (text/string data-path :font *font/ubuntu/italic/18* :font-color *color/solarized/violet*)
+          (text/string "' path using JavaScript. For this request the web service returns another document in JSON format that provides the data for the pie chart. For all other unknown requests the web service sends an HTML error page. The following screenshot shows how the page looks like." :font *font/ubuntu/regular/18* :font-color *color/solarized/content/darker*)
           (text/newline)
           (image/image (asdf:system-relative-pathname :projectured "etc/pie.png"))
           (text/newline)

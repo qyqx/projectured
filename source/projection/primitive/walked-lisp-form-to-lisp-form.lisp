@@ -12,6 +12,9 @@
 (def (projection e) walked-lisp-form/comment->lisp-form/comment ()
   ())
 
+(def (projection e) walked-lisp-form/top-level-forms->lisp-form/top-level ()
+  ())
+
 (def (projection e) walked-lisp-form/constant-form->lisp-form/string ()
   ())
 
@@ -51,6 +54,9 @@
 (def (function e) make-projection/walked-lisp-form/comment->lisp-form/comment ()
   (make-projection 'walked-lisp-form/comment->lisp-form/comment))
 
+(def (function e) make-projection/walked-lisp-form/top-level-forms->lisp-form/top-level ()
+  (make-projection 'walked-lisp-form/top-level-forms->lisp-form/top-level))
+
 (def (function e) make-projection/walked-lisp-form/constant-form->lisp-form/string ()
   (make-projection 'walked-lisp-form/constant-form->lisp-form/string))
 
@@ -89,6 +95,9 @@
 
 (def (macro e) walked-lisp-form/comment->lisp-form/comment ()
   '(make-projection/walked-lisp-form/comment->lisp-form/comment))
+
+(def (macro e) walked-lisp-form/top-level-forms->lisp-form/top-level ()
+  '(make-projection/walked-lisp-form/top-level-forms->lisp-form/top-level))
 
 (def (macro e) walked-lisp-form/constant-form->lisp-form/string ()
   '(make-projection/walked-lisp-form/constant-form->lisp-form/string))
@@ -190,6 +199,16 @@
 
 (def printer walked-lisp-form/comment->lisp-form/comment (projection recursion iomap input input-reference output-reference)
   (bind ((output (make-lisp-form/comment (output-of (recurse-printer recursion iomap (content-of input) input-reference output-reference)))))
+    (make-iomap/recursive projection recursion input input-reference output output-reference
+                          (list (make-iomap/object projection recursion input input-reference output output-reference)))))
+
+(def printer walked-lisp-form/top-level-forms->lisp-form/top-level (projection recursion iomap input input-reference output-reference)
+  (bind ((body-iomaps (recurse/slot recursion iomap input 'body input-reference `(elt (the list ,output-reference) 1)))
+         (output (make-lisp-form/top-level (iter (for body-iomap :in-sequence body-iomaps)
+                                                 (for body-output = (output-of body-iomap))
+                                                 ;; KLUDGE:
+                                                 (setf (indentation-of body-output) 0)
+                                                 (collect body-output)))))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)))))
 
@@ -396,6 +415,10 @@
 ;;; Reader
 
 (def reader walked-lisp-form/comment->lisp-form/comment (projection recursion printer-iomap projection-iomap gesture-queue operation document)
+  (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
+  operation)
+
+(def reader walked-lisp-form/top-level-forms->lisp-form/top-level (projection recursion printer-iomap projection-iomap gesture-queue operation document)
   (declare (ignore projection recursion printer-iomap projection-iomap gesture-queue document))
   operation)
 

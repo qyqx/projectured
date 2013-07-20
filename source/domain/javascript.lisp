@@ -21,6 +21,9 @@
 (def document javascript/statement/block (javascript/statement)
   ((elements :type sequence)))
 
+(def document javascript/statement/top-level (javascript/statement)
+  ((elements :type sequence)))
+
 ;;;;;;
 ;;; Javascript expression classes
 
@@ -84,6 +87,9 @@
 
 (def (function e) make-javascript/statement/block (elements)
   (make-instance 'javascript/statement/block :elements elements))
+
+(def (function e) make-javascript/statement/top-level (elements)
+  (make-instance 'javascript/statement/top-level :elements elements))
 
 ;;;;;;
 ;;; Javascript expression constructors

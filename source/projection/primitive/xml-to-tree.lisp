@@ -52,8 +52,14 @@
 
 (def printer xml/text->tree/leaf (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
-  (bind ((output (make-tree/leaf (make-text/string (text-of input) :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/green*))))
-    (make-iomap/object projection recursion input input-reference output output-reference)))
+  (bind ((text (text-of input))
+         (typed-input-reference `(the ,(form-type input) ,input-reference))
+         (output (make-tree/leaf (make-text/string text :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/green*))))
+    (make-iomap/recursive projection recursion input input-reference output output-reference
+                          (list (make-iomap/object projection recursion input input-reference output output-reference)
+                                (make-iomap/string text `(text-of ,typed-input-reference) 0
+                                                   text `(content-of (the text/string (content-of (the tree/leaf ,output-reference)))) 0
+                                                   (length text))))))
 
 (def printer xml/attribute->tree/node (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
@@ -70,18 +76,18 @@
          (value-reference `(elt (the list (children-of (the tree/node ,output-reference))) 1)))
     (make-iomap/recursive projection recursion input input-reference output output-reference
                           (list (make-iomap/object projection recursion input input-reference output output-reference)
+                                (make-iomap/object projection recursion
+                                                   name `(name-of ,typed-input-reference)
+                                                   name-leaf name-reference)
                                 (make-iomap/string name `(name-of ,typed-input-reference) 0
                                                    name `(content-of (the text/string (content-of (the tree/leaf ,name-reference)))) 0
                                                    (length name))
                                 (make-iomap/object projection recursion
-                                                   name `(name-of ,typed-input-reference)
-                                                   name-leaf name-reference)
+                                                   value `(value-of ,typed-input-reference)
+                                                   value-leaf value-reference)
                                 (make-iomap/string value `(value-of ,typed-input-reference) 0
                                                    value `(content-of (the text/string (content-of (the tree/leaf ,value-reference)))) 0
-                                                   (length value))
-                                (make-iomap/object projection recursion
-                                                   value `(value-of ,typed-input-reference)
-                                                   value-leaf value-reference)))))
+                                                   (length value))))))
 
 (def printer xml/element->tree/node (projection recursion iomap input input-reference output-reference)
   (declare (ignore iomap))
@@ -113,6 +119,8 @@
                                                                            (collect (output-of iomap)))
                                                                      :closing-delimiter (make-text/string (if children ">" "/>") :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
                                                                      :separator (make-text/string " " :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*))
+                                                   ;; TODO: this kills editing xml attribute names and values because it kicks in when mapping backward
+                                                   #+nil
                                                    (push (make-iomap/object* projection recursion input `(the list (attributes-of ,typed-input-reference))
                                                                              output `(the tree/node (elt (the list (children-of (the tree/node ,output-reference))) 1)))
                                                          child-iomaps))))
