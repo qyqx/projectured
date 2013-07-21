@@ -209,23 +209,23 @@
   '(make-projection/lisp-form->tree))
 
 ;;;;;;
-;;; Walked lisp form
+;;; Common lisp
 
-(def (function e) make-projection/walked-lisp-form->lisp-form ()
+(def (function e) make-projection/common-lisp->lisp-form ()
   (type-dispatching
-    (hu.dwim.walker:constant-form (make-projection/walked-lisp-form/constant-form->lisp-form/string))
-    (hu.dwim.walker:variable-reference-form (make-projection/walked-lisp-form/variable-reference-form->lisp-form/string))
-    (hu.dwim.walker:if-form (make-projection/walked-lisp-form/if-form->lisp-form/list))
-    (hu.dwim.walker:the-form (make-projection/walked-lisp-form/the-form->lisp-form/list))
-    (hu.dwim.walker:progn-form (make-projection/walked-lisp-form/progn-form->lisp-form/list))
-    (hu.dwim.walker:lexical-variable-binding-form (make-projection/walked-lisp-form/lexical-variable-binding-form->lisp-form/list))
-    (hu.dwim.walker:let-form (make-projection/walked-lisp-form/let-form->lisp-form/list))
-    (hu.dwim.walker:application-form (make-projection/walked-lisp-form/application-form->lisp-form/list))
-    (hu.dwim.walker:function-definition-form (make-projection/walked-lisp-form/function-definition-form->lisp-form/list))
-    (hu.dwim.walker:lambda-function-form (make-projection/walked-lisp-form/lambda-function-form->lisp-form/list))
-    (hu.dwim.walker:function-argument-form (make-projection/walked-lisp-form/function-argument-form->lisp-form/string))
-    (walked-lisp-form/comment (make-projection/walked-lisp-form/comment->lisp-form/comment))
-    (walked-lisp-form/top-level-forms (make-projection/walked-lisp-form/top-level-forms->lisp-form/top-level))))
+    (common-lisp/constant (make-projection/common-lisp/constant-form->lisp-form/string))
+    (common-lisp/variable-reference (make-projection/common-lisp/variable-reference-form->lisp-form/string))
+    (common-lisp/if (make-projection/common-lisp/if-form->lisp-form/list))
+    (common-lisp/the (make-projection/common-lisp/the-form->lisp-form/list))
+    (common-lisp/progn (make-projection/common-lisp/progn-form->lisp-form/list))
+    (common-lisp/lexical-variable-binding (make-projection/common-lisp/lexical-variable-binding-form->lisp-form/list))
+    (common-lisp/let (make-projection/common-lisp/let-form->lisp-form/list))
+    (common-lisp/application (make-projection/common-lisp/application-form->lisp-form/list))
+    (common-lisp/function-definition (make-projection/common-lisp/function-definition-form->lisp-form/list))
+    (common-lisp/lambda-function (make-projection/common-lisp/lambda-function-form->lisp-form/list))
+    (common-lisp/function-argument (make-projection/common-lisp/function-argument-form->lisp-form/string))
+    (common-lisp/comment (make-projection/common-lisp/comment->lisp-form/comment))
+    (common-lisp/top-level (make-projection/common-lisp/top-level->lisp-form/top-level))))
 
-(def (macro e) walked-lisp-form->lisp-form ()
-  '(make-projection/walked-lisp-form->lisp-form))
+(def (macro e) common-lisp->lisp-form ()
+  '(make-projection/common-lisp->lisp-form))

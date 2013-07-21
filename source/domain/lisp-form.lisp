@@ -10,6 +10,8 @@
 ;;;; Lisp form domain provides:
 ;;;;  - all types provided by the Common Lisp implementation
 
+;; TODO: either rename to s-expression or merge as literals into common-lisp?
+
 ;;;;;;
 ;;; Lisp form document classes
 

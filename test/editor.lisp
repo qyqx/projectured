@@ -95,8 +95,8 @@
 (def test test/editor/lisp-form ()
   (test/editor/read-eval-print-loop (make-test-document/lisp-form) (make-test-projection/lisp-form->graphics)))
 
-(def test test/editor/walked-lisp-form ()
-  (test/editor/read-eval-print-loop (make-test-document/walked-lisp-form) (make-test-projection/walked-lisp-form->graphics)))
+(def test test/editor/common-lisp ()
+  (test/editor/read-eval-print-loop (make-test-document/common-lisp) (make-test-projection/common-lisp->graphics)))
 
 (def test test/editor/evaluator ()
   (test/editor/read-eval-print-loop (make-test-document/evaluator) (make-test-projection/evaluator)))

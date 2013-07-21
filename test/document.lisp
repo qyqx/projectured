@@ -178,15 +178,15 @@
     (make-test-content/lisp-form)))
 
 ;;;;;;
-;;; Walked lisp form
+;;; Common lisp
 
-(def function make-test-document/walked-lisp-form/empty ()
+(def function make-test-document/common-lisp/empty ()
   (test-document (:selection '(content-of (the document document)))
-    (make-test-content/walked-lisp-form/empty)))
+    (make-test-content/common-lisp/empty)))
 
-(def function make-test-document/walked-lisp-form ()
-  (test-document (:selection '(the sequence-position (pos (the string (slot-value (the hu.dwim.walker:function-definition-form (content-of (the document document))) 'hu.dwim.walker::docstring)) 7)))
-    (make-test-content/walked-lisp-form)))
+(def function make-test-document/common-lisp ()
+  (test-document (:selection '(the sequence-position (pos (the string (slot-value (the common-lisp/function-definition (content-of (the document document))) 'documentation)) 7)))
+    (make-test-content/common-lisp)))
 
 ;;;;;
 ;;; Evaluator
@@ -217,14 +217,14 @@
 ;;; Nested
 
 (def function make-test-document/nested ()
-  (test-document (:selection '(the sequence-position (pos (the string (slot-value (the hu.dwim.walker:constant-form (elt (the list (slot-value (the hu.dwim.walker:free-application-form (slot-value (the hu.dwim.walker:if-form (elt (the list (slot-value (the hu.dwim.walker:lambda-function-form (content-of (the document document))) 'hu.dwim.walker::body)) 0)) 'hu.dwim.walker::condition)) 'hu.dwim.walker::arguments)) 0)) 'hu.dwim.walker::value)) 1)))
+  (test-document (:selection '(the sequence-position (pos (the string (slot-value (the common-lisp/constant (elt (the list (slot-value (the common-lisp/application (slot-value (the common-lisp/if (elt (the list (slot-value (the common-lisp/lambda-function (content-of (the document document))) 'body)) 0)) 'condition)) 'arguments)) 0)) 'value)) 1)))
     (make-test-content/nested)))
 
 ;;;;;;
 ;;; Complex
 
 (def function make-test-document/complex ()
-  (test-document (:selection '(the sequence-position (pos (the string (slot-value (the hu.dwim.walker:function-definition-form (content-of (content-of (the table/cell (elt (the list (cells-of (the table/row (elt (the list (rows-of (the table/table (content-of (the document document))))) 1)))) 1))))) 'hu.dwim.walker::docstring)) 7)))
+  (test-document (:selection '(the sequence-position (pos (the string (slot-value (the common-lisp/function-definition (content-of (content-of (the table/cell (elt (the list (cells-of (the table/row (elt (the list (rows-of (the table/table (content-of (the document document))))) 1)))) 1))))) 'documentation)) 7)))
     (make-test-content/complex)))
 
 ;;;;;;

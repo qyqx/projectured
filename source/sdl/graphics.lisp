@@ -22,6 +22,6 @@
            (sdl:get-font-size text :size :h :font (raw-of font))))
 
 (def method make-bounding-rectangle ((instance graphics/image))
-    (bind ((image (sdl-image:load-image (source-of instance) :color-key-at #(0 0)))
-           (rectangle (sdl:get-surface-rect :surface image)))
-      (make-rectangle (location-of instance) (make-2d (sdl:width rectangle) (sdl:height rectangle)))))
+  (bind ((image (sdl-image:load-image (source-of instance) :color-key-at #(0 0)))
+         (rectangle (sdl:get-surface-rect :surface image)))
+    (make-rectangle (location-of instance) (make-2d (sdl:width rectangle) (sdl:height rectangle)))))

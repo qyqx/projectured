@@ -520,25 +520,25 @@
           (make-test-projection/styled-string->output))))))
 
 ;;;;;;
-;;; Walked lisp form
+;;; Common lisp
 
-(def function make-test-projection/walked-lisp-form->lisp-form ()
-  (recursive (walked-lisp-form->lisp-form)))
+(def function make-test-projection/common-lisp->lisp-form ()
+  (recursive (common-lisp->lisp-form)))
 
-(def function make-test-projection/walked-lisp-form->styled-string ()
+(def function make-test-projection/common-lisp->styled-string ()
   (sequential
-    (make-test-projection/walked-lisp-form->lisp-form)
+    (make-test-projection/common-lisp->lisp-form)
     (make-test-projection/lisp-form->tree)
     (recursive (tree->styled-string))))
 
-(def function make-test-projection/walked-lisp-form->graphics ()
+(def function make-test-projection/common-lisp->graphics ()
   (test-projection
     (nesting
       (widget->graphics)
       (sequential
         (nesting
           (document->document)
-          (make-test-projection/walked-lisp-form->styled-string))
+          (make-test-projection/common-lisp->styled-string))
         (nesting
           (document->document)
           (styled-string->line-numbered-styled-string))
@@ -560,7 +560,7 @@
         (nesting
           (document->document)
           (sequence->list)
-          (make-test-projection/walked-lisp-form->styled-string))
+          (make-test-projection/common-lisp->styled-string))
         (nesting
           (document->document)
           (list->string))
@@ -630,7 +630,7 @@
   (sequential
     (recursive
       (type-dispatching
-        (hu.dwim.walker:walked-form (walked-lisp-form->lisp-form))
+        (common-lisp/base (common-lisp->lisp-form))
         (t (preserving))))
     (recursive
       (type-dispatching
@@ -670,10 +670,10 @@
       (java/base (sequential
                    (recursive (java->tree))
                    (recursive (tree->styled-string))))
-      (hu.dwim.walker:walked-form (sequential
-                                    (recursive (walked-lisp-form->lisp-form))
-                                    (recursive (lisp-form->tree))
-                                    (recursive (tree->styled-string)))))))
+      (common-lisp/base (sequential
+                          (recursive (common-lisp->lisp-form))
+                          (recursive (lisp-form->tree))
+                          (recursive (tree->styled-string)))))))
 
 (def function make-test-projection/complex->graphics ()
   (test-projection
@@ -702,16 +702,8 @@
           (document->document)
           (recursive
             (type-dispatching
-              ((or hu.dwim.walker::walked-form walked-lisp-form/base) (walked-lisp-form->lisp-form))
-              (table/base (table->string))
-              (t (copying)))))
-        (nesting
-          (document->document)
-          (recursive
-            (type-dispatching
               (book/base (book->tree))
               (text/base (text->tree))
-              (tree/base (preserving))
               (image/image (make-projection/image/image->tree/leaf))
               (t
                (sequential
@@ -722,15 +714,23 @@
                      (xml/base (xml->tree))
                      (json/base (json->tree))
                      (javascript/base (javascript->tree))
+                     (table/base (sequential
+                                   (recursive (table->string))
+                                   (make-projection 't->tree/leaf)))
+                     (common-lisp/base (sequential
+                                         (common-lisp->lisp-form)
+                                         (lisp-form->tree)))
                      (lisp-form/base (lisp-form->tree))
                      (image/image (make-projection/image/image->tree/leaf))
                      (t (preserving))))
                  (recursive (tree->styled-string))
+                 ;; TODO: slow due to text/split
                  (styled-string->line-numbered-styled-string)
                  (make-projection 't->tree/leaf))))))
         (nesting
           (document->document)
           (recursive (tree->styled-string)))
+        ;; TODO: this is slow due to text/find
         (nesting
           (document->document)
           (word-wrapping :wrap-width 1024))
@@ -756,9 +756,9 @@
               (java/base (java->tree))
               (javascript/base (javascript->tree))
               (lisp-form/base (lisp-form->tree))
-              (hu.dwim.walker::walked-form
+              (common-lisp/base
                (sequential
-                 (recursive (walked-lisp-form->lisp-form))
+                 (recursive (common-lisp->lisp-form))
                  (recursive (lisp-form->tree))))
               (table/base (table->string))
               (text/base (text->string))
@@ -826,14 +826,14 @@
 (def test test/projection/lisp-form->graphics ()
   (test/projection/apply-printer (make-test-document/lisp-form) (make-test-projection/lisp-form->graphics)))
 
-(def test test/projection/walked-lisp-form->lisp-form ()
-  (test/projection/apply-printer (make-test-content/walked-lisp-form) (make-test-projection/walked-lisp-form->lisp-form)))
+(def test test/projection/common-lisp->lisp-form ()
+  (test/projection/apply-printer (make-test-content/common-lisp) (make-test-projection/common-lisp->lisp-form)))
 
-(def test test/projection/walked-lisp-form->styled-string ()
-  (test/projection/apply-printer (make-test-content/walked-lisp-form) (make-test-projection/walked-lisp-form->styled-string)))
+(def test test/projection/common-lisp->styled-string ()
+  (test/projection/apply-printer (make-test-content/common-lisp) (make-test-projection/common-lisp->styled-string)))
 
-(def test test/projection/walked-lisp-form->graphics ()
-  (test/projection/apply-printer (make-test-document/walked-lisp-form) (make-test-projection/walked-lisp-form->graphics)))
+(def test test/projection/common-lisp->graphics ()
+  (test/projection/apply-printer (make-test-document/common-lisp) (make-test-projection/common-lisp->graphics)))
 
 (def test test/projection/evaluator ()
   (test/projection/apply-printer (make-test-document/evaluator) (make-test-projection/evaluator)))

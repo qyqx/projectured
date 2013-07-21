@@ -254,18 +254,25 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                              (make-lisp-form/object (make-string-output-stream)))))
 
 ;;;;;;
-;;; Walked lisp form
+;;; Common lisp
 
-(def function make-test-content/walked-lisp-form/empty ()
+(def function make-test-content/common-lisp/empty ()
   nil)
 
-(def function make-test-content/walked-lisp-form ()
-  (hu.dwim.walker:walk-form (make-test-content/lisp-form/function)))
+(def function make-test-content/common-lisp ()
+  (make-instance 'common-lisp/function-definition
+                 :name 'factorial
+                 :bindings (list (make-instance 'common-lisp/required-function-argument :name 'n))
+                 :allow-other-keys #f
+                 :documentation "Computes the factorial of N"
+                 :body nil))
 
 ;;;;;;
 ;;; Evaluator
 
 (def function make-test-content/evaluator ()
+  ;; TODO:
+  #+nil
   (hu.dwim.walker:walk-form '(* 2 (+ 3 4) (- 5 6))))
 
 ;;;;;;
@@ -297,11 +304,13 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
 ;;; Nested
 
 (def function make-test-content/nested ()
-  (bind ((walked-lisp-form (hu.dwim.walker:walk-form '(lambda (name) (if (string= "json" name) nil nil))))
-         (if-form (elt (hu.dwim.walker:body-of walked-lisp-form) 0)))
+  ;; TODO:
+  #+nil
+  (bind ((common-lisp (hu.dwim.walker:walk-form '(lambda (name) (if (string= "json" name) nil nil))))
+         (if-form (elt (hu.dwim.walker:body-of common-lisp) 0)))
     (setf (hu.dwim.walker:then-of if-form) (make-test-content/json))
     (setf (hu.dwim.walker:else-of if-form) (make-test-content/xml))
-    walked-lisp-form))
+    common-lisp))
 
 ;;;;;;
 ;;; Demo
@@ -317,7 +326,7 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
 (def function make-test-content/demo ()
   (bind ((page-path (make-adjustable-string "/page"))
          (data-path (make-adjustable-string "/data"))
-         (trace-amounts (make-walked-lisp-form/comment
+         (trace-amounts (make-common-lisp/comment
                          (text/text ()
                            (text/string "This part contains trace amounts of " :font projectured::*font/ubuntu/regular/18* :font-color *color/solarized/gray*)
                            (image/image (asdf:system-relative-pathname :projectured "etc/lisp-flag.jpg")))))
@@ -417,13 +426,13 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                            (xml/text ""))
                          (xml/element "p" ()
                            (xml/text "Last refresh: ")
-                           (make-walked-lisp-form/top-level-forms
+                           (make-common-lisp/top-level
                             (list trace-amounts
-                                  (make-instance 'hu.dwim.walker:free-application-form :operator 'local-time:format-timestring
-                                                 :arguments (list (make-instance 'hu.dwim.walker:constant-form :value t)
-                                                                  (make-instance 'hu.dwim.walker:free-application-form :operator 'local-time:now :arguments nil)
-                                                                  (make-instance 'hu.dwim.walker:constant-form :value :format)
-                                                                  (make-instance 'hu.dwim.walker:constant-form :value 'local-time:+asctime-format+)))))))))
+                                  (make-instance 'common-lisp/application :operator 'local-time:format-timestring
+                                                 :arguments (list (make-instance 'common-lisp/constant :value t)
+                                                                  (make-instance 'common-lisp/application :operator 'local-time:now :arguments nil)
+                                                                  (make-instance 'common-lisp/constant :value :format)
+                                                                  (make-instance 'common-lisp/constant :value 'local-time:+asctime-format+)))))))))
          (chart-data (json/array
                        (json/array (json/string "Task") (json/string "Hours per Day"))
                        (json/array (json/string "Work") (json/number 11))
@@ -431,15 +440,15 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                        (json/array (json/string "Commute") (json/number 2))
                        (json/array (json/string "Watch TV") (json/number 2))
                        (json/array (json/string "Sleep")
-                                   (make-walked-lisp-form/top-level-forms
+                                   (make-common-lisp/top-level
                                     (list trace-amounts
-                                          (make-instance 'hu.dwim.walker:free-application-form :operator '-
-                                                         :arguments (list (make-instance 'hu.dwim.walker:constant-form :value 24)
-                                                                          (make-instance 'hu.dwim.walker:free-application-form :operator '+
-                                                                                         :arguments (list (make-instance 'hu.dwim.walker:constant-form :value 11)
-                                                                                                          (make-instance 'hu.dwim.walker:constant-form :value 2)
-                                                                                                          (make-instance 'hu.dwim.walker:constant-form :value 2)
-                                                                                                          (make-instance 'hu.dwim.walker:constant-form :value 2))))))))))
+                                          (make-instance 'common-lisp/application :operator '-
+                                                         :arguments (list (make-instance 'common-lisp/constant :value 24)
+                                                                          (make-instance 'common-lisp/application :operator '+
+                                                                                         :arguments (list (make-instance 'common-lisp/constant :value 11)
+                                                                                                          (make-instance 'common-lisp/constant :value 2)
+                                                                                                          (make-instance 'common-lisp/constant :value 2)
+                                                                                                          (make-instance 'common-lisp/constant :value 2))))))))))
          (error-page (xml/element "html" ()
                        (xml/element "head" ()
                          (xml/element "title" ()
@@ -447,32 +456,34 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
                        (xml/element "body" ()
                          (xml/element "p" ()
                            (xml/text "We are sorry, page ")
-                           (make-walked-lisp-form/top-level-forms
+                           (make-common-lisp/top-level
                             (list trace-amounts
-                                  (make-instance 'hu.dwim.walker:variable-reference-form :name 'path)))
+                                  (make-instance 'common-lisp/variable-reference :name 'path)))
                            (xml/text " cannot be found.")))))
-         (lisp-function (make-instance 'hu.dwim.walker:function-definition-form
+         (lisp-function (make-instance 'common-lisp/function-definition
                                        :name 'process-http-request
-                                       :bindings (list (make-instance 'hu.dwim.walker:required-function-argument-form :name 'request))
-                                       :body (list (make-walked-lisp-form/comment
+                                       :bindings (list (make-instance 'common-lisp/required-function-argument :name 'request))
+                                       :allow-other-keys #f
+                                       :documentation nil
+                                       :body (list (make-common-lisp/comment
                                                     (text/text ()
                                                       (text/string "dispatch on the path of the incoming HTTP request according to the following table" :font *font/ubuntu/monospace/regular/18* :font-color *color/solarized/gray*)
                                                       (text/newline)
                                                       dispatch-table))
-                                                   (make-instance 'hu.dwim.walker:let-form
-                                                                  :bindings (list (make-instance 'hu.dwim.walker:lexical-variable-binding-form :name 'path
-                                                                                                 :initial-value (make-instance 'hu.dwim.walker:free-application-form :operator 'path-of
-                                                                                                                               :arguments (list (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'request)))))
-                                                                  :body (list (make-instance 'hu.dwim.walker:free-application-form :operator 'make-http-response
-                                                                                             :arguments (list (make-instance 'hu.dwim.walker:if-form
-                                                                                                                             :condition (make-instance 'hu.dwim.walker:free-application-form :operator 'string=
-                                                                                                                                                       :arguments (list (make-instance 'hu.dwim.walker:constant-form :value page-path)
-                                                                                                                                                                        (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'path)))
+                                                   (make-instance 'common-lisp/let
+                                                                  :bindings (list (make-instance 'common-lisp/lexical-variable-binding :name 'path
+                                                                                                 :initial-value (make-instance 'common-lisp/application :operator 'path-of
+                                                                                                                               :arguments (list (make-instance 'common-lisp/variable-reference :name 'request)))))
+                                                                  :body (list (make-instance 'common-lisp/application :operator 'make-http-response
+                                                                                             :arguments (list (make-instance 'common-lisp/if
+                                                                                                                             :condition (make-instance 'common-lisp/application :operator 'string=
+                                                                                                                                                       :arguments (list (make-instance 'common-lisp/constant :value page-path)
+                                                                                                                                                                        (make-instance 'common-lisp/variable-reference :name 'path)))
                                                                                                                              :then chart-page
-                                                                                                                             :else (make-instance 'hu.dwim.walker:if-form
-                                                                                                                                                  :condition (make-instance 'hu.dwim.walker:free-application-form :operator 'string=
-                                                                                                                                                                            :arguments (list (make-instance 'hu.dwim.walker:constant-form :value data-path)
-                                                                                                                                                                                             (make-instance 'hu.dwim.walker:free-variable-reference-form :name 'path)))
+                                                                                                                             :else (make-instance 'common-lisp/if
+                                                                                                                                                  :condition (make-instance 'common-lisp/application :operator 'string=
+                                                                                                                                                                            :arguments (list (make-instance 'common-lisp/constant :value data-path)
+                                                                                                                                                                                             (make-instance 'common-lisp/variable-reference :name 'path)))
                                                                                                                                                   :then chart-data
                                                                                                                                                   :else error-page))))))))))
     (book/book (:title "ProjecturEd" :authors (list "Levente Mészáros"))
@@ -512,7 +523,7 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
   (make-table/table (list (make-table/row (list (make-table/cell (make-test-content/xml))
                                                 (make-table/cell (make-test-content/json))))
                           (make-table/row (list (make-table/cell (make-test-content/java))
-                                                (make-table/cell (make-test-content/walked-lisp-form)))))))
+                                                (make-table/cell (make-test-content/common-lisp)))))))
 
 ;;;;;;
 ;;; Wow
@@ -554,7 +565,7 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
       (make-test-content/lisp-form))
     (book/chapter (:title "Common Lisp code Domain")
       "Some Common Lisp code"
-      (make-test-content/walked-lisp-form))
+      (make-test-content/common-lisp))
     (book/chapter (:title "Object Domain")
       "Some object"
       #+nil (make-test-content/t))))
@@ -603,8 +614,8 @@ New line" :font *font/ubuntu/bold/24* :font-color *color/solarized/blue*)))
 (def test test/content/lisp-form ()
   (test/content/print-document (make-test-content/lisp-form)))
 
-(def test test/content/walked-lisp-form ()
-  (test/content/print-document (make-test-content/walked-lisp-form)))
+(def test test/content/common-lisp ()
+  (test/content/print-document (make-test-content/common-lisp)))
 
 (def test test/content/evaluator ()
   (test/content/print-document (make-test-content/evaluator)))

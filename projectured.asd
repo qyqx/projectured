@@ -14,8 +14,7 @@
   :depends-on (:hu.dwim.common
                :hu.dwim.computed-class+hu.dwim.defclass-star
                :hu.dwim.def
-               :hu.dwim.defclass-star
-               :hu.dwim.syntax-sugar+hu.dwim.walker
+               :hu.dwim.syntax-sugar
                :hu.dwim.util
                :parse-number)
   :components ((:module "source"
@@ -68,7 +67,7 @@
                                            (:file "table")
                                            (:file "text")
                                            (:file "tree")
-                                           (:file "walked-lisp-form")
+                                           (:file "common-lisp")
                                            (:file "widget")
                                            (:file "xml")))
                              (:module "projection"
@@ -125,7 +124,7 @@
                                                          (:file "tree-to-graphics")
                                                          (:file "tree-to-string")
                                                          (:file "tree-to-styled-string")
-                                                         (:file "walked-lisp-form-to-lisp-form")
+                                                         (:file "common-lisp-to-lisp-form")
                                                          (:file "widget-to-graphics")
                                                          (:file "word-wrapping")
                                                          (:file "xml-to-tree")))
